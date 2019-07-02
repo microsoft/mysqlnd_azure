@@ -69,7 +69,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 
 
 ## Test
-* Currently it only supports redirection when the connection is via ssl, and it need that the redirection feature switch is enabled on server side. Following is a snippet to test connection with redirection:
+* Currently redirection is only possible when the connection is via ssl, and it need that the redirection feature switch is enabled on server side. Following is a snippet to test connection with redirection:
 
 ```php
   echo "mysqlnd_rd.enabled: ", ini_get("mysqlnd_rd.enabled") == true?"On":"Off", "\n";
