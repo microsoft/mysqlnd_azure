@@ -19,9 +19,9 @@ Following is a brief guide of how to build and test the extension.
   - ./configure
   - make 
 * After that, you will find a .so file named **mysqlnd_rd.so** under ./modules folder. Then you can run **make install** to put the .so to your php so library. However this may not add the configuration file for you automatically. So the alternative way is using following steps:
-  - run php -i to find the extension **extension_dir** and  **dir for additional .ini files**
+  - run php -i, you will find two field **extension_dir** and  **Scan this dir for additional .ini files**, you can find it using php -i | grep "extension_dir" or grep "dir for additional .ini files".
   - put mysqlnd_rd.so under extension_dir
-  - under dir for additional .ini files, create a new ini file for mysqlnd_rd, **make sure the alphabet order of the name is after that of mysqnld**, e.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-rd.ini. In the ini file, add the following     two lines:
+  - under directory for additional .ini files, you will find the ini files for the common used modules, e.g. 10-mysqlnd.ini for mysqlnd, 20-mysqli.ini for mysqli. Create a new ini file for mysqlnd_rd here. **Make sure the alphabet order of the name is after that of mysqnld**, since the modules are loaded according to the name order of the ini files. E.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-rd.ini. In the ini file, add the following two lines:
       - extension=mysqlnd_rd
       - mysqlnd_rd.enabled = on  ; you can also set this to off to disable redirection
 
