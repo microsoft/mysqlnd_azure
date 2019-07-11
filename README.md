@@ -7,7 +7,7 @@ The extension is named with **mysqlnd_rd**, source code here has two branches:
 * mysqlnd-rd-php-7-4 : Compatiable with PHP7.4
 
 Following is a brief guide of how to build and test the extension. 
-## Step to build on Linux Ubuntu (On Redhat, the build steps are similar but difference stated below)
+## Step to build on Linux
 * Install phpize for build using following command
   - Ubuntu: apt-get install php7.x-dev  
   //use the version that corresponds to your PHP version, i.e. if you use PHP7.3, use php7.3-dev here
