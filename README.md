@@ -12,9 +12,9 @@ Following is a brief guide of how to build and test the extension.
   - Ubuntu: apt-get install php7.x-dev  
   //use the version that corresponds to your PHP version, i.e. if you use PHP7.3, use php7.3-dev here
   - Redhat: yum install php7x-php-devel, e.g. yum install php72-php-devel
-            after install, you need to link phpize and php-config in order to make it work correctly:
-	    ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
-	    ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
+            -after install, you need to link phpize and php-config in order to make it work correctly:
+	    -ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
+	    -ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
 * Chose your folder to hold the source code, e.g. php-mysqlnd_extension, and cd to it
 * git clone https://github.com/microsoft/php-mysqlnd .
 * git checkout to branch mysqlnd-rd-php-7-2 or mysqlnd-rd-php-7-4
