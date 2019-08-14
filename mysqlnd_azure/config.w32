@@ -1,0 +1,11 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE('mysqlnd_azure', 'mysqlnd_azure support for redirection', 'no');
+
+if (PHP_MYSQLND_AZURE != 'no') {
+	AC_DEFINE('HAVE_MYSQLND_AZURE', 1, 'mysqlnd_azure support for redirection enabled');
+	ADD_EXTENSION_DEP('mysqlnd_azure', 'mysqlnd');
+	
+	EXTENSION('mysqlnd_azure', 'mysqlnd_azure.c php_mysqlnd_azure.c redirect_cache.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
