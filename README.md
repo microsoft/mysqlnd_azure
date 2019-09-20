@@ -2,7 +2,7 @@
 The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support. 
 
 ## Name and Extension Version
-The extension is named with **mysqlnd_azure**, currently the valid version is branch *mysqlnd-azure-php-cc-7-2 or tag v1.0.0. Required PHP min version is PHP7.2.15+ and PHP7.3.2+
+The extension is named with **mysqlnd_azure**, currently the valid version is branch *mysqlnd-azure-php-cc-7-2 or tag v1.0.0. Required PHP min version is PHP7.2.15+ and PHP7.3.2+.
 
 Following is a brief guide of how to build and test the extension. 
 ## Step to build on Linux
