@@ -110,7 +110,7 @@ zend_module_entry mysqlnd_azure_module_entry = {
 	NULL,
 	NULL,
 	PHP_MINFO(mysqlnd_azure),
-	EXT_MYSQLND_AZURE_VERSION_STR,
+	EXT_MYSQLND_AZURE_VERSION,
 	PHP_MODULE_GLOBALS(mysqlnd_azure),
 	PHP_GINIT(mysqlnd_azure),
 	PHP_GSHUTDOWN(mysqlnd_azure),
