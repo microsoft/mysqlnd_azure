@@ -13,10 +13,10 @@ Following is a brief guide of how to build and test the extension.
   //e.g. php72-php-devel. after install if you still cannot find phpize or php-config, you need to link phpize and php-config in order to make it work correctly:
     - ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
     - ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
-* Chose your folder to hold the source code, e.g. php-mysqlnd_extension, and cd to it
+* Chose your folder to hold the source code, e.g. mysqlnd_azure, and cd to it
 * git clone https://github.com/microsoft/mysqlnd_azure .
 * git checkout to branch mysqlnd-azure-php723-1.0.0
-* cd to the mysqlnd_azure source folder, and run
+* run
   - phpize
   - ./configure
   - make 
@@ -51,7 +51,7 @@ There need more steps to build the extension under Windows, and it willl use the
 * Under the folder, git clone php source code from https://github.com/php/php-src.git  Fecth the related version, e.g. PHP-7.2.20
 * use the PHP SDK tools to fetch the suitable dependencies automatically by calling 
   - phpsdk_deps -u
-* Extract mysqlnd_azure code https://github.com/microsoft/mysqlnd_azure from ext folder to the php-source-code-folder\ext\, e.g. to C:\php-sdk\phpdev\vc15\x64\php-src\ext. Or create another folder with name "pecl" which is in parallel with php source, e.g. C:\php-sdk\phpdev\vc15\x64\pecl, and extract the code there.
+* Extract mysqlnd_azure code https://github.com/microsoft/mysqlnd_azure to the php-source-code-folder\ext\mysqlnd_azure(a new directory need to create), e.g. to C:\php-sdk\phpdev\vc15\x64\php-src\ext\mysqlnd_azure. Or create another folder with name "pecl" which is in parallel with php source, e.g. C:\php-sdk\phpdev\vc15\x64\pecl, and extract the code there in folder mysqlnd_azure.
 After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-src\ext\mysqlnd_azure, or C:\php-sdk\phpdev\vc15\x64\pecl\mysqlnd_azure
   
 #### Compile
