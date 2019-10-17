@@ -4,6 +4,12 @@
  <channel>pecl.php.net</channel>
  <summary>mysqlnd_azure - a redirection plugin for mysqlnd</summary>
  <description>mysqlnd extension for azure</description>
+ <lead>
+  <name>Qianqian Bu</name>
+  <user>bqq</user>
+  <email>Qianqian.Bu@microsoft.com</email>
+  <active>yes</active>
+ </lead>
  <developer>
   <name>Qianqian Bu</name>
   <user>bqq</user>
