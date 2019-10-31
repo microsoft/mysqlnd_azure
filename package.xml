@@ -16,11 +16,11 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </developer>
- <date>2019-10-17</date>
- <time>10:30:13</time>
+ <date>2019-10-31</date>
+ <time>12:00:13</time>
  <version>
-  <release>1.0.0</release>
-  <api>1.0.0</api>
+  <release>1.0.1</release>
+  <api>1.0.1</api>
  </version>
  <stability>
   <release>stable</release>
@@ -47,6 +47,7 @@
    <file md5sum="a898ba9138cb8ebe9751d0629ebdcd87" name="LICENSE.txt" role="doc" />
    <file md5sum="c3de6c763e44bebab12cfa0d85c37fa0" name="Notes.txt" role="doc" />
    <file md5sum="2e6b1acdbd3ea3056847cbd5d8042153" name="CREDITS" role="doc" />
+   <file md5sum="e7390e0b685a34055ee4dae466073362" name="README.md" role="doc" />
   </dir>
  </contents>
  <dependencies>
@@ -64,6 +65,21 @@
  <providesextension>mysqlnd_azure</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.0.1</release>
+    <api>1.0.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2019-10-31</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+Update package folder name for pecl install, and README.md
+   </notes>
+  </release>
   <release>
    <version>
     <release>1.0.0</release>
