@@ -9,11 +9,12 @@ Valid version:
 - 1.0.1 with pecl install command line support on linux
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
-##Step to install using PECL
+
+## Step to install using PECL
 The PECL link is available at  https://pecl.php.net/package/mysqlnd_azure.
 Following steps assume that php and php-mysql have already been normally installed on each platform.
-####Setup
-######Linux
+#### Setup
+###### Linux
 example to install required tools for php7.3 on Ubuntu:
     sudo apt-get install php-pear
     sudo apt-get install php7.3-dev
@@ -21,16 +22,13 @@ example to install required tools for php7.3 on Redhat 7.4:
     sudo yum --enablerepo=epel,remi-php73 install php-devel
     sudo yum --enablerepo=epel,remi-php73 install php-pear
 
-####Install
-######Linux
+#### Install
+###### Linux
 sudo pecl install mysqlnd_azure
-######Windows
+###### Windows
 Download the dll from the DLL link on https://pecl.php.net/package/mysqlnd_azure, and put it under exension_dir (Follow the configure step below to get the value).
-####Configure
+#### Configure
 The configuration step is same with that of build from source. Check content below for Linux or Windows platform.
-
-
-
 
 
 ## Step to build on Linux
