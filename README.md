@@ -1,11 +1,40 @@
 # PHP mysqlnd redirection extension mysqlnd_azure
-The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support. 
+The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support.  The extension is also available on PECL website at  https://pecl.php.net/package/mysqlnd_azure.
 
 ## Name and Extension Version
-The extension is named with **mysqlnd_azure**, currently the valid version is branch *mysqlnd-azure-php723-1.0.0 or tag v1.0.0. Required PHP min version is PHP7.2.15+ and PHP7.3.2+.
+Extension name: **mysqlnd_azure**
+Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
+Valid version:
+- 1.0.0
+- 1.0.1 with pecl install command line support on linux
 
-Following is a brief guide of how to build and test the extension. 
+Following is a brief guide of how to install using pecl or build and test the extension from source. 
+##Step to install using PECL
+The PECL link is available at  https://pecl.php.net/package/mysqlnd_azure.
+Following steps assume that php and php-mysql have already been normally installed on each platform.
+####Setup
+######Linux
+example to install required tools for php7.3 on Ubuntu:
+    sudo apt-get install php-pear
+    sudo apt-get install php7.3-dev
+example to install required tools for php7.3 on Redhat 7.4:
+    sudo yum --enablerepo=epel,remi-php73 install php-devel
+    sudo yum --enablerepo=epel,remi-php73 install php-pear
+
+####Install
+######Linux
+sudo pecl install mysqlnd_azure
+######Windows
+Download the dll from the DLL link on https://pecl.php.net/package/mysqlnd_azure, and put it under exension_dir (Follow the configure step below to get the value).
+####Configure
+The configuration step is same with that of build from source. Check content below for Linux or Windows platform.
+
+
+
+
+
 ## Step to build on Linux
+#### Setup
 * Install phpize for build using following command
   - Ubuntu: apt-get install php7.x-dev  
   //use the version that corresponds to your PHP version, i.e. if you use PHP7.3, use php7.3-dev here
@@ -13,16 +42,21 @@ Following is a brief guide of how to build and test the extension.
   //e.g. php72-php-devel. after install if you still cannot find phpize or php-config, you need to link phpize and php-config in order to make it work correctly:
     - ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
     - ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
+	
+#### Compile
 * Chose your folder to hold the source code, e.g. mysqlnd_azure, and cd to it
 * git clone https://github.com/microsoft/mysqlnd_azure .
-* git checkout to branch mysqlnd-azure-php723-1.0.0
+* git checkout to corresponding branch
 * run
   - phpize
   - ./configure
   - make 
-* After that, you will find a .so file named **mysqlnd_azure.so** under ./modules folder. Then you can run **make install** to put the .so to your php so library. However this may not add the configuration file for you automatically. So the alternative way is using following steps:
+* After that, you will find a .so file named **mysqlnd_azure.so** under ./modules folder. 
+
+#### Install and configure
+Then you can run **make install** to put the .so to your php so library. However this may not add the configuration file for you automatically. So the alternative way is using following steps:
   - run php -i, you will find two field **extension_dir** and  **Scan this dir for additional .ini files**, you can find it using php -i | grep "extension_dir" or grep "dir for additional .ini files".
-  - put mysqlnd_azure.so under extension_dir
+  - put mysqlnd_azure.so under extension_dir.
   - under directory for additional .ini files, you will find the ini files for the common used modules, e.g. 10-mysqlnd.ini for mysqlnd, 20-mysqli.ini for mysqli. Create a new ini file for mysqlnd_azure here. **Make sure the alphabet order of the name is after that of mysqnld**, since the modules are loaded according to the name order of the ini files. E.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-azure.ini. In the ini file, add the following two lines:
       - extension=mysqlnd_azure
       - mysqlnd_azure.enabled = on  ; you can also set this to off to disable redirection
@@ -57,12 +91,13 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 #### Compile
 * Invoke the starter script, for example for Visual Studio 2017 64-bit build, invoke     
   - phpsdk-vc15-x64.bat
+* checkout to corresponding branch
 * run **buildconf**
 * run **configure.bat --disable-all --enable-cli --with-mysqlnd --enable-mysqlnd_azure=shared**
 * run **nmake**
 * after that, you will find a dll under .\x64\x64\Release_TS\ with name **php_mysqlnd_azure.dll**, this is the target library.
 
-#### Install
+#### Install and configure
 * Use php -i to find the ini to find the extension_dir, copy php_mysqlnd_azure.dll there
 * Find the ini file location, modify the ini file with the following extra lines:
     - extension=mysqlnd_azure
