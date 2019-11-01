@@ -10,7 +10,7 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2019-10-31</date>
+ <date>2019-11-01</date>
  <time>12:00:13</time>
  <version>
   <release>1.0.1</release>
@@ -68,7 +68,7 @@
     <release>stable</release>
     <api>stable</api>
    </stability>
-   <date>2019-10-31</date>
+   <date>2019-11-01</date>
    <license uri="http://www.php.net/license">PHP License</license>
    <notes>
 Update package folder name for pecl install, and README.md
