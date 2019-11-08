@@ -22,8 +22,8 @@ Example to install required tools for php7.3 on Ubuntu:
 Example to install required tools for php7.3 on Redhat 7.4:
 - sudo yum --enablerepo=epel,remi-php73 install php-devel
 - sudo yum --enablerepo=epel,remi-php73 install php-pear
-- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command (the version may be out of date, please check the related website for version information)
-- rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command
+- rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 - rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 
 #### Install
@@ -45,8 +45,8 @@ The configuration step is same with that of build from source. Check content bel
   	//e.g. php72-php-devel. after install if you still cannot find phpize or php-config, you need to link phpize and php-config in order to make it work correctly:
 	- ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
 	- ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
-	- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command (the version may be out of date, please check the related website for version information)
-   	- rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+	- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command
+   	- rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	- rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 	
 #### Compile
