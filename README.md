@@ -15,12 +15,16 @@ The PECL link is available at  https://pecl.php.net/package/mysqlnd_azure.
 Following steps assume that php and php-mysql have already been normally installed on each platform.
 #### Setup
 ###### Linux
-example to install required tools for php7.3 on Ubuntu:
-    sudo apt-get install php-pear
-    sudo apt-get install php7.3-dev
-example to install required tools for php7.3 on Redhat 7.4:
-    sudo yum --enablerepo=epel,remi-php73 install php-devel
-    sudo yum --enablerepo=epel,remi-php73 install php-pear
+Example to install required tools for php7.3 on Ubuntu:
+- sudo apt-get install php-pear
+- sudo apt-get install php7.3-dev
+
+Example to install required tools for php7.3 on Redhat 7.4:
+- sudo yum --enablerepo=epel,remi-php73 install php-devel
+- sudo yum --enablerepo=epel,remi-php73 install php-pear
+- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command (the version may be out of date, please check the related website for version information)
+- rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+- rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 
 #### Install
 ###### Linux
@@ -36,10 +40,14 @@ The configuration step is same with that of build from source. Check content bel
 * Install phpize for build using following command
   - Ubuntu: apt-get install php7.x-dev  
   //use the version that corresponds to your PHP version, i.e. if you use PHP7.3, use php7.3-dev here
+
   - Redhat: yum install php7x-php-devel  
-  //e.g. php72-php-devel. after install if you still cannot find phpize or php-config, you need to link phpize and php-config in order to make it work correctly:
-    - ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
-    - ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
+  	//e.g. php72-php-devel. after install if you still cannot find phpize or php-config, you need to link phpize and php-config in order to make it work correctly:
+	- ln -s /opt/remi/php72/root/bin/phpize /usr/bin/phpize
+	- ln -s /opt/remi/php72/root/bin/php-config /usr/bin/php-config
+	- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command (the version may be out of date, please check the related website for version information)
+   	- rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+	- rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 	
 #### Compile
 * Chose your folder to hold the source code, e.g. mysqlnd_azure, and cd to it
@@ -81,7 +89,8 @@ There need more steps to build the extension under Windows, and it willl use the
     x## is your architecture (x86 or x64)
     For example: C:\php-sdk\phpdev\vc15\x64\  for PHP7.2+
 * Under the folder, git clone php source code from https://github.com/php/php-src.git  Fecth the related version, e.g. PHP-7.2.20
-* use the PHP SDK tools to fetch the suitable dependencies automatically by calling 
+* cd to php-src directory
+* use the PHP SDK tools to fetch the suitable dependencies automatically for a valid branch by calling 
   - phpsdk_deps -u
 * Extract mysqlnd_azure code https://github.com/microsoft/mysqlnd_azure to the php-source-code-folder\ext\mysqlnd_azure(a new directory need to create), e.g. to C:\php-sdk\phpdev\vc15\x64\php-src\ext\mysqlnd_azure. Or create another folder with name "pecl" which is in parallel with php source, e.g. C:\php-sdk\phpdev\vc15\x64\pecl, and extract the code there in folder mysqlnd_azure.
 After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-src\ext\mysqlnd_azure, or C:\php-sdk\phpdev\vc15\x64\pecl\mysqlnd_azure
@@ -93,7 +102,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 * run **buildconf**
 * run **configure.bat --disable-all --enable-cli --with-mysqlnd --enable-mysqlnd_azure=shared**
 * run **nmake**
-* after that, you will find a dll under .\x64\x64\Release_TS\ with name **php_mysqlnd_azure.dll**, this is the target library.
+* after that, you will find a dll under .\x64\Release_TS\ with name **php_mysqlnd_azure.dll**, this is the target library.
 
 #### Install and configure
 * Use php -i to find the ini to find the extension_dir, copy php_mysqlnd_azure.dll there
