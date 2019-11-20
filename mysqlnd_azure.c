@@ -253,7 +253,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 		password.s = "";
 		password.l = 0;
 	}
-	if (!database.s) {
+	if (!database.s || !database.s[0]) {
 		DBG_INF_FMT("no db given, using empty string");
 		database.s = "";
 		database.l = 0;
