@@ -5,8 +5,9 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 Extension name: **mysqlnd_azure**
 Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
 Valid version:
-- 1.0.0
-- 1.0.1 with pecl install command line support on linux
+- 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
+- 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
+- 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
@@ -30,7 +31,24 @@ Example to install required tools for php7.3 on Redhat 7.4:
 ###### Linux
 sudo pecl install mysqlnd_azure
 ###### Windows
-Download the dll from the DLL link on https://pecl.php.net/package/mysqlnd_azure, and put it under exension_dir (Follow the configure step below to get the value).
+Download the corresponding dll package from the DLL link on https://pecl.php.net/package/mysqlnd_azure. Extract the zip file, find the dll file named with *php_mysqlnd_azure.dll*, and put it under extension_dir (Follow the configure step below to get the value).
+
+You may use following command to check the thread safety setting of the php:
+- php -i | findstr "Thread"
+
+If you cannnot determine the x86/64 version of the php, you may use following script to figure out:
+```php
+switch(PHP_INT_SIZE) {
+    case 4:
+        echo '32-bit version of PHP', "\n";
+        break;
+    case 8:
+        echo '64-bit version of PHP', "\n";
+        break;
+    default:
+        echo 'PHP_INT_SIZE is ' . PHP_INT_SIZE, "\n";
+}
+```
 #### Configure
 The configuration step is same with that of build from source. Check content below for Linux or Windows platform.
 
@@ -105,11 +123,13 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 * after that, you will find a dll under .\x64\Release_TS\ with name **php_mysqlnd_azure.dll**, this is the target library.
 
 #### Install and configure
-* Use php -i to find the ini to find the extension_dir, copy php_mysqlnd_azure.dll there
-* Find the ini file location, modify the ini file with the following extra lines:
-    - extension=mysqlnd_azure
-    - [mysqlnd_azure]
-    - mysqlnd_azure.enabled = on
+* Use php -i | find "extension_dir" to find the extension_dir, copy php_mysqlnd_azure.dll there
+* Use php -i | find "Loaded Configuration File" to find the ini file location, modify the ini file with the following extra lines:
+    - Under the Dynamic Extensions section add:
+    	- extension=mysqlnd_azure
+    - Under the Module Settings section add:
+    	- [mysqlnd_azure]
+    	- mysqlnd_azure.enabled = on
 
 
 ## Test
