@@ -3,7 +3,9 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 
 ## Name and Extension Version
 Extension name: **mysqlnd_azure**
+
 Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
+
 Valid version:
 - 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
