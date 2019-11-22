@@ -5,6 +5,12 @@
  <summary>mysqlnd_azure - a redirection plugin for mysqlnd</summary>
  <description>mysqlnd extension for azure</description>
  <lead>
+  <name>Hang Zhang</name>
+  <user>ymr674</user>
+  <email>haz@microsoft.com</email>
+  <active>yes</active>
+ </lead>
+ <lead>
   <name>Qianqian Bu</name>
   <user>bqq</user>
   <email>Qianqian.Bu@microsoft.com</email>
