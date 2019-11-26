@@ -1,7 +1,7 @@
 --TEST--
-Azure redirection test for servers when mysqlnd_azure.enabled
+Azure redirection test for servers when mysqlnd_azure.enableRedirect
 --INI--
-mysqlnd_azure.enabled=1
+mysqlnd_azure.enableRedirect=1
 --SKIPIF--
 <?php
 require_once('skipif.inc');
@@ -11,8 +11,8 @@ require_once('skipifconnectfailure.inc');
 <?php
 require_once("connect.inc");
 
-if (($tmp = ini_get("mysqlnd_azure.enabled")) != true)
-		printf("[001] mysqlnd_azure.enabled not set to true, got '%s'\n", $tmp);
+if (($tmp = ini_get("mysqlnd_azure.enableRedirect")) != true)
+		printf("[001] mysqlnd_azure.enableRedirect not set to true, got '%s'\n", $tmp);
 
 $link = mysqli_init();
 $ret = mysqli_real_connect($link, $host, $user, $passwd, $db, $port, NULL, MYSQLI_CLIENT_SSL);

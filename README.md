@@ -85,7 +85,7 @@ Then you can run **make install** to put the .so to your php so library. However
   - put mysqlnd_azure.so under extension_dir.
   - under directory for additional .ini files, you will find the ini files for the common used modules, e.g. 10-mysqlnd.ini for mysqlnd, 20-mysqli.ini for mysqli. Create a new ini file for mysqlnd_azure here. **Make sure the alphabet order of the name is after that of mysqnld**, since the modules are loaded according to the name order of the ini files. E.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-azure.ini. In the ini file, add the following two lines:
       - extension=mysqlnd_azure
-      - mysqlnd_azure.enabled = on  ; you can also set this to off to disable redirection
+      - mysqlnd_azure.enableRedirect = on  ; you can also set this to off to disable redirection
 
 
 ## Step to build on Windows
@@ -131,14 +131,14 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
     	- extension=mysqlnd_azure
     - Under the Module Settings section add:
     	- [mysqlnd_azure]
-    	- mysqlnd_azure.enabled = on
+    	- mysqlnd_azure.enableRedirect = on
 
 
 ## Test
 * Currently redirection is only possible when the connection is via ssl, and it need that the redirection feature switch is enabled on server side. Following is a snippet to test connection with redirection:
 
 ```php
-  echo "mysqlnd_azure.enabled: ", ini_get("mysqlnd_azure.enabled") == true?"On":"Off", "\n";
+  echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect") == true?"On":"Off", "\n";
   $db = mysqli_init();
   $link = mysqli_real_connect ($db, 'your-hostname-with-redirection-enabled', 'user@host', 'password', "db", 3306, NULL, MYSQLI_CLIENT_SSL);
   if (!$link) {

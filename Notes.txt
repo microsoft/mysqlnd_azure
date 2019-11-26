@@ -9,7 +9,7 @@ connection, and use the new one afterward.
 +---------------------------+
 OPTION DESCRIPTION
 ------------------ ----------------------------------------------------------
-mysqlnd_azure.enabled This option is to control enable or disable mysqlnd_rd. 
+mysqlnd_azure.enableRedirect This option is to control enable or disable redirection feature of mysqlnd_azure.
 If this is set to 0, it will not use redirection.
 (Default: 0)
 
