@@ -138,7 +138,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
     - Under the Module Settings section add:
     	- [mysqlnd_azure]
     	- mysqlnd_azure.enableRedirect = on
-		- **Notice:** since 1.0.3, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
+			- **Notice:** since 1.0.3, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
 
 
 ## Test
