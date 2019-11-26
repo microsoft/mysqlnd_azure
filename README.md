@@ -10,11 +10,11 @@ Valid version:
 - 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
-- 1.0.3  Change: 
-	1. Enfore ssl when using redirection.
-	2. Enfore server support redrection if using redirection.
+- 1.0.3  Change: In preious versions, if connection doesnot use SSL, or server doesnot support redirection, or redirected connection fails to connect for some reason, it will fallback to the first proxy connection. Since 1.0.3, the logic changes as follows: 
+	1. If redirection is on, ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
+	2. If redirection is on, but on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
 	3. If redirected connection failed, also abort the first gateway connection. Return the error of the redirected connection.
-	4. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect.
+	4. The option mysqlnd_azure.enabled is also renamed to mysqlnd_azure.enableRedirect.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
@@ -90,7 +90,8 @@ Then you can run **make install** to put the .so to your php so library. However
   - put mysqlnd_azure.so under extension_dir.
   - under directory for additional .ini files, you will find the ini files for the common used modules, e.g. 10-mysqlnd.ini for mysqlnd, 20-mysqli.ini for mysqli. Create a new ini file for mysqlnd_azure here. **Make sure the alphabet order of the name is after that of mysqnld**, since the modules are loaded according to the name order of the ini files. E.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-azure.ini. In the ini file, add the following two lines:
       - extension=mysqlnd_azure
-      - mysqlnd_azure.enableRedirect = on  ; you can also set this to off to disable redirection
+      - mysqlnd_azure.enableRedirect = on  ; you can also set this to off to disable redirection. 
+      	- **Notice:** since 1.0.3, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
 
 
 ## Step to build on Windows
@@ -137,6 +138,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
     - Under the Module Settings section add:
     	- [mysqlnd_azure]
     	- mysqlnd_azure.enableRedirect = on
+		- **Notice:** since 1.0.3, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
 
 
 ## Test
@@ -145,6 +147,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 ```php
   echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect") == true?"On":"Off", "\n";
   $db = mysqli_init();
+  //The connection must be configured with SSL for redirection test
   $link = mysqli_real_connect ($db, 'your-hostname-with-redirection-enabled', 'user@host', 'password', "db", 3306, NULL, MYSQLI_CLIENT_SSL);
   if (!$link) {
      die ('Connect error (' . mysqli_connect_errno() . '): ' . mysqli_connect_error() . "\n");
