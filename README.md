@@ -10,6 +10,11 @@ Valid version:
 - 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
+- 1.0.3  Change: 
+	1. Enfore ssl when using redirection.
+	2. Enfore server support redrection if using redirection.
+	3. If redirected connection failed, also abort the first gateway connection. Return the error of the redirected connection.
+	4. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
