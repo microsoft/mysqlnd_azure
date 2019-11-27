@@ -378,7 +378,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 		}
 		else if (!(*pdata)->is_using_redirect) {
             //If there is no redirection information contained in the last_message, then redirection is not possible. In this case, abort the connection
-            php_error_docref(NULL, E_ERROR, "No redirection information available, redirection is not possible. Abort the connection.");
+            php_error_docref(NULL, E_ERROR, "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol.");
             conn->m->send_close(conn);
 			conn->m->dtor(conn);
             pfc = NULL;
