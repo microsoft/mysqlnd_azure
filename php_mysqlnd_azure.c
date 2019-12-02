@@ -35,18 +35,6 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 	mysqlnd_azure_globals->enableRedirect = 0;
-	mysqlnd_azure_globals->redirectCache = NULL;
-}
-/* }}} */
-
-/* {{{ PHP_GSHUTDOWN_FUNCTION */
-static PHP_GSHUTDOWN_FUNCTION(mysqlnd_azure)
-{
-	if (mysqlnd_azure_globals->redirectCache) {
-		zend_hash_destroy(mysqlnd_azure_globals->redirectCache);
-		mnd_pefree(mysqlnd_azure_globals->redirectCache, 1);
-		mysqlnd_azure_globals->redirectCache = NULL;
-	}
 }
 /* }}} */
 
@@ -70,6 +58,11 @@ static PHP_MINIT_FUNCTION(mysqlnd_azure)
   /* register mysqlnd plugin */
   mysqlnd_azure_minit_register_hooks();
 
+  #ifdef ZTS
+  mysqlnd_azure_redirect_cache_lock_alloc();
+  #endif
+  redirectCache = NULL;
+
   return SUCCESS;
 }
 
@@ -78,6 +71,16 @@ static PHP_MINIT_FUNCTION(mysqlnd_azure)
 static PHP_MSHUTDOWN_FUNCTION(mysqlnd_azure)
 {
 	UNREGISTER_INI_ENTRIES();
+
+    if (redirectCache) {
+		zend_hash_destroy(redirectCache);
+		mnd_pefree(redirectCache, 1);
+		redirectCache = NULL;
+	}
+
+    #ifdef ZTS
+    mysqlnd_azure_redirect_cache_lock_free();
+    #endif
 
 	return SUCCESS;
 }
@@ -113,7 +116,7 @@ zend_module_entry mysqlnd_azure_module_entry = {
 	EXT_MYSQLND_AZURE_VERSION,
 	PHP_MODULE_GLOBALS(mysqlnd_azure),
 	PHP_GINIT(mysqlnd_azure),
-	PHP_GSHUTDOWN(mysqlnd_azure),
+	NULL,
 	NULL,
 	STANDARD_MODULE_PROPERTIES_EX
 };

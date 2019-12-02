@@ -31,9 +31,20 @@ extern zend_module_entry mysqlnd_azure_module_entry;
 #define EXT_MYSQLND_AZURE_NAME      "mysqlnd_azure"
 #define EXT_MYSQLND_AZURE_VERSION   "1.0.3"
 
+/* true global environment */
+HashTable* redirectCache;
+
+#ifdef ZTS
+/* exclusive locking for redirectCache*/
+void mysqlnd_azure_redirect_cache_lock(void);
+void mysqlnd_azure_redirect_cache_unlock(void);
+void mysqlnd_azure_redirect_cache_lock_alloc(void);
+void mysqlnd_azure_redirect_cache_lock_free(void);
+#endif
+
+
 ZEND_BEGIN_MODULE_GLOBALS(mysqlnd_azure)
 	zend_bool		enableRedirect;
-	HashTable*		redirectCache;
 ZEND_END_MODULE_GLOBALS(mysqlnd_azure)
 
 PHPAPI ZEND_EXTERN_MODULE_GLOBALS(mysqlnd_azure)
