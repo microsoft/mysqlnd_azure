@@ -335,7 +335,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
 				if (ret == FAIL) { //init redirect_conn failed
 					redirect_conn->m->dtor(redirect_conn);
-                    php_error_docref(NULL, E_ERROR, "[redirect]: mysql redirect fails to copy MYSQLND_CONN_DATA. Abort the connection.");
+                    php_error_docref(NULL, E_WARNING, "[redirect]: mysql redirect fails to copy MYSQLND_CONN_DATA. Abort the connection.");
                     DBG_RETURN(FAIL);
 				}
 				else { //init redirect_conn succeeded, use this conn to start a new connection and handshake
@@ -378,7 +378,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 		}
 		else if (!(*pdata)->is_using_redirect) {
             //If there is no redirection information contained in the last_message, then redirection is not possible. In this case, abort the connection
-            php_error_docref(NULL, E_ERROR, "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol.");
+            php_error_docref(NULL, E_WARNING, "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol.");
             conn->m->send_close(conn);
 			conn->m->dtor(conn);
             pfc = NULL;
@@ -558,7 +558,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
             //Redirection is only possible with SSL
             unsigned int temp_flags = (*pconn)->m->get_updated_connect_flags(*pconn, mysql_flags);
             if(!(temp_flags & CLIENT_SSL)) {
-                php_error_docref(NULL, E_ERROR, "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL.");
+                php_error_docref(NULL, E_WARNING, "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL.");
                 DBG_RETURN(FAIL);
             }
 
