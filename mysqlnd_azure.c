@@ -355,7 +355,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
 					enum_func_status redirectState = redirect_conn->m->connect_handshake(redirect_conn, &redirect_scheme, &redirect_username, &password, &database, mysql_flags);
 
-					if (redirectState == PASS) { //handshake with redirect_conn succeeded, replace original connection info with redirect_conn
+					if (redirectState == PASS) { //handshake with redirect_conn succeeded, replace original connection info with redirect_conn and add the redirect info into cache table
 
 						//add the redirect info into cache table
 						mysqlnd_azure_add_redirect_cache(redirect_conn->persistent, username.s, hostname.s, port, redirect_username.s, redirect_hostname.s, ui_redirect_port);
