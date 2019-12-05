@@ -28,8 +28,8 @@
 extern zend_module_entry mysqlnd_azure_module_entry;
 # define phpext_mysqlnd_azure_ptr &mysqlnd_azure_module_entry
 
-#define EXT_MYSQLND_AZURE_NAME      "mysqlnd_azure"
-#define EXT_MYSQLND_AZURE_VERSION   "1.0.3"
+#define PHP_MYSQLND_AZURE_NAME      "mysqlnd_azure"
+#define PHP_MYSQLND_AZURE_VERSION   "1.1.0Beta"
 
 /* true global environment */
 HashTable* redirectCache;

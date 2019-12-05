@@ -41,11 +41,9 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
 /* {{{ PHP_INI */
 /*
 	It is handy to allow users to disable any mysqlnd plugin globally - not only for debugging :-)
-	Because we register our plugin in MINIT changes to myqlnd_azure.enableRedirect shall be bound to
-	INI_SYSTEM (and PHP restarts).
 */
 PHP_INI_BEGIN()
-STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "0", PHP_INI_ALL, OnUpdateBool, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
+STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "0", PHP_INI_PERDIR, OnUpdateBool, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 PHP_INI_END()
 /* }}} */
 
@@ -106,14 +104,14 @@ zend_module_entry mysqlnd_azure_module_entry = {
 	STANDARD_MODULE_HEADER_EX,
 	NULL,
 	mysqlnd_azure_deps,
-	EXT_MYSQLND_AZURE_NAME,
+	PHP_MYSQLND_AZURE_NAME,
 	NULL,
 	PHP_MINIT(mysqlnd_azure),
 	PHP_MSHUTDOWN(mysqlnd_azure),
 	NULL,
 	NULL,
 	PHP_MINFO(mysqlnd_azure),
-	EXT_MYSQLND_AZURE_VERSION,
+	PHP_MYSQLND_AZURE_VERSION,
 	PHP_MODULE_GLOBALS(mysqlnd_azure),
 	PHP_GINIT(mysqlnd_azure),
 	NULL,
