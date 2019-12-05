@@ -12,9 +12,9 @@ Since 1.1.0Beta, the logic changes as follows:
 
 ```
 Ask from you:
-In version 1.1.0Beta, we add many restrictions when the feature is turned on, but fallback is then not possible any +more. We also want to hear from you that given the following two options, what will you prefer:
- 1. Add another option "preferred" with fallback support (i.e. go without redirection if SSL is not used or server doesnot support +redirection or do not need redirection).
- 2. Remove the restrictions when redrection is turned on, still go without redirection if SSL is not used or server doesnot support redirection or do not need redirection. 
+In version 1.1.0Beta, we add many restrictions when the feature is turned on, but fallback is then not possible anymore. We also want to hear from you that given the following two options, what will you prefer:
+ 1. Add another option "preferred" with fallback support (i.e. go without redirection if SSL is not used or server does not support redirection or do not need redirection).
+ 2. Remove the restrictions when redrection is turned on, still go without redirection if SSL is not used or server does not support redirection or do not need redirection.
 
 You may vote for your preference by giving comment on issue page on github or send email to the people of maintenance which you can find in the file named with package.xml.
 ```
