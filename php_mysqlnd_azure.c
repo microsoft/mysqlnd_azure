@@ -26,7 +26,47 @@
 #include "php_mysqlnd_azure.h"
 #include "ext/mysqlnd/mysqlnd_ext_plugin.h"
 
+
 ZEND_DECLARE_MODULE_GLOBALS(mysqlnd_azure)
+
+
+/* {{{ OnUpdateEnableRedirect */
+static ZEND_INI_MH(OnUpdateEnableRedirect)
+{
+	if (zend_string_equals_literal_ci(new_value, "preferred")) {
+
+		MYSQLND_AZURE_G(enableRedirect) = REDIRECT_PREFERRED;
+
+	} else if (zend_string_equals_literal_ci(new_value, "1")
+                || zend_string_equals_literal_ci(new_value, "on")
+                || zend_string_equals_literal_ci(new_value, "yes")
+                || zend_string_equals_literal_ci(new_value, "true")) {
+
+        MYSQLND_AZURE_G(enableRedirect) = REDIRECT_ON;
+
+    } else if (zend_string_equals_literal_ci(new_value, "0")
+                || new_value->val == NULL
+                || new_value->val[0]==0
+                || new_value->val == "off"
+                || new_value->val == "on"
+                || new_value->val == "false") {
+
+        MYSQLND_AZURE_G(enableRedirect) = REDIRECT_OFF;
+
+	}
+
+	return SUCCESS;
+
+}
+/* }}} */
+
+
+/* {{{ PHP_INI */
+PHP_INI_BEGIN()
+STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "preferred", PHP_INI_ALL, OnUpdateEnableRedirect, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
+PHP_INI_END()
+/* }}} */
+
 
 /* {{{ PHP_GINIT_FUNCTION */
 static PHP_GINIT_FUNCTION(mysqlnd_azure)
@@ -34,18 +74,10 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
 #if defined(COMPILE_DL_MYSQLND_AZURE) && defined(ZTS)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
-	mysqlnd_azure_globals->enableRedirect = 0;
+	mysqlnd_azure_globals->enableRedirect = REDIRECT_PREFERRED;
 }
 /* }}} */
 
-/* {{{ PHP_INI */
-/*
-	It is handy to allow users to set the value for debug and other behavior check purpose)
-*/
-PHP_INI_BEGIN()
-STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "0", PHP_INI_ALL, OnUpdateBool, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
-PHP_INI_END()
-/* }}} */
 
 /* {{{ PHP_MINIT_FUNCTION
  */
@@ -89,7 +121,7 @@ PHP_MINFO_FUNCTION(mysqlnd_azure)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "mysqlnd_azure", "enableRedirect");
-	php_info_print_table_row(2, "enableRedirect", MYSQLND_AZURE_G(enableRedirect)? "Yes":"No");
+	php_info_print_table_row(2, "enableRedirect", MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF ? "off" : (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON ? "on" : "preferred"));
 	php_info_print_table_end();
 }
 /* }}} */
@@ -111,7 +143,7 @@ zend_module_entry mysqlnd_azure_module_entry = {
 	NULL,
 	NULL,
 	PHP_MINFO(mysqlnd_azure),
-	PHP_MYSQLND_AZURE_VERSION,
+    PHP_MYSQLND_AZURE_VERSION,
 	PHP_MODULE_GLOBALS(mysqlnd_azure),
 	PHP_GINIT(mysqlnd_azure),
 	NULL,

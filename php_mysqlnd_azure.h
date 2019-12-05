@@ -29,7 +29,7 @@ extern zend_module_entry mysqlnd_azure_module_entry;
 # define phpext_mysqlnd_azure_ptr &mysqlnd_azure_module_entry
 
 #define PHP_MYSQLND_AZURE_NAME      "mysqlnd_azure"
-#define PHP_MYSQLND_AZURE_VERSION   "1.1.0beta1"
+#define PHP_MYSQLND_AZURE_VERSION   "1.1.0beta2"
 
 /* true global environment */
 HashTable* redirectCache;
@@ -42,10 +42,17 @@ void mysqlnd_azure_redirect_cache_lock_alloc(void);
 void mysqlnd_azure_redirect_cache_lock_free(void);
 #endif
 
+typedef enum _mysqlnd_azure_redirect_mode {
+	REDIRECT_OFF = 0,  /* completely disabled */
+	REDIRECT_PREFERRED = 1,   /* enabled without fallback, block if redirection fail */
+    REDIRECT_ON = 2   /* enabled with fallback */
+} mysqlnd_azure_redirect_mode;
+
 
 ZEND_BEGIN_MODULE_GLOBALS(mysqlnd_azure)
-	zend_bool		enableRedirect;
+	mysqlnd_azure_redirect_mode		enableRedirect;
 ZEND_END_MODULE_GLOBALS(mysqlnd_azure)
+
 
 PHPAPI ZEND_EXTERN_MODULE_GLOBALS(mysqlnd_azure)
 #define MYSQLND_AZURE_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(mysqlnd_azure, v)
