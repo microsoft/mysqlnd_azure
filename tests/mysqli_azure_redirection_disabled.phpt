@@ -33,6 +33,6 @@ echo "Done\n";
 ?>
 --EXPECTF--
 %s
-Location: mysql://tr%d.%s:%d/user=%s@%s
+Location: mysql://%s:%d/user=%s@%s
 1
 Done

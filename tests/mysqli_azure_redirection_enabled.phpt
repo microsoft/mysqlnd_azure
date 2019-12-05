@@ -32,7 +32,7 @@ mysqli_close($link);
 echo "Done\n";
 ?>
 --EXPECTF--
-tr%d.%s
-Location: mysql://tr%d.%s:%d/user=%s@%s
+%s
+Location: mysql://%s:%d/user=%s@%s
 0
 Done
