@@ -1,8 +1,8 @@
 # PHP mysqlnd redirection extension mysqlnd_azure
 The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support.  The extension is also available on PECL website at  https://pecl.php.net/package/mysqlnd_azure.
-```diff
-!**Important notice:** There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL.
-```
+
+**Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL.**
+
 In 1.0.x versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection. 
 
 Since 1.1.0beta1, the logic changes as follows:
