@@ -20,7 +20,7 @@ Extension name: **mysqlnd_azure**
 Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
 
 Valid version:
-- 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
+- 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux, the package on PECL website is invalid, only possible to install with manual compilation on Linux. Cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
 - 1.1.0Beta  Change: In preious versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for some reason, it will fallback to the first proxy connection. Since 1.0.3, the logic changes as follows: 
