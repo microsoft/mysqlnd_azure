@@ -367,7 +367,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
 						DBG_ENTER("[redirect]: mysql redirect handshake succeeded.");
 					}
-                    else {
+                    else { //redirect failed
                         goto err;
                     }
 				}
