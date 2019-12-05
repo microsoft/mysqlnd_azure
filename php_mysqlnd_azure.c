@@ -40,10 +40,10 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
 
 /* {{{ PHP_INI */
 /*
-	It is handy to allow users to disable any mysqlnd plugin globally - not only for debugging :-)
+	It is handy to allow users to set the value for debug and other behavior check purpose)
 */
 PHP_INI_BEGIN()
-STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "0", PHP_INI_PERDIR, OnUpdateBool, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
+STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "0", PHP_INI_ALL, OnUpdateBool, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 PHP_INI_END()
 /* }}} */
 
