@@ -7,7 +7,7 @@ In 1.0.x versions, if connection does not use SSL, or server does not support re
 
 Since 1.1.0Beta, the logic changes as follows:
 - If redirection is on, ssl is off, no connection will be made, it will return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
-- If redirection is on, but on server side redirection is not available (e.g. a community verion mysql installed locally), it will abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
+- If redirection is on, but on server side redirection is not supported/needed (e.g. a community verion mysql installed locally), and there is no last message in OK packet, it will abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
 - If redirected connection failed for any reason, it will also abort the first proxy connection, and return the error of the redirected connection.
 
 ```
@@ -28,10 +28,10 @@ Valid version:
 - 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux, the package on PECL website is invalid, only possible to install with manual compilation on Linux. Cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
-- 1.1.0Beta  Change: In preious versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for some reason, it will fallback to the first proxy connection. Since 1.0.3, the logic changes as follows: 
+- 1.1.0Beta  Change: In 1.0.x versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection. Since 1.1.0Beta, the logic changes as follows: 
 	1. If redirection is on, ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
-	2. If redirection is on, but on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
-	3. If redirected connection failed, also abort the first proxy connection. Return the error of the redirected connection.
+	2. If redirection is on, but on server side redirection is not supported/needed, and there is no last message in OK packet, abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
+	3. If redirected connection failed for any reason, it will also abort the first proxy connection, and return the error of the redirected connection.
 	4. The option mysqlnd_azure.enabled is also renamed to mysqlnd_azure.enableRedirect.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
