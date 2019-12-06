@@ -33,11 +33,12 @@ ZEND_DECLARE_MODULE_GLOBALS(mysqlnd_azure)
 /* {{{ OnUpdateEnableRedirect */
 static ZEND_INI_MH(OnUpdateEnableRedirect)
 {
-	if (zend_string_equals_literal_ci(new_value, "preferred")) {
+	if (zend_string_equals_literal_ci(new_value, "preferred")
+        || zend_string_equals_literal_ci(new_value, "1")) {
 
 		MYSQLND_AZURE_G(enableRedirect) = REDIRECT_PREFERRED;
 
-	} else if (zend_string_equals_literal_ci(new_value, "1")
+	} else if (zend_string_equals_literal_ci(new_value, "2")
                 || zend_string_equals_literal_ci(new_value, "on")
                 || zend_string_equals_literal_ci(new_value, "yes")
                 || zend_string_equals_literal_ci(new_value, "true")) {
