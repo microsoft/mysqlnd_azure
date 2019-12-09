@@ -44,8 +44,8 @@ void mysqlnd_azure_redirect_cache_lock_free(void);
 
 typedef enum _mysqlnd_azure_redirect_mode {
 	REDIRECT_OFF = 0,  /* completely disabled */
-	REDIRECT_PREFERRED = 1,   /* enabled without fallback, block if redirection fail */
-    REDIRECT_ON = 2   /* enabled with fallback */
+    REDIRECT_ON = 1,   /* enabled with fallback */
+    REDIRECT_PREFERRED = 2  /* enabled without fallback, block if redirection fail */
 } mysqlnd_azure_redirect_mode;
 
 

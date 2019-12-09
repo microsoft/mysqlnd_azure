@@ -26,35 +26,29 @@
 #include "php_mysqlnd_azure.h"
 #include "ext/mysqlnd/mysqlnd_ext_plugin.h"
 
-
 ZEND_DECLARE_MODULE_GLOBALS(mysqlnd_azure)
 
 
 /* {{{ OnUpdateEnableRedirect */
 static ZEND_INI_MH(OnUpdateEnableRedirect)
 {
-	if (zend_string_equals_literal_ci(new_value, "preferred")
-        || zend_string_equals_literal_ci(new_value, "1")) {
+    if ((ZSTR_LEN(new_value) == 9 && strcasecmp("preferred", ZSTR_VAL(new_value)) == 0)
+        || (ZSTR_LEN(new_value) == 1 && strcasecmp("2", ZSTR_VAL(new_value)) == 0)) {
 
-		MYSQLND_AZURE_G(enableRedirect) = REDIRECT_PREFERRED;
+        MYSQLND_AZURE_G(enableRedirect) = REDIRECT_PREFERRED;
 
-	} else if (zend_string_equals_literal_ci(new_value, "2")
-                || zend_string_equals_literal_ci(new_value, "on")
-                || zend_string_equals_literal_ci(new_value, "yes")
-                || zend_string_equals_literal_ci(new_value, "true")) {
+    } else if ((ZSTR_LEN(new_value) == 2 && strcasecmp("on", ZSTR_VAL(new_value)) == 0)
+        || (ZSTR_LEN(new_value) == 3 && strcasecmp("yes", ZSTR_VAL(new_value)) == 0)
+        || (ZSTR_LEN(new_value) == 4 && strcasecmp("true", ZSTR_VAL(new_value)) == 0)
+        || (ZSTR_LEN(new_value) == 1 && strcasecmp("1", ZSTR_VAL(new_value)) == 0)) {
 
         MYSQLND_AZURE_G(enableRedirect) = REDIRECT_ON;
 
-    } else if (zend_string_equals_literal_ci(new_value, "0")
-                || new_value->val == NULL
-                || new_value->val[0]==0
-                || new_value->val == "off"
-                || new_value->val == "on"
-                || new_value->val == "false") {
+    } else {
 
         MYSQLND_AZURE_G(enableRedirect) = REDIRECT_OFF;
 
-	}
+    }
 
 	return SUCCESS;
 
