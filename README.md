@@ -6,18 +6,25 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 In 1.0.x versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection. 
 
 Since 1.1.0beta1, the logic changes as follows:
-- If redirection is on, ssl is off, no connection will be made, it will return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
-- If redirection is on, but on server side redirection is not supported/needed (e.g. a community verion mysql installed locally), and there is no last message in OK packet, it will abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
-- If redirected connection failed for any reason, it will also abort the first proxy connection, and return the error of the redirected connection.
+- The option mysqlnd_azure.enabled is renamed to mysqlnd_azure.enableRedirect, and there is a new option value "preferred" provided.
+- The detailed usage of the option enableRedirect is as follows:
 
-```
-Ask from you:
-In version 1.1.0beta1, we add many restrictions when the feature is turned on, but fallback is then not possible anymore. We also want to hear from you that given the following two options, what will you prefer:
- 1. Add another option with name "preferred" with fallback support (i.e. go without redirection if SSL is not used, or server does not support redirection, or server does not need redirection).
- 2. Remove the restrictions when redrection is turned on, still use the fallback logic as a single solution (i.e. redirect when posssible, and go without redirection if SSL is not used, or server does not support redirection, or server does not need redirection).
-
-You may vote for your preference by giving comment on issue page on github or send email to the people of maintenance which you can find in the file named with package.xml.
-```
+(Default: off)
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+off(0)         | - It will not use redirection.
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+on(1)          | - If ssl is off, no connection will be made, return error:
+               |   "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
+               | - If on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error:
+               |   "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol."
+               | - If server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection.
+               |   Return the error of the redirected connection.
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+preferred(2)   | - it will use redirection if possible.
+               | - If connection does not use SSL, or server does not support redirection, or redirected connection fails 
+               |   to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback 
+               |   to the first proxy connection.
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Name and Extension Version
 Extension name: **mysqlnd_azure**
@@ -28,11 +35,13 @@ Valid version:
 - 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux, the package on PECL website is invalid, only possible to install with manual compilation on Linux. Cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
-- 1.1.0Beta  Change: In 1.0.x versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection. Since 1.1.0Beta, the logic changes as follows: 
-	1. If redirection is on, ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
-	2. If redirection is on, but on server side redirection is not supported/needed, and there is no last message in OK packet, abort the first connection and return error "No redirection information available, redirection is not possible. Abort the connection."
-	3. If redirected connection failed for any reason, it will also abort the first proxy connection, and return the error of the redirected connection.
-	4. The option mysqlnd_azure.enabled is also renamed to mysqlnd_azure.enableRedirect.
+- 1.1.0beta1  Change: In 1.0.x versions, if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection. Since 1.1.0beta1, the logic changes as follows: 
+	1. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred".
+    2. When enableRedirect is "preferred", it will use redirection if possible. If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
+    3. If enableRedirect is with value "on", ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
+    4. If enableRedirect is with value "on", but on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol."
+    5. If enableRedirect is with value "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
+    6. The cache implementation has been changed from module global to true global to improve share range for multi-thread scenario.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
@@ -108,7 +117,7 @@ Then you can run **make install** to put the .so to your php so library. However
   - put mysqlnd_azure.so under extension_dir.
   - under directory for additional .ini files, you will find the ini files for the common used modules, e.g. 10-mysqlnd.ini for mysqlnd, 20-mysqli.ini for mysqli. Create a new ini file for mysqlnd_azure here. **Make sure the alphabet order of the name is after that of mysqnld**, since the modules are loaded according to the name order of the ini files. E.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-azure.ini. In the ini file, add the following two lines:
       - extension=mysqlnd_azure
-      - mysqlnd_azure.enableRedirect = on  ; you can also set this to off to disable redirection. 
+      - mysqlnd_azure.enableRedirect = on/off/preferred
       	- **Notice:** since 1.1.0beta1, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
 
 
@@ -155,7 +164,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
     	- extension=mysqlnd_azure
     - Under the Module Settings section add:
     	- [mysqlnd_azure]
-    	- mysqlnd_azure.enableRedirect = on
+    	- mysqlnd_azure.enableRedirect = on/off/preferred
 			- **Notice:** since 1.1.0beta1, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
 
 
@@ -163,7 +172,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 * Currently redirection is only possible when the connection is via ssl, and it need that the redirection feature switch is enabled on server side. Following is a snippet to test connection with redirection:
 
 ```php
-  echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect") == true?"On":"Off", "\n";
+  echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
   $db = mysqli_init();
   //The connection must be configured with SSL for redirection test
   $link = mysqli_real_connect ($db, 'your-hostname-with-redirection-enabled', 'user@host', 'password', "db", 3306, NULL, MYSQLI_CLIENT_SSL);
