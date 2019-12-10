@@ -10,21 +10,29 @@ Since 1.1.0beta1, the logic changes as follows:
 - The detailed usage of the option enableRedirect is as follows:
 
 (Default: off)
----------------|------------------------------------------------------------------------------------------------------------------------------------------
-off(0)         | - It will not use redirection.
----------------|------------------------------------------------------------------------------------------------------------------------------------------
-on(1)          | - If ssl is off, no connection will be made, return error:
-               |   "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
-               | - If on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error:
-               |   "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol."
-               | - If server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection.
-               |   Return the error of the redirected connection.
----------------|------------------------------------------------------------------------------------------------------------------------------------------
-preferred(2)   | - it will use redirection if possible.
-               | - If connection does not use SSL, or server does not support redirection, or redirected connection fails 
-               |   to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback 
-               |   to the first proxy connection.
----------------|------------------------------------------------------------------------------------------------------------------------------------------
+<table>
+<tr>
+<td>off(0)</td>     
+<td> - It will not use redirection. </td>  
+</tr>
+
+<tr>
+<td>on(1)</td>
+<td>  - If SSL is off, no connection will be made, return error:
+	<i>"mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."</i></br>
+      - If on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error: <i>"Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol."</i></br>
+      - If server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
+</td> 
+</tr>
+<tr>
+<td> 
+preferred(2)
+</td>
+<td>  - It will use redirection if possible.</br>
+      - If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
+</td> 
+</tr>
+</table>
 
 ## Name and Extension Version
 Extension name: **mysqlnd_azure**
@@ -169,7 +177,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 
 
 ## Test
-* Currently redirection is only possible when the connection is via ssl, and it need that the redirection feature switch is enabled on server side. Following is a snippet to test connection with redirection:
+* Currently redirection is only possible when the connection is configured with SSL, and it need that the redirection is supported and enabled on server side. Following is a snippet to test connection with redirection:
 
 ```php
   echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
