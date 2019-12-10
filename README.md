@@ -3,9 +3,11 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 
 **Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL.**
 
+## Option Usage
+
 In 1.0.x versions, when redirection is turned on, but if connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection. The detailed usage of the option enableRedirect is as follows:
 
-(Config name: **mysqlnd_azure.enableRedirect**. Valid value: on/off. Default value: off)
+(Version 1.0.x. Config name: **mysqlnd_azure.enableRedirect**. Valid value: on/off. Default value: off)
 <table>
 <tr>
 <td>off(0)</td>     
@@ -24,7 +26,7 @@ Since 1.1.0beta1, the logic changes as follows:
 - The option mysqlnd_azure.enabled is renamed to **mysqlnd_azure.enableRedirect**, and there is a new option value "preferred" provided.
 - The detailed usage of the option enableRedirect is as follows:
 
-(Config name: **mysqlnd_azure.enableRedirect**. Valid value: on/off/preferred. Default value: off)
+(Version 1.1.0beta1. Config name: **mysqlnd_azure.enableRedirect**. Valid value: on/off/preferred. Default value: off)
 <table>
 <tr>
 <td>off(0)</td>     
@@ -141,7 +143,7 @@ Then you can run **make install** to put the .so to your php so library. However
   - under directory for additional .ini files, you will find the ini files for the common used modules, e.g. 10-mysqlnd.ini for mysqlnd, 20-mysqli.ini for mysqli. Create a new ini file for mysqlnd_azure here. **Make sure the alphabet order of the name is after that of mysqnld**, since the modules are loaded according to the name order of the ini files. E.g. if mysqlnd ini is with name 10-mysqlnd.ini,then name the ini as 20-mysqlnd-azure.ini. In the ini file, add the following two lines:
       - extension=mysqlnd_azure
       - mysqlnd_azure.enableRedirect = on/off/preferred
-      	- **Notice:** since 1.1.0beta1, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
+      	- **Notice:** since 1.1.0beta1, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail. Please check the Option Usage section for detailed information.
 
 
 ## Step to build on Windows
@@ -188,7 +190,7 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
     - Under the Module Settings section add:
     	- [mysqlnd_azure]
     	- mysqlnd_azure.enableRedirect = on/off/preferred
-			- **Notice:** since 1.1.0beta1, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail.
+			- **Notice:** since 1.1.0beta1, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail. Please check the Option Usage section for detailed information.
 
 
 ## Test
