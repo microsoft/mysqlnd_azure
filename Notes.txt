@@ -18,9 +18,9 @@ Available option values:
 off(0)         | - It will not use redirection.
 ---------------|------------------------------------------------------------------------------------------------------------------------------------------
 on(1)          | - If ssl is off, no connection will be made, return error:
-               |   "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL."
+               |   "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
                | - If on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error:
-               |   "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol."
+               |   "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
                | - If server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection.
                |   Return the error of the redirected connection.
 ---------------|------------------------------------------------------------------------------------------------------------------------------------------

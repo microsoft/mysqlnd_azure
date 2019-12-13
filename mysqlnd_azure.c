@@ -325,7 +325,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
             if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
                 //When REDIRECT_ON, if there is no redirection information contained in the last_message, then redirection is not possible. In this case, abort the connection
                 conn->m->send_close(conn);
-                SET_CLIENT_ERROR(conn->error_info, -1, UNKNOWN_SQLSTATE, "Abort the connection because MySQL server does not enable redirection or network package doesn't meet redirection protocol.");
+                SET_CLIENT_ERROR(conn->error_info, -1, UNKNOWN_SQLSTATE, "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol.");
                 DBG_ENTER("[redirect]: Server doesnot supoort redirection, Abort the connection. ");
                 goto err;
             } else {
@@ -616,7 +616,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
             unsigned int temp_flags = (*pconn)->m->get_updated_connect_flags(*pconn, mysql_flags);
             if(!(temp_flags & CLIENT_SSL)) {
                 if((MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON)) {
-                    SET_CLIENT_ERROR((*pconn)->error_info, -1, UNKNOWN_SQLSTATE, "mysqlnd_azure.enableRedirect is on, but SSL option is not set. Redirection is only possible with SSL.");
+                    SET_CLIENT_ERROR((*pconn)->error_info, -1, UNKNOWN_SQLSTATE, "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL.");
                     (*pconn)->m->free_contents(*pconn);
                     ret = FAIL;
                 }
