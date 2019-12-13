@@ -29,6 +29,43 @@
 #include "ext/mysqlnd/mysqlnd_statistics.h"
 #include "ext/mysqlnd/mysqlnd_connection.h"
 
+#ifdef ZTS
+#include <TSRM/TSRM.h>
+#endif
+
+#ifdef ZTS
+static MUTEX_T redirect_cache_mutex;
+
+/* {{{ mysqlnd_azure_redirect_cache_lock */
+void mysqlnd_azure_redirect_cache_lock(void)
+{
+    tsrm_mutex_lock(redirect_cache_mutex);
+}
+/* }}} */
+
+/* {{{ mysqlnd_azure_redirect_cache_unlock */
+void mysqlnd_azure_redirect_cache_unlock(void)
+{
+    tsrm_mutex_unlock(redirect_cache_mutex);
+}
+/* }}} */
+
+/* {{{ mysqlnd_azure_redirect_cache_lock_alloc */
+void mysqlnd_azure_redirect_cache_lock_alloc(void)
+{
+	redirect_cache_mutex = tsrm_mutex_alloc();
+}
+/* }}} */
+
+/* {{{ mysqlnd_azure_redirect_cache_lock_free */
+void mysqlnd_azure_redirect_cache_lock_free(void)
+{
+	tsrm_mutex_free(redirect_cache_mutex);
+}
+/* }}} */
+
+#endif
+
 /* {{{ mysqlnd_azure_redirect_info_dtor */
 static void mysqlnd_azure_redirect_info_dtor(zval *zv)
 {
@@ -76,58 +113,79 @@ MYSQLND_AZURE_CONN_DATA** mysqlnd_azure_set_is_using_redirect(MYSQLND_CONN_DATA 
 /* }}} */
 
 /* {{{ mysqlnd_azure_add_redirect_cache */
-enum_func_status mysqlnd_azure_add_redirect_cache(const MYSQLND_CONN_DATA* conn, const char* user, const char* host, int port, const char* redirect_user, const char* redirect_host, int redirect_port)
+enum_func_status mysqlnd_azure_add_redirect_cache(zend_bool persistent, const char* user, const char* host, int port, const char* redirect_user, const char* redirect_host, int redirect_port)
 {
-	if (MYSQLND_AZURE_G(redirectCache) == NULL) {
-		MYSQLND_AZURE_G(redirectCache) = mnd_pemalloc(sizeof(HashTable), 1);
-		zend_hash_init(MYSQLND_AZURE_G(redirectCache), 0, NULL, mysqlnd_azure_redirect_info_dtor, 1);
-	}
-
-	char *key = NULL;
+    char *key = NULL;
 	mnd_sprintf(&key, MAX_REDIRECT_HOST_LEN+ MAX_REDIRECT_USER_LEN+8, "%s_%s_%d", user, host, port);
 
-	MYSQLND_AZURE_REDIRECT_INFO* redirect_info = pemalloc(sizeof(MYSQLND_AZURE_REDIRECT_INFO), conn->persistent);
-	redirect_info->redirect_user = mnd_pestrndup(redirect_user, strlen(redirect_user), conn->persistent);
-	redirect_info->redirect_host = mnd_pestrndup(redirect_host, strlen(redirect_host), conn->persistent);
+	MYSQLND_AZURE_REDIRECT_INFO* redirect_info = pemalloc(sizeof(MYSQLND_AZURE_REDIRECT_INFO), persistent);
+	redirect_info->redirect_user = mnd_pestrndup(redirect_user, strlen(redirect_user), persistent);
+	redirect_info->redirect_host = mnd_pestrndup(redirect_host, strlen(redirect_host), persistent);
 	redirect_info->redirect_port = redirect_port;
 
-	zend_hash_str_update_ptr(MYSQLND_AZURE_G(redirectCache), key, strlen(key), redirect_info);
+    #ifdef ZTS
+    mysqlnd_azure_redirect_cache_lock();
+    #endif
+	if (redirectCache == NULL) {
+		redirectCache = mnd_pemalloc(sizeof(HashTable), 1);
+		zend_hash_init(redirectCache, 0, NULL, mysqlnd_azure_redirect_info_dtor, 1);
+	}
 
-	mnd_sprintf_free(key);
+	zend_hash_str_update_ptr(redirectCache, key, strlen(key), redirect_info);
+
+    #ifdef ZTS
+    mysqlnd_azure_redirect_cache_unlock();
+    #endif
+
+    mnd_sprintf_free(key);
 
     return PASS;
 }
 /* }}} */
 
 /* {{{ mysqlnd_azure_remove_redirect_cache */
-enum_func_status mysqlnd_azure_remove_redirect_cache(const MYSQLND_CONN_DATA* conn, const char* user, const char* host, int port)
+enum_func_status mysqlnd_azure_remove_redirect_cache(const char* user, const char* host, int port)
 {
-	if (MYSQLND_AZURE_G(redirectCache) == NULL)
-		return PASS;
+    if(redirectCache != NULL) {
+        char *key = NULL;
+        mnd_sprintf(&key, MAX_REDIRECT_HOST_LEN + MAX_REDIRECT_USER_LEN + 8, "%s_%s_%d", user, host, port);
 
-	char *key = NULL;
-	mnd_sprintf(&key, MAX_REDIRECT_HOST_LEN + MAX_REDIRECT_USER_LEN + 8, "%s_%s_%d", user, host, port);
+        #ifdef ZTS
+        mysqlnd_azure_redirect_cache_lock();
+        #endif
 
-	zend_hash_str_del(MYSQLND_AZURE_G(redirectCache), key, strlen(key));
+        zend_hash_str_del(redirectCache, key, strlen(key));
+        #ifdef ZTS
+        mysqlnd_azure_redirect_cache_unlock();
+        #endif
 
-	mnd_sprintf_free(key);
+        mnd_sprintf_free(key);
+    }
 
 	return PASS;
 }
 /* }}} */
 
 /* {{{ mysqlnd_azure_find_redirect_cache */
-MYSQLND_AZURE_REDIRECT_INFO* mysqlnd_azure_find_redirect_cache(const MYSQLND_CONN_DATA* conn, const char* user, const char* host, int port)
+MYSQLND_AZURE_REDIRECT_INFO* mysqlnd_azure_find_redirect_cache(const char* user, const char* host, int port)
 {
-	if (MYSQLND_AZURE_G(redirectCache) == NULL)
-		return NULL;
+    if (redirectCache != NULL) {
+        char *key = NULL;
+        mnd_sprintf(&key, MAX_REDIRECT_HOST_LEN + MAX_REDIRECT_USER_LEN + 8, "%s_%s_%d", user, host, port);
 
-	char *key = NULL;
-	mnd_sprintf(&key, MAX_REDIRECT_HOST_LEN + MAX_REDIRECT_USER_LEN + 8, "%s_%s_%d", user, host, port);
+        #ifdef ZTS
+        mysqlnd_azure_redirect_cache_lock();
+        #endif
 
-	void* zv_dest = zend_hash_str_find_ptr(MYSQLND_AZURE_G(redirectCache), key, strlen(key));
-	mnd_sprintf_free(key);
+        void* zv_dest = zend_hash_str_find_ptr(redirectCache, key, strlen(key));
+        #ifdef ZTS
+        mysqlnd_azure_redirect_cache_unlock();
+        #endif
+        mnd_sprintf_free(key);
 
-	return (MYSQLND_AZURE_REDIRECT_INFO*)zv_dest;
+        return (MYSQLND_AZURE_REDIRECT_INFO*)zv_dest;
+    } else {
+        return NULL;
+    }
 }
 /* }}} */

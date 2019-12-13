@@ -174,6 +174,45 @@ copyFailed:
 }
 /* }}} */
 
+/* {{{ get_redirect_info */
+static zend_bool
+get_redirect_info(MYSQLND_CONN_DATA * const conn, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port)
+{
+    /**
+    * Get redirected server information contained in OK packet.
+	* Redirection string somehow look like:
+	* Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser
+	* the minimal len is 27 bytes
+	*/
+    if (conn->last_message.l > 27 && (strncmp((char*)conn->last_message.s, "Location:", strlen("Location:")) == 0) && ((strstr((char*)conn->last_message.s, "mysql://")) != NULL)) {
+        char  redirect_port[8] = { 0 };
+
+        int redirect_total_len = conn->last_message.l;
+		unsigned char *cur_pos = conn->last_message.s;
+		char *p1 = strstr((char*)cur_pos, "//");
+		char *p2 = strstr(p1, ":");
+		char *p3 = strstr((char*)cur_pos, "user=");
+
+		int redirect_host_len = p2 - p1 - 2;
+		int redirect_port_len = p3 - p2 - 2;
+		int redirect_user_len = redirect_total_len - (p3 + 5 - ((char*)cur_pos));
+		if (redirect_host_len <= 0 || redirect_port_len <= 0 || redirect_user_len <= 0) {
+			redirect_host_len = redirect_port_len = redirect_user_len = 0;
+		} else {
+            memcpy(redirect_host, p1 + 2, redirect_host_len);
+			memcpy(redirect_user, p3 + 5, redirect_user_len);
+			memcpy(redirect_port, p2 + 1, redirect_port_len);
+			*p_ui_redirect_port = atoi(redirect_port);
+		}
+
+        return redirect_host_len > 0 && redirect_user_len > 0 && redirect_port_len > 0;
+
+    } else {
+        return FALSE;
+    }
+}
+
+
 /* {{{ mysqlnd_azure_data::connect */
 MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 						MYSQLND_CSTRING hostname,
@@ -277,111 +316,143 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 	{
 		SET_CONNECTION_STATE(&conn->state, CONN_READY); //set ready status so the connection can be closed correctly later if redirect succeeds
 
+		DBG_ENTER("[redirect] mysqlnd_azure_data::connect::redirect");
+        char redirect_host[MAX_REDIRECT_HOST_LEN] = { 0 };
+		char redirect_user[MAX_REDIRECT_USER_LEN] = { 0 };
+		unsigned int ui_redirect_port = 0;
+		zend_bool serverSupportRedirect =  get_redirect_info(conn, redirect_host, redirect_user, &ui_redirect_port);
+		if(!serverSupportRedirect) {
+            if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
+                //When REDIRECT_ON, if there is no redirection information contained in the last_message, then redirection is not possible. In this case, abort the connection
+                conn->m->send_close(conn);
+                SET_CLIENT_ERROR(conn->error_info, -1, UNKNOWN_SQLSTATE, "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol.");
+                DBG_ENTER("[redirect]: Server doesnot supoort redirection, Abort the connection. ");
+                goto err;
+            } else {
+                //REDIRECT_PREFERRED, do nothing else for redirection, just use the previous connection
+                DBG_ENTER("[redirect]: Server doesnot supoort redirection, do not need redirection. ");
+                goto after_conn;
+            }
+        }
+
+        //Get here means serverSupportRedirect
 		MYSQLND_AZURE_CONN_DATA** pdata = mysqlnd_azure_get_is_using_redirect(conn);
 
-		if (!(*pdata)->is_using_redirect && conn->last_message.l > 27 && (strncmp((char*)conn->last_message.s, "Location:", strlen("Location:")) == 0) && ((strstr((char*)conn->last_message.s, "mysql://")) != NULL)) { //there is a redirection connection info we can take use of
-			/**
-			* Get redirected server information contained in OK packet.
-			* Redirection string somehow look like:
-			* Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser
-			* the minimal len is 27 bytes
-			*/
-			DBG_ENTER("[redirect] mysqlnd_azure_data::connect::redirect");
-			char redirect_host[MAX_REDIRECT_HOST_LEN] = { 0 };
-			char redirect_user[MAX_REDIRECT_USER_LEN] = { 0 };
-			unsigned int ui_redirect_port = 0;
-			char  redirect_port[8] = { 0 };
+        //Already use redirected connection, or the connection string is a redirected on
+        if((*pdata)->is_using_redirect || (strcmp(redirect_host, hostname.s)==0 && strcmp(redirect_user, username.s)==0 && ui_redirect_port == port)) {
+            DBG_ENTER("[redirect]: Is using redirection, or redirection info are equal to origin, no need to redirect");
+            goto after_conn;
+        }
 
-			int redirect_total_len = conn->last_message.l;
-			unsigned char *cur_pos = conn->last_message.s;
-			char *p1 = strstr((char*)cur_pos, "//");
-			char *p2 = strstr(p1, ":");
-			char *p3 = strstr((char*)cur_pos, "user=");
+        //serverSupportRedirect, and currently used conn is not redirected connection, start redirection handshake
+        {
+            DBG_INF_FMT("[redirect]: redirect host=%s user=%s port=%d ", redirect_host, redirect_user, ui_redirect_port);
+            enum_func_status ret = FAIL;
+			MYSQLND* redirect_conneHandle = mysqlnd_init(MYSQLND_CLIENT_KNOWS_RSET_COPY_DATA, conn->persistent); //init MYSQLND but only need only MYSQLND_CONN_DATA here
+			MYSQLND_CONN_DATA* redirect_conn = redirect_conneHandle->data;
+			redirect_conneHandle->data = NULL;
+			mnd_pefree(redirect_conneHandle, redirect_conneHandle->persistent);
+			redirect_conneHandle = NULL;
 
-			int redirect_host_len = p2 - p1 - 2;
-			int redirect_port_len = p3 - p2 - 2;
-			int redirect_user_len = redirect_total_len - (p3 + 5 - ((char*)cur_pos));
-			if (redirect_host_len <= 0 || redirect_port_len <= 0 || redirect_user_len <= 0) {
-				redirect_host_len = redirect_port_len = redirect_user_len = 0;
-			}
-			else {
-				memcpy(redirect_host, p1 + 2, redirect_host_len);
-				memcpy(redirect_user, p3 + 5, redirect_user_len);
-				memcpy(redirect_port, p2 + 1, redirect_port_len);
-				ui_redirect_port = atoi(redirect_port);
-			}
+			ret = set_redirect_client_options(conn, redirect_conn);
 
-			if (redirect_host_len > 0 && redirect_user_len > 0 && redirect_port_len > 0
-				&& (strcmp(redirect_host, hostname.s) || strcmp(redirect_user, username.s) || ui_redirect_port != port)) { //currently used conn is not redirected connection
-				enum_func_status ret = FAIL;
-				MYSQLND* redirect_conneHandle = mysqlnd_init(MYSQLND_CLIENT_KNOWS_RSET_COPY_DATA, conn->persistent); //init MYSQLND but only need only MYSQLND_CONN_DATA here
-				MYSQLND_CONN_DATA* redirect_conn = redirect_conneHandle->data;
-				redirect_conneHandle->data = NULL;
-				mnd_pefree(redirect_conneHandle, redirect_conneHandle->persistent);
-				redirect_conneHandle = NULL;
-				
-				DBG_INF_FMT("[redirect]: redirect host=%s user=%s port=%s ", redirect_host, redirect_user, redirect_port);
+            //when REDIRECT_ON, fallback is not supported. Close the first connection first before establish the redirected connection
+            if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
+                conn->m->send_close(conn);
+                conn->m->dtor(conn);
+                pfc = NULL;
+                if (transport.s) {
+                    mnd_sprintf_free(transport.s);
+                    transport.s = NULL;
+                }
 
-				ret = set_redirect_client_options(conn, redirect_conn);
-				if (ret == FAIL) { //init redirect_conn failed
-					redirect_conn->m->dtor(redirect_conn);
-					DBG_ENTER("[redirect]: mysql redirect fails to copy MYSQLND_CONN_DATA, use original connection information!");
-				}
-				else { //init redirect_conn succeeded, use this conn to start a new connection and handshake
-					MYSQLND_CSTRING redirect_hostname = { redirect_host, strlen(redirect_host) };
-					MYSQLND_CSTRING redirect_username = { redirect_user, strlen(redirect_user) };
-					MYSQLND_STRING redirect_transport = redirect_conn->m->get_scheme(redirect_conn, redirect_hostname, &socket_or_pipe, ui_redirect_port, &unix_socket, &named_pipe);
-					const MYSQLND_CSTRING redirect_scheme = { redirect_transport.s, redirect_transport.l };
+                //when REDIRECT_ON, previous connection has been closed, need update variable to handle both success/failure case
+                conn = redirect_conn;
+                *pconn = redirect_conn; //use new conn outside for caller
+                pfc = redirect_conn->protocol_frame_codec;
+            }
 
-					mysqlnd_azure_set_is_using_redirect(redirect_conn, 1);
+            //init redirect_conn failed, if REDIRECT_ON, abort connection, if REDIRECT_PREFERRED, use the proxy connection
+			if (ret == FAIL) {
+                if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
+                    SET_CLIENT_ERROR(conn->error_info, -1, UNKNOWN_SQLSTATE, "[redirect]: mysql redirect fails to copy MYSQLND_CONN_DATA. Abort the connection.");
+                    goto err;
+                }
+                else {
+                    //REDIRECT_PREFERRED, just use previous direct connection
+                    redirect_conn->m->dtor(redirect_conn);
+                    goto after_conn;
+                }
+            }
 
-					enum_func_status redirectState = redirect_conn->m->connect_handshake(redirect_conn, &redirect_scheme, &redirect_username, &password, &database, mysql_flags);
+            //init redirect_conn succeeded, use this conn to start a new connection and handshake
+            MYSQLND_CSTRING redirect_hostname = { redirect_host, strlen(redirect_host) };
+			MYSQLND_CSTRING redirect_username = { redirect_user, strlen(redirect_user) };
+            MYSQLND_STRING redirect_transport = redirect_conn->m->get_scheme(redirect_conn, redirect_hostname, &socket_or_pipe, ui_redirect_port, &unix_socket, &named_pipe);
 
-					if (redirectState == FAIL) { //handshake with new redirection MYSQLND_CONN_DATA failed, release resource and use original connection
-						redirect_conn->m->dtor(redirect_conn);
-						if (redirect_transport.s) {
-							mnd_sprintf_free(redirect_transport.s);
-							redirect_transport.s = NULL;
-						}
-						DBG_ENTER("[redirect]: mysql redirect handshake fails, use original connection information!");
-					}
-					else { //handshake with redirect_conn succeeded, close and release resource of original conn and replace it with redirect_conn
+            const MYSQLND_CSTRING redirect_scheme = { redirect_transport.s, redirect_transport.l };
 
-						//add the redirect info into cache table
-						mysqlnd_azure_add_redirect_cache(conn, username.s, hostname.s, port, redirect_username.s, redirect_hostname.s, ui_redirect_port);
+            //set is_using_redirect flag
+			mysqlnd_azure_set_is_using_redirect(redirect_conn, 1);
 
-						conn->m->send_close(conn);
-						conn->m->dtor(conn);
-						pfc = NULL;
-						//upate conn, transport,  pconn for later user
-						conn = redirect_conn;
-						if (transport.s) {
-							mnd_sprintf_free(transport.s);
-							transport.s = NULL;
-						}
-						transport = redirect_transport;
-						*pconn = redirect_conn; //use new conn outside for caller
+			enum_func_status redirectState = redirect_conn->m->connect_handshake(redirect_conn, &redirect_scheme, &redirect_username, &password, &database, mysql_flags);
 
-						///upate host, user, pfc for later user
-						hostname = redirect_hostname;
-						username = redirect_username;
-						port = ui_redirect_port;
-						pfc = redirect_conn->protocol_frame_codec;
+			if (redirectState == PASS) { //handshake with redirect_conn succeeded, replace original connection info with redirect_conn and add the redirect info into cache table
 
-						DBG_ENTER("[redirect]: mysql redirect handshake succeeded.");
-					}
-				}
-			}
-			else {
-				DBG_ENTER("[redirect]: redirection info are equal to origin, no need to redirect");
-			}
-		}
-		else {
-			DBG_ENTER("[redirect]: already use redirection info or can not find redirection location in ok packet");
-		}
+				//add the redirect info into cache table
+				mysqlnd_azure_add_redirect_cache(redirect_conn->persistent, username.s, hostname.s, port, redirect_username.s, redirect_hostname.s, ui_redirect_port);
+
+                if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_PREFERRED) { //when REDIRECT_PREFERRED, previous proxy conn is not closed by now, need close it
+                    //close previous proxy connection
+                    conn->m->send_close(conn);
+                    conn->m->dtor(conn);
+                    pfc = NULL;
+                    if (transport.s) {
+                        mnd_sprintf_free(transport.s);
+                        transport.s = NULL;
+                    }
+                    //upate conn, pfc,  pconn for later user
+                    conn = redirect_conn;
+                    pfc = redirect_conn->protocol_frame_codec;
+                    *pconn = redirect_conn; //use new conn outside for caller
+                }
+
+                //following variable need update for both REDIRECT_PREFERRED and REDIRECT_ON
+
+				//upate host, user, transport for later user
+                hostname = redirect_hostname;
+				username = redirect_username;
+                port = ui_redirect_port;
+                transport = redirect_transport;
+
+                DBG_ENTER("[redirect]: mysql redirect handshake succeeded.");
+
+			} else { //redirect failed. If REDIRECT_ON, redirect failed, fail the connection and report error; if REDIRECT_PREFERRED, use original connection information
+
+                //clear is_using_redirect flag
+                mysqlnd_azure_set_is_using_redirect(redirect_conn, 0);
+
+                if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_PREFERRED) {
+                    //free resource, and use original connection information
+                    redirect_conn->m->dtor(redirect_conn);
+                    if (redirect_transport.s) {
+                        mnd_sprintf_free(redirect_transport.s);
+                        redirect_transport.s = NULL;
+                    }
+                    DBG_ENTER("[redirect]: mysql redirect handshake fails, use original connection information!");
+                } else  { //REDIRECT_ON
+
+                    DBG_ENTER("[redirect]: mysql redirect handshake fails, report error");
+                    goto err; //REDIRECT_ON, redirect failed, fail the connection and report error
+
+                }
+            }
+        }
+
 	}
 	/*end of Azure Redirection Logic*/
 
+after_conn:
 	{
 		SET_CONNECTION_STATE(&conn->state, CONN_READY);
 
@@ -534,35 +605,53 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 			mysqlnd_options4(conn_handle, MYSQL_OPT_CONNECT_ATTR_ADD, "_server_host", hostname.s);
 		}
 
-		if(!MYSQLND_AZURE_G(enabled)) {
+		if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF) {
 			DBG_ENTER("mysqlnd_azure::connect redirect disabled");
 			ret = org_conn_d_m.connect(*pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
 		}
 		else {
 			DBG_ENTER("mysqlnd_azure::connect redirect enabled");
 
-			//first check whether the redirect info already cached
-			MYSQLND_AZURE_REDIRECT_INFO* redirect_info = mysqlnd_azure_find_redirect_cache(*pconn, username.s, hostname.s, port);
-			if (redirect_info != NULL) {
-				DBG_ENTER("mysqlnd_azure::connect try the cached info first");
-				MYSQLND_CSTRING redirect_host = { redirect_info->redirect_host, strlen(redirect_info->redirect_host) };
-				MYSQLND_CSTRING redirect_user = { redirect_info->redirect_user, strlen(redirect_info->redirect_user) };
+            //Redirection is only possible with SSL at present. Abort the connection attempt when REDIRECT_ON. Continue with no redirection if REDIRECT_PREFERRED
+            unsigned int temp_flags = (*pconn)->m->get_updated_connect_flags(*pconn, mysql_flags);
+            if(!(temp_flags & CLIENT_SSL)) {
+                if((MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON)) {
+                    SET_CLIENT_ERROR((*pconn)->error_info, -1, UNKNOWN_SQLSTATE, "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL.");
+                    (*pconn)->m->free_contents(*pconn);
+                    ret = FAIL;
+                }
+                else {
+                    ret = org_conn_d_m.connect(*pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
+                }
+            }
+            else { //SSL is enabled
 
-				mysqlnd_azure_set_is_using_redirect(*pconn, 1);
-				ret = (*pconn)->m->connect(pconn, redirect_host, redirect_user, password, database, redirect_info->redirect_port, socket_or_pipe, mysql_flags);
-				if (ret == FAIL) {
-					//remove invalid cache
-					mysqlnd_azure_remove_redirect_cache(*pconn, username.s, hostname.s, port);
+                //first check whether the redirect info already cached
+                MYSQLND_AZURE_REDIRECT_INFO* redirect_info = mysqlnd_azure_find_redirect_cache(username.s, hostname.s, port);
+                if (redirect_info != NULL) {
+                    DBG_ENTER("mysqlnd_azure::connect try the cached info first");
+                    MYSQLND_CSTRING redirect_host = { redirect_info->redirect_host, strlen(redirect_info->redirect_host) };
+                    MYSQLND_CSTRING redirect_user = { redirect_info->redirect_user, strlen(redirect_info->redirect_user) };
 
-					mysqlnd_azure_set_is_using_redirect(*pconn, 0);
-					ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
-				}
-			}
-			else {
-				ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
-			}
+                    mysqlnd_azure_set_is_using_redirect(*pconn, 1);
+                    ret = (*pconn)->m->connect(pconn, redirect_host, redirect_user, password, database, redirect_info->redirect_port, socket_or_pipe, mysql_flags);
+                    if (ret == FAIL) {
+                        //remove invalid cache
+                        mysqlnd_azure_remove_redirect_cache(username.s, hostname.s, port);
+
+                        mysqlnd_azure_set_is_using_redirect(*pconn, 0);
+                        ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
+                    }
+                }
+                else {
+                    ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
+                }
+
+            }
 		}
+
 		(*pconn)->m->local_tx_end(*pconn, this_func, FAIL);
+
 	}
 	DBG_RETURN(ret);
 }

@@ -16,19 +16,25 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2019-11-20</date>
- <time>13:00:13</time>
+ <date>2019-12-10</date>
+ <time>14:00:13</time>
  <version>
-  <release>1.0.2</release>
-  <api>1.0.2</api>
+  <release>1.1.0beta1</release>
+  <api>1.1.0beta1</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>beta</release>
+  <api>beta</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- apply fix for database null/empty problem change in https://github.com/php/php-src/pull/4340 in MYSQLND_METHOD(mysqlnd_conn_data, connect) to MYSQLND_METHOD(mysqlnd_azure_data, connect)
+- 1. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect.
+- 2. If enableRedirect is with value "on", ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
+- 3. If enableRedirect is with value "on", but on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
+- 4. If enableRedirect is with value "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
+- 5. A new option for mysqlnd_azure.enableRedirect is introduced with name "preferred". When enableRedirect is "preferred", it will use redirection if possible. 
+     If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
+- 6. The cache implementation has been changed from module global to true global to improve share range for multi-thread scenario.  
  </notes>
  <contents>
   <dir name="/">
@@ -39,11 +45,11 @@
    <file md5sum="81379d753b8268922e3e3dd8c11c803c" name="redirect_cache.c" role="src" />
    <file md5sum="f6ce2d3ccfaa1d8e53196f9df9043b35" name="mysqlnd_azure.h" role="src" />
    <file md5sum="207e117afe26f28a75d83776e88d7ee0" name="php_mysqlnd_azure.h" role="src" />
-   <file md5sum="1d60dd2a72d2d9a325e68070b7fd0fbf" name="tests/mysqli_azure_redirection_enabled.phpt" role="test" />
-   <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_disabled.phpt" role="test" />
+   <file md5sum="1d60dd2a72d2d9a325e68070b7fd0fbf" name="tests/mysqli_azure_redirection_on.phpt" role="test" />
+   <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_off.phpt" role="test" />
+   <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_preferred.phpt" role="test" />
    <file md5sum="271878ad9afcd0f4304529ff9522e034" name="tests/connect.inc" role="test" />
    <file md5sum="d621e9a3ad808225480ee11b361338ad" name="tests/skipif.inc" role="test" />
-   <file md5sum="841204de228db4ea0150bf7289956163" name="tests/skipifconnectfailure.inc" role="test" />
    <file md5sum="a898ba9138cb8ebe9751d0629ebdcd87" name="LICENSE.txt" role="doc" />
    <file md5sum="c3de6c763e44bebab12cfa0d85c37fa0" name="Notes.txt" role="doc" />
    <file md5sum="2e6b1acdbd3ea3056847cbd5d8042153" name="CREDITS" role="doc" />
@@ -65,6 +71,27 @@
  <providesextension>mysqlnd_azure</providesextension>
  <extsrcrelease />
  <changelog>
+   <release>
+    <version>
+    <release>1.1.0beta1</release>
+    <api>1.1.0beta1</api>
+    </version>
+    <stability>
+      <release>beta</release>
+      <api>beta</api>
+    </stability>
+   <date>2019-12-10</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+- 1. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred".
+- 2. If enableRedirect is with value "on", ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
+- 3. If enableRedirect is with value "on", but on server side redirection is not available, and there is no last message in OK packet, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
+- 4. If enableRedirect is with value "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
+- 5. A new option for mysqlnd_azure.enableRedirect is introduced with name "preferred". When enableRedirect is "preferred", it will use redirection if possible. 
+     If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
+- 6. The cache implementation has been changed from module global to true global to improve share range for multi-thread scenario.
+   </notes>
+  </release>
    <release>
     <version>
     <release>1.0.2</release>
