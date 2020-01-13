@@ -86,9 +86,9 @@ enum_func_status mysqlnd_azure_add_redirect_cache(const MYSQLND_CONN_DATA* conn,
 	char *key = NULL;
 	mnd_sprintf(&key, MAX_REDIRECT_HOST_LEN+ MAX_REDIRECT_USER_LEN+8, "%s_%s_%d", user, host, port);
 
-	MYSQLND_AZURE_REDIRECT_INFO* redirect_info = pemalloc(sizeof(MYSQLND_AZURE_REDIRECT_INFO), conn->persistent);
-	redirect_info->redirect_user = mnd_pestrndup(redirect_user, strlen(redirect_user), conn->persistent);
-	redirect_info->redirect_host = mnd_pestrndup(redirect_host, strlen(redirect_host), conn->persistent);
+	MYSQLND_AZURE_REDIRECT_INFO* redirect_info = pemalloc(sizeof(MYSQLND_AZURE_REDIRECT_INFO), 1);
+	redirect_info->redirect_user = mnd_pestrndup(redirect_user, strlen(redirect_user), 1);
+	redirect_info->redirect_host = mnd_pestrndup(redirect_host, strlen(redirect_host), 1);
 	redirect_info->redirect_port = redirect_port;
 
 	zend_hash_str_update_ptr(MYSQLND_AZURE_G(redirectCache), key, strlen(key), redirect_info);
