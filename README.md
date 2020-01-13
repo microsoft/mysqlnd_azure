@@ -1,6 +1,8 @@
 # PHP mysqlnd redirection extension mysqlnd_azure
 The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support.  The extension is also available on PECL website at  https://pecl.php.net/package/mysqlnd_azure.
 
+**Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL.**
+
 ## Name and Extension Version
 Extension name: **mysqlnd_azure**
 
@@ -9,7 +11,8 @@ Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
 Valid version:
 - 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
-- 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+
+- 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+.  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
+- 1.0.2-hotfix Change: fix the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
