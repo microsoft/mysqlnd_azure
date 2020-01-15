@@ -41,7 +41,6 @@ typedef struct st_mysqlnd_azure_redirect_info {
 #define MAX_REDIRECT_HOST_LEN 128
 #define MAX_REDIRECT_USER_LEN 128
 
-extern unsigned int mysqlnd_azure_plugin_id;
 void mysqlnd_azure_minit_register_hooks();
 
 MYSQLND_AZURE_CONN_DATA** mysqlnd_azure_get_is_using_redirect(const MYSQLND_CONN_DATA *conn);

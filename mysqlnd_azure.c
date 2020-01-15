@@ -52,6 +52,40 @@ MYSQLND_METHOD_PRIVATE(mysqlnd_azure_data, dtor)(MYSQLND_CONN_DATA * conn)
 }
 /* }}} */
 
+/* {{{ mysqlnd_azure_get_is_using_redirect */
+MYSQLND_AZURE_CONN_DATA**
+mysqlnd_azure_get_is_using_redirect(const MYSQLND_CONN_DATA *conn)
+{
+	MYSQLND_AZURE_CONN_DATA** props = NULL;
+	props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
+	if (!props || !(*props)) {
+		*props = mnd_pecalloc(1, sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
+        if(!props  || !(*props)) {
+            return NULL;
+        }
+		(*props)->is_using_redirect = 0;
+	}
+	return props;
+}
+/* }}} */
+
+/* {{{ mysqlnd_azure_set_is_using_redirect */
+MYSQLND_AZURE_CONN_DATA**
+mysqlnd_azure_set_is_using_redirect(MYSQLND_CONN_DATA *conn, zend_bool is_using_redirect)
+{
+	MYSQLND_AZURE_CONN_DATA** props = NULL;
+	props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
+	if (!props || !(*props)) {
+		*props = mnd_pecalloc(1, sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
+        if(!props  || !(*props)) {
+            return NULL;
+        }
+	}
+	(*props)->is_using_redirect = is_using_redirect;
+	return props;
+}
+/* }}} */
+
 /* {{{ set_redirect_client_options */
 static enum_func_status
 set_redirect_client_options(MYSQLND_CONN_DATA * const conn, MYSQLND_CONN_DATA * const redirectConn)
@@ -377,6 +411,10 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 			DBG_INF_FMT("[redirect]: redirect host=%s user=%s port=%d ", redirect_host, redirect_user, ui_redirect_port);
 			enum_func_status ret = FAIL;
 			MYSQLND* redirect_conneHandle = mysqlnd_init(MYSQLND_CLIENT_KNOWS_RSET_COPY_DATA, conn->persistent); //init MYSQLND but only need only MYSQLND_CONN_DATA here
+            if(!redirect_conneHandle) {
+                //redirect_conneHandle init failed, do nothing more, just use the original connection
+				goto after_conn;
+            }
 			MYSQLND_CONN_DATA* redirect_conn = redirect_conneHandle->data;
 			redirect_conneHandle->data = NULL;
 			mnd_pefree(redirect_conneHandle, redirect_conneHandle->persistent);
