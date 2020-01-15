@@ -26,11 +26,6 @@
 #include "ext/mysqlnd/mysqlnd.h"
 #include "ext/mysqlnd/mysqlnd_debug.h"
 
-/* data which we will associate with a mysqlnd connection for redirection */
-typedef struct st_mysqlnd_azure_conn_data {
-	zend_bool is_using_redirect;
-} MYSQLND_AZURE_CONN_DATA;
-
 /*struct to store redirection chache info in hash table*/
 typedef struct st_mysqlnd_azure_redirect_info {
 	char* redirect_user;
@@ -43,8 +38,6 @@ typedef struct st_mysqlnd_azure_redirect_info {
 
 void mysqlnd_azure_minit_register_hooks();
 
-MYSQLND_AZURE_CONN_DATA** mysqlnd_azure_get_is_using_redirect(const MYSQLND_CONN_DATA *conn);
-MYSQLND_AZURE_CONN_DATA** mysqlnd_azure_set_is_using_redirect(MYSQLND_CONN_DATA *conn, zend_bool is_using_redirect);
 enum_func_status mysqlnd_azure_add_redirect_cache(const char* user, const char* host, int port, const char* redirect_user, const char* redirect_host, int redirect_port);
 enum_func_status mysqlnd_azure_remove_redirect_cache(const char* user, const char* host, int port);
 MYSQLND_AZURE_REDIRECT_INFO* mysqlnd_azure_find_redirect_cache(const char* user, const char* host, int port);
