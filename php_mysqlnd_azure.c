@@ -21,10 +21,10 @@
 #endif
 
 #include "php.h"
-#include "ext/standard/info.h"
 #include "mysqlnd_azure.h"
 #include "php_mysqlnd_azure.h"
 #include "ext/mysqlnd/mysqlnd_ext_plugin.h"
+#include "ext/standard/info.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(mysqlnd_azure)
 
