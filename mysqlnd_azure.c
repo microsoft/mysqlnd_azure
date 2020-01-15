@@ -59,7 +59,7 @@ mysqlnd_azure_get_is_using_redirect(const MYSQLND_CONN_DATA *conn)
 	MYSQLND_AZURE_CONN_DATA** props = NULL;
 	props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
 	if (!props || !(*props)) {
-		*props = mnd_pecalloc(1, sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
+		*props = mnd_pemalloc(sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
         if(!props  || !(*props)) {
             return NULL;
         }
@@ -76,7 +76,7 @@ mysqlnd_azure_set_is_using_redirect(MYSQLND_CONN_DATA *conn, zend_bool is_using_
 	MYSQLND_AZURE_CONN_DATA** props = NULL;
 	props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
 	if (!props || !(*props)) {
-		*props = mnd_pecalloc(1, sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
+		*props = mnd_pemalloc(sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
         if(!props  || !(*props)) {
             return NULL;
         }
