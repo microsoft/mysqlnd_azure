@@ -29,6 +29,7 @@
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
 - apply fix for the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
+- avoid redirect when ssl is false. Other performance improvement and refactor.
  </notes>
  <contents>
   <dir name="/">
@@ -78,6 +79,7 @@
      <license uri="http://www.php.net/license">PHP License</license>
      <notes>
 apply fix for the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
+avoid redirect when ssl is false. Other performance improvement and refactor.
      </notes>
    </release>
    <release>
