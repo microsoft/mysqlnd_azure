@@ -13,7 +13,7 @@ Valid version:
 - 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+.  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false
 - 1.0.3RC Change: fix the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
-                  This version is marked as beta, so please use pecl install mysqlnd_azure-1.0.3RC to install when using pecl.
+                  This version is marked as beta, so please use *pecl install mysqlnd_azure-1.0.3RC* to install when using pecl.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
@@ -35,8 +35,10 @@ Example to install required tools for php7.3 on Redhat 7.4:
 
 #### Install
 ###### Linux
-sudo pecl install mysqlnd_azure
-For beta version like 1.0.3RC, please specify the version number, e.g. pecl install mysqlnd_azure-1.0.3RC
+sudo pecl install mysqlnd_azure 
+
+For beta version like 1.0.3RC, please specify the version number, e.g. *pecl install mysqlnd_azure-1.0.3RC*
+
 ###### Windows
 Download the corresponding dll package from the DLL link on https://pecl.php.net/package/mysqlnd_azure. Extract the zip file, find the dll file named with *php_mysqlnd_azure.dll*, and put it under extension_dir (Follow the configure step below to get the value).
 
