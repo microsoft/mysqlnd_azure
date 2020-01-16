@@ -222,7 +222,7 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
     const char * msg_header = "Location: mysql://";
     int msg_header_len = strlen(msg_header);
 
-    if (conn->last_message.l <= 27 || (strncmp(conn->last_message.s, msg_header, msg_header_len) != 0)) {
+    if (conn->last_message.l < 28 || (strncmp(conn->last_message.s, msg_header, msg_header_len) != 0)) {
         return FALSE;
     }
 
