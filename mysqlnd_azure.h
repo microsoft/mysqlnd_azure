@@ -41,14 +41,13 @@ typedef struct st_mysqlnd_azure_redirect_info {
 #define MAX_REDIRECT_HOST_LEN 128
 #define MAX_REDIRECT_USER_LEN 128
 
-extern unsigned int mysqlnd_azure_plugin_id;
 void mysqlnd_azure_minit_register_hooks();
 
 MYSQLND_AZURE_CONN_DATA** mysqlnd_azure_get_is_using_redirect(const MYSQLND_CONN_DATA *conn);
 MYSQLND_AZURE_CONN_DATA** mysqlnd_azure_set_is_using_redirect(MYSQLND_CONN_DATA *conn, zend_bool is_using_redirect);
-enum_func_status mysqlnd_azure_add_redirect_cache(const MYSQLND_CONN_DATA* conn, const char* user, const char* host, int port, const char* redirect_user, const char* redirect_host, int redirect_port);
-enum_func_status mysqlnd_azure_remove_redirect_cache(const MYSQLND_CONN_DATA* conn, const char* user, const char* host, int port);
-MYSQLND_AZURE_REDIRECT_INFO* mysqlnd_azure_find_redirect_cache(const MYSQLND_CONN_DATA* conn, const char* user, const char* host, int port);
+enum_func_status mysqlnd_azure_add_redirect_cache(const char* user, const char* host, int port, const char* redirect_user, const char* redirect_host, int redirect_port);
+enum_func_status mysqlnd_azure_remove_redirect_cache(const char* user, const char* host, int port);
+MYSQLND_AZURE_REDIRECT_INFO* mysqlnd_azure_find_redirect_cache(const char* user, const char* host, int port);
 
 #if defined(ZTS) && defined(COMPILE_DL_MYSQLND_AZURE)
 ZEND_TSRMLS_CACHE_EXTERN()

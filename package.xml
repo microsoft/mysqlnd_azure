@@ -16,19 +16,19 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2019-11-20</date>
- <time>13:00:13</time>
+ <date>2020-1-16</date>
+ <time>17:00:13</time>
  <version>
-  <release>1.0.2</release>
-  <api>1.0.2</api>
+  <release>1.0.2-hotfix</release>
+  <api>1.0.2-hotfix</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>beta</release>
+  <api>beta</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- apply fix for database null/empty problem change in https://github.com/php/php-src/pull/4340 in MYSQLND_METHOD(mysqlnd_conn_data, connect) to MYSQLND_METHOD(mysqlnd_azure_data, connect)
+- apply fix for the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
  </notes>
  <contents>
   <dir name="/">
@@ -65,6 +65,21 @@
  <providesextension>mysqlnd_azure</providesextension>
  <extsrcrelease />
  <changelog>
+    <release>
+     <version>
+     <release>1.0.2-hotfix</release>
+     <api>1.0.2-hotfix</api>
+     </version>
+     <stability>
+      <release>beta</release>
+      <api>beta</api>
+     </stability>
+     <date>2020-1-16</date>
+     <license uri="http://www.php.net/license">PHP License</license>
+     <notes>
+apply fix for the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
+     </notes>
+   </release>
    <release>
     <version>
     <release>1.0.2</release>

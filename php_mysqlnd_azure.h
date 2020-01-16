@@ -17,7 +17,7 @@
 */
 
 #ifndef PHP_MYSQLND_AZURE_H
-# define PHP_MYSQLND_AZURE_H
+#define PHP_MYSQLND_AZURE_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -26,10 +26,10 @@
 #include "php.h"
 
 extern zend_module_entry mysqlnd_azure_module_entry;
-# define phpext_mysqlnd_azure_ptr &mysqlnd_azure_module_entry
+#define phpext_mysqlnd_azure_ptr &mysqlnd_azure_module_entry
 
 #define EXT_MYSQLND_AZURE_NAME      "mysqlnd_azure"
-#define EXT_MYSQLND_AZURE_VERSION   "1.0.2"
+#define EXT_MYSQLND_AZURE_VERSION   "1.0.2-hotfix"
 
 ZEND_BEGIN_MODULE_GLOBALS(mysqlnd_azure)
 	zend_bool		enabled;
