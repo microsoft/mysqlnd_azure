@@ -16,20 +16,19 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2020-01-16</date>
+ <date>2020-02-04</date>
  <time>17:00:13</time>
  <version>
-  <release>1.0.3RC</release>
-  <api>1.0.3RC</api>
+  <release>1.0.3</release>
+  <api>1.0.3</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- apply fix for the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
-- avoid redirect when ssl is false. Other performance improvement and refactor.
+- Remove the is_using_redirect flag
  </notes>
  <contents>
   <dir name="/">
@@ -66,6 +65,21 @@
  <providesextension>mysqlnd_azure</providesextension>
  <extsrcrelease />
  <changelog>
+    <release>
+     <version>
+     <release>1.0.3</release>
+     <api>1.0.3</api>
+     </version>
+     <stability>
+      <release>stable</release>
+      <api>stable</api>
+     </stability>
+     <date>2020-02-04</date>
+     <license uri="http://www.php.net/license">PHP License</license>
+     <notes>
+Remove the is_using_redirect flag
+     </notes>
+    </release>
     <release>
      <version>
      <release>1.0.3RC</release>
