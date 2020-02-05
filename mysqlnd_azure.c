@@ -219,11 +219,14 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
     }
 
     char  redirect_port[8] = { 0 };
+    memcpy(redirect_port, port_begin, port_len);
+    *p_ui_redirect_port = atoi(redirect_port);
+    if(*p_ui_redirect_port <=0) {
+        return FALSE;
+    }
 
     memcpy(redirect_host, host_begin, host_len);
     memcpy(redirect_user, user_begin, user_len);
-    memcpy(redirect_port, port_begin, port_len);
-    *p_ui_redirect_port = atoi(redirect_port);
 
     return TRUE;
 }
