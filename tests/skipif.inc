@@ -4,7 +4,7 @@ if (!extension_loaded('mysqlnd')) {
 }
 
 if (!extension_loaded('mysqlnd_azure')) {
-	die('skip mysqlnd_rd extension not available');
+	die('skip mysqlnd_azure extension not available');
 }
 
 if (!extension_loaded('openssl')) {
