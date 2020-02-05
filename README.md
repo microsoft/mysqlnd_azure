@@ -14,7 +14,7 @@ Valid version:
 - 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+.  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false
 - 1.0.3RC Change: fix the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
                   This version is marked as beta, so please use *pecl install mysqlnd_azure-1.0.3RC* to install when using pecl.
-- 1.0.3  Change: Remove the use of is_using_redirect flag.
+- 1.0.3  Change: Remove the use of is_using_redirect flag. More strict validation and new test cases with embedded web server.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 

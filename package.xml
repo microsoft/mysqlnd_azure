@@ -16,7 +16,7 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2020-02-04</date>
+ <date>2020-02-05</date>
  <time>17:00:13</time>
  <version>
   <release>1.0.3</release>
@@ -28,7 +28,7 @@
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- Remove the is_using_redirect flag
+- Remove the use of is_using_redirect flag. More strict validation and test cases with embedded web server.
  </notes>
  <contents>
   <dir name="/">
@@ -44,6 +44,13 @@
    <file md5sum="271878ad9afcd0f4304529ff9522e034" name="tests/connect.inc" role="test" />
    <file md5sum="d621e9a3ad808225480ee11b361338ad" name="tests/skipif.inc" role="test" />
    <file md5sum="841204de228db4ea0150bf7289956163" name="tests/skipifconnectfailure.inc" role="test" />
+   <file md5sum="c5ac2a622a1ad2ecbb1a80fddb1ea774" name="tests/server.inc" role="test" />
+   <file md5sum="ee9b26d984fe6024f9ee9d6c162b3a1d" name="tests/skipif_pdo.inc" role="test" />
+   <file md5sum="9ecaa780d20d362faeae7df543a0d38f" name="tests/skipif_server.inc" role="test" />
+   <file md5sum="280ebbbe7bfbee3f9f50f3872ce58375" name="tests/server_basic_mysqli.phpt" role="test" />
+   <file md5sum="d6e763bef7cb06cd23db8b6416e50701" name="tests/server_basic_mysqli_testcase.php" role="test" />
+   <file md5sum="02d8e393486d59fb84866c03996489d1" name="tests/server_basic_pdo.phpt" role="test" />
+   <file md5sum="2b98d0e792fa35bb67fa7f196f05f7ca" name="tests/server_basic_pdo_testcase.php" role="test" />
    <file md5sum="a898ba9138cb8ebe9751d0629ebdcd87" name="LICENSE.txt" role="doc" />
    <file md5sum="c3de6c763e44bebab12cfa0d85c37fa0" name="Notes.txt" role="doc" />
    <file md5sum="2e6b1acdbd3ea3056847cbd5d8042153" name="CREDITS" role="doc" />
@@ -74,10 +81,10 @@
       <release>stable</release>
       <api>stable</api>
      </stability>
-     <date>2020-02-04</date>
+     <date>2020-02-05</date>
      <license uri="http://www.php.net/license">PHP License</license>
      <notes>
-Remove the is_using_redirect flag
+Remove the use of is_using_redirect flag. More strict validation and test cases with embedded web server.
      </notes>
     </release>
     <release>
