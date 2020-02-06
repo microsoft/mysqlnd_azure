@@ -32,29 +32,29 @@ ZEND_DECLARE_MODULE_GLOBALS(mysqlnd_azure)
 static PHP_GINIT_FUNCTION(mysqlnd_azure)
 {
 #if defined(COMPILE_DL_MYSQLND_AZURE) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE();
+    ZEND_TSRMLS_CACHE_UPDATE();
 #endif
-	mysqlnd_azure_globals->enabled = 0;
-	mysqlnd_azure_globals->redirectCache = NULL;
+    mysqlnd_azure_globals->enabled = 0;
+    mysqlnd_azure_globals->redirectCache = NULL;
 }
 /* }}} */
 
 /* {{{ PHP_GSHUTDOWN_FUNCTION */
 static PHP_GSHUTDOWN_FUNCTION(mysqlnd_azure)
 {
-	if (mysqlnd_azure_globals->redirectCache) {
-		zend_hash_destroy(mysqlnd_azure_globals->redirectCache);
-		mnd_pefree(mysqlnd_azure_globals->redirectCache, 1);
-		mysqlnd_azure_globals->redirectCache = NULL;
-	}
+    if (mysqlnd_azure_globals->redirectCache) {
+        zend_hash_destroy(mysqlnd_azure_globals->redirectCache);
+        mnd_pefree(mysqlnd_azure_globals->redirectCache, 1);
+        mysqlnd_azure_globals->redirectCache = NULL;
+    }
 }
 /* }}} */
 
 /* {{{ PHP_INI */
 /*
-	It is handy to allow users to disable any mysqlnd plugin globally - not only for debugging :-)
-	Because we register our plugin in MINIT changes to mysqlnd_ed.enabled shall be bound to
-	INI_SYSTEM (and PHP restarts).
+    It is handy to allow users to disable any mysqlnd plugin globally - not only for debugging :-)
+    Because we register our plugin in MINIT changes to mysqlnd_ed.enabled shall be bound to
+    INI_SYSTEM (and PHP restarts).
 */
 PHP_INI_BEGIN()
 STD_PHP_INI_ENTRY("mysqlnd_azure.enabled", "0", PHP_INI_ALL, OnUpdateBool, enabled, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
@@ -77,45 +77,45 @@ static PHP_MINIT_FUNCTION(mysqlnd_azure)
  */
 static PHP_MSHUTDOWN_FUNCTION(mysqlnd_azure)
 {
-	UNREGISTER_INI_ENTRIES();
+    UNREGISTER_INI_ENTRIES();
 
-	return SUCCESS;
+    return SUCCESS;
 }
 
 /* {{{ PHP_MINFO_FUNCTION
  */
 PHP_MINFO_FUNCTION(mysqlnd_azure)
 {
-	php_info_print_table_start();
-	php_info_print_table_header(2, "mysqlnd_azure", "enabled");
-	php_info_print_table_row(2, "enabled", MYSQLND_AZURE_G(enabled)? "Yes":"No");
-	php_info_print_table_end();
+    php_info_print_table_start();
+    php_info_print_table_header(2, "mysqlnd_azure", "enabled");
+    php_info_print_table_row(2, "enabled", MYSQLND_AZURE_G(enabled)? "Yes":"No");
+    php_info_print_table_end();
 }
 /* }}} */
 
 static const zend_module_dep mysqlnd_azure_deps[] = {
-	ZEND_MOD_REQUIRED("mysqlnd")
-	ZEND_MOD_END
+    ZEND_MOD_REQUIRED("mysqlnd")
+    ZEND_MOD_END
 };
 
 /* {{{ mysqlnd_azure_module_entry*/
 zend_module_entry mysqlnd_azure_module_entry = {
-	STANDARD_MODULE_HEADER_EX,
-	NULL,
-	mysqlnd_azure_deps,
-	EXT_MYSQLND_AZURE_NAME,
-	NULL,
-	PHP_MINIT(mysqlnd_azure),
-	PHP_MSHUTDOWN(mysqlnd_azure),
-	NULL,
-	NULL,
-	PHP_MINFO(mysqlnd_azure),
-	EXT_MYSQLND_AZURE_VERSION,
-	PHP_MODULE_GLOBALS(mysqlnd_azure),
-	PHP_GINIT(mysqlnd_azure),
-	PHP_GSHUTDOWN(mysqlnd_azure),
-	NULL,
-	STANDARD_MODULE_PROPERTIES_EX
+    STANDARD_MODULE_HEADER_EX,
+    NULL,
+    mysqlnd_azure_deps,
+    EXT_MYSQLND_AZURE_NAME,
+    NULL,
+    PHP_MINIT(mysqlnd_azure),
+    PHP_MSHUTDOWN(mysqlnd_azure),
+    NULL,
+    NULL,
+    PHP_MINFO(mysqlnd_azure),
+    EXT_MYSQLND_AZURE_VERSION,
+    PHP_MODULE_GLOBALS(mysqlnd_azure),
+    PHP_GINIT(mysqlnd_azure),
+    PHP_GSHUTDOWN(mysqlnd_azure),
+    NULL,
+    STANDARD_MODULE_PROPERTIES_EX
 };
 /* }}} */
 

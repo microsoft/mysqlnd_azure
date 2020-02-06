@@ -28,9 +28,9 @@
 
 /*struct to store redirection chache info in hash table*/
 typedef struct st_mysqlnd_azure_redirect_info {
-	char* redirect_user;
-	char* redirect_host;
-	unsigned int redirect_port;
+    char* redirect_user;
+    char* redirect_host;
+    unsigned int redirect_port;
 } MYSQLND_AZURE_REDIRECT_INFO;
 
 #define MAX_REDIRECT_HOST_LEN 128
@@ -46,5 +46,5 @@ MYSQLND_AZURE_REDIRECT_INFO* mysqlnd_azure_find_redirect_cache(const char* user,
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
 
-#endif	/* MYSQLND_AZURE_H */
+#endif  /* MYSQLND_AZURE_H */
 

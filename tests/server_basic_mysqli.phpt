@@ -2,7 +2,7 @@
 Test redirection in web server with baisc functionality - mysqli
 --SKIPIF--
 <?php 
-	require_once('skipif_server.inc');
+    require_once('skipif_server.inc');
     require_once('skipif.inc');
     require_once('skipifconnectfailure.inc');
 ?>
@@ -20,11 +20,11 @@ $url = "http://"."{$host}/server_basic_mysqli_testcase.php";
 
 $fp = fopen($url, 'r');
 if(!$fp) {
-	echo "[000] request url failed \n";
-	die();
+    echo "[000] request url failed \n";
+    die();
 }
 while (!feof($fp)) {
-	echo fgets($fp, 4096);
+    echo fgets($fp, 4096);
 }
 
 fclose($fp);
