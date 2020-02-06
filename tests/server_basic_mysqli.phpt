@@ -6,6 +6,8 @@ Test redirection in web server with baisc functionality - mysqli
     require_once('skipif.inc');
     require_once('skipifconnectfailure.inc');
 ?>
+--CONFLICTS--
+server
 --FILE--
 <?php
 include 'server.inc';

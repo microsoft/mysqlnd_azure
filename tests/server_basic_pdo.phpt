@@ -5,6 +5,8 @@ Test redirection in web server with baisc functionality - pdo_mysql
 	require_once('skipif_server.inc');
     require_once('skipif_pdo.inc');
 ?>
+--CONFLICTS--
+server
 --FILE--
 <?php
 include 'server.inc';
