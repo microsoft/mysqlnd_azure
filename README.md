@@ -1,7 +1,7 @@
 # PHP mysqlnd redirection extension mysqlnd_azure
 The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support.  The extension is also available on PECL website at  https://pecl.php.net/package/mysqlnd_azure.
 
-**Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL, and it will only support TLS 1.2 with FIPS approved cipher for redirection**
+**Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL, and it will only support TLS 1.2 with FIPS approved cipher for redirection.**
 
 ## Name and Extension Version
 Extension name: **mysqlnd_azure**
