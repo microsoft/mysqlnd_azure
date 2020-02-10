@@ -2,7 +2,7 @@
   +----------------------------------------------------------------------+
   | PHP Version 7                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2006-2018 The PHP Group                                |
+  | Copyright (c) The PHP Group                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 3.01 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -34,57 +34,6 @@ struct st_mysqlnd_conn_data_methods org_conn_d_m;
 struct st_mysqlnd_conn_data_methods* conn_d_m;
 struct st_mysqlnd_conn_methods org_conn_m;
 struct st_mysqlnd_conn_methods* conn_m;
-
-/* {{{ mysqlnd_conn_data::dtor */
-/*  to free the extra data is_using_redirect*/
-static void
-MYSQLND_METHOD_PRIVATE(mysqlnd_azure_data, dtor)(MYSQLND_CONN_DATA * conn)
-{
-	DBG_ENTER("mysqlnd_azure_data::dtor");
-	MYSQLND_AZURE_CONN_DATA** props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
-
-	if (props && *props) {
-		mnd_pefree((*props), conn->persistent);
-		*props = NULL;
-	}
-
-	DBG_RETURN(org_conn_d_m.dtor(conn));
-}
-/* }}} */
-
-/* {{{ mysqlnd_azure_get_is_using_redirect */
-MYSQLND_AZURE_CONN_DATA**
-mysqlnd_azure_get_is_using_redirect(const MYSQLND_CONN_DATA *conn)
-{
-	MYSQLND_AZURE_CONN_DATA** props = NULL;
-	props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
-	if (!props || !(*props)) {
-		*props = mnd_pemalloc(sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
-        if(!props  || !(*props)) {
-            return NULL;
-        }
-		(*props)->is_using_redirect = 0;
-	}
-	return props;
-}
-/* }}} */
-
-/* {{{ mysqlnd_azure_set_is_using_redirect */
-MYSQLND_AZURE_CONN_DATA**
-mysqlnd_azure_set_is_using_redirect(MYSQLND_CONN_DATA *conn, zend_bool is_using_redirect)
-{
-	MYSQLND_AZURE_CONN_DATA** props = NULL;
-	props = (MYSQLND_AZURE_CONN_DATA**)mysqlnd_plugin_get_plugin_connection_data_data(conn, mysqlnd_azure_plugin_id);
-	if (!props || !(*props)) {
-		*props = mnd_pemalloc(sizeof(MYSQLND_AZURE_CONN_DATA), conn->persistent);
-        if(!props  || !(*props)) {
-            return NULL;
-        }
-	}
-	(*props)->is_using_redirect = is_using_redirect;
-	return props;
-}
-/* }}} */
 
 /* {{{ set_redirect_client_options */
 static enum_func_status
@@ -270,11 +219,14 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
     }
 
     char  redirect_port[8] = { 0 };
+    memcpy(redirect_port, port_begin, port_len);
+    *p_ui_redirect_port = atoi(redirect_port);
+    if(*p_ui_redirect_port <=0) {
+        return FALSE;
+    }
 
     memcpy(redirect_host, host_begin, host_len);
     memcpy(redirect_user, user_begin, user_len);
-    memcpy(redirect_port, port_begin, port_len);
-    *p_ui_redirect_port = atoi(redirect_port);
 
     return TRUE;
 }
@@ -394,14 +346,9 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 		}
 
 		//Get here means serverSupportRedirect
-		MYSQLND_AZURE_CONN_DATA** pdata = mysqlnd_azure_get_is_using_redirect(conn);
-        if(pdata==NULL) {
-			//mysqlnd_azure_get_is_using_redirect failed due to oom, do nothing here, just keep go with original connection if still usable.
-			goto after_conn;
-        }
 
 		//Already use redirected connection, or the connection string is a redirected one
-		if ((*pdata)->is_using_redirect || (strcmp(redirect_host, hostname.s) == 0 && strcmp(redirect_user, username.s) == 0 && ui_redirect_port == port)) {
+		if (strcmp(redirect_host, hostname.s) == 0 && strcmp(redirect_user, username.s) == 0 && ui_redirect_port == port) {
 			DBG_ENTER("[redirect]: Is using redirection, or redirection info are equal to origin, no need to redirect");
 			goto after_conn;
 		}
@@ -430,14 +377,6 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 			}
 
 			//init redirect_conn succeeded, use this conn to start a new connection and handshake
-
-            //set is_using_redirect flag
-			MYSQLND_AZURE_CONN_DATA** data_ret = mysqlnd_azure_set_is_using_redirect(redirect_conn, 1);
-            if(data_ret==NULL) {
-                //mysqlnd_azure_set_is_using_redirect failed due to oom, do nothing here, just keep go with original connection if still usable.
-                redirect_conn->m->dtor(redirect_conn);
-                goto after_conn;
-            }
 
 			const MYSQLND_CSTRING redirect_hostname = { redirect_host, strlen(redirect_host) };
 			const MYSQLND_CSTRING redirect_username = { redirect_user, strlen(redirect_user) };
@@ -475,9 +414,6 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
 			}
 			else { //redirect failed. use original connection information
-
-				//clear is_using_redirect flag. This step is not need explictly, since object redirect_conn will be destroyed
-				//MYSQLND_AZURE_CONN_DATA** data_ret = mysqlnd_azure_set_is_using_redirect(redirect_conn, 0);
 
 				//free resource, and use original connection information
 				redirect_conn->m->dtor(redirect_conn);
@@ -667,22 +603,10 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 					const MYSQLND_CSTRING redirect_host = { redirect_info->redirect_host, strlen(redirect_info->redirect_host) };
 					const MYSQLND_CSTRING redirect_user = { redirect_info->redirect_user, strlen(redirect_info->redirect_user) };
 
-					MYSQLND_AZURE_CONN_DATA** data_ret = mysqlnd_azure_set_is_using_redirect(*pconn, 1);
-                    if(data_ret==NULL) {
-                        SET_OOM_ERROR((*pconn)->error_info);
-                        return FAIL;
-                    }
-
 					ret = (*pconn)->m->connect(pconn, redirect_host, redirect_user, password, database, redirect_info->redirect_port, socket_or_pipe, mysql_flags);
 					if (ret == FAIL) {
 						//remove invalid cache
 						mysqlnd_azure_remove_redirect_cache(username.s, hostname.s, port);
-
-						MYSQLND_AZURE_CONN_DATA** data_ret = mysqlnd_azure_set_is_using_redirect(*pconn, 0);
-                        if(data_ret==NULL) {
-                            SET_OOM_ERROR((*pconn)->error_info);
-                            return FAIL;
-                        }
 
 						ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
 					}
@@ -715,7 +639,6 @@ void mysqlnd_azure_minit_register_hooks()
 
 	conn_m->connect = MYSQLND_METHOD(mysqlnd_azure, connect);
 	conn_d_m->connect = MYSQLND_METHOD(mysqlnd_azure_data, connect);
-	conn_d_m->dtor = MYSQLND_METHOD_PRIVATE(mysqlnd_azure_data, dtor);
 }
 
 /* }}} */
