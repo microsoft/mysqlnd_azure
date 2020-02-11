@@ -4,6 +4,7 @@
     if(!link)
         die("skip mysqli_init failed");
 
+    ini_set("mysqlnd_azure.enableRedirect", "preferred");
     $ret = mysqli_real_connect($link, $host, $user, $passwd, $db, $port, NULL, MYSQLI_CLIENT_SSL);
     if (!$ret)
         die(sprintf("skip Can't connect to MySQL Server with ssl - [%d] %s", mysqli_connect_errno(), mysqli_connect_error()));

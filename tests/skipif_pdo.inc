@@ -20,7 +20,7 @@
     }
 
     include_once('connect.inc');
-    ini_set("mysqlnd_azure.enabled", "on");
+    ini_set("mysqlnd_azure.enableRedirect ", "preferred");
     $conn = NULL;
     try {
         $conn = new PDO($pdo_dsn, $user, $passwd, 

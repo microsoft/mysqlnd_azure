@@ -33,22 +33,22 @@ fclose($fp);
 --EXPECTF--
 *** Testing mysqli in web server: basic functionality ***
 step1: redirect enabled, non-persistent connection 
-mysqlnd_azure.enabled: On
+mysqlnd_azure.enableRedirect: preferred
 %s
 Location: mysql://%s:%d/user=%s
 0
 step2: redirect enabled, persistent connection 
-mysqlnd_azure.enabled: On
+mysqlnd_azure.enableRedirect: preferred
 %s
 Location: mysql://%s:%d/user=%s
 0
 step3: redirect disabled, non-persistent connection 
-mysqlnd_azure.enabled: Off
+mysqlnd_azure.enableRedirect: off
 %s
 Location: mysql://%s:%d/user=%s
 1
 step4: redirect disabled, persistent connection 
-mysqlnd_azure.enabled: Off
+mysqlnd_azure.enableRedirect: off
 %s
 
 0
