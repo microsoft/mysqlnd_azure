@@ -340,7 +340,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
         unsigned int ui_redirect_port = 0;
         zend_bool serverSupportRedirect = get_redirect_info(conn, redirect_host, redirect_user, &ui_redirect_port);
         if (!serverSupportRedirect) {
-            DBG_ENTER("[redirect]: Server doesnot supoort redirection.");
+            DBG_ENTER("[redirect]: Server does not support redirection.");
             if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
                 //REDIRECT_ON, if redirection is not supported, abort the original connection and return error
                 conn->m->send_close(conn);
@@ -435,31 +435,31 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
                 username = redirect_username;
                 port = ui_redirect_port;
                 transport = redirect_transport;
+                redirect_transport = NULL;
 
             } else { //redirect failed. if REDIRECT_ON, also abort the original conn, if REDIRECT_PREFERRED, use original connection
                 DBG_ENTER("[redirect]: mysql redirect handshake fails");
+                //need free in both cases
+                if (redirect_transport.s) {
+                    mnd_sprintf_free(redirect_transport.s);
+                    redirect_transport.s = NULL;
+                }
 
                 if (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_PREFERRED) {
-                    //free resource and use original connection
+                    //free object and use original connection
                     redirect_conn->m->dtor(redirect_conn);
-                    if (redirect_transport.s) {
-                        mnd_sprintf_free(redirect_transport.s);
-                        redirect_transport.s = NULL;
-                    }
                     goto after_conn;
 
                 } else { //REDIRECT_ON, free original connect, and use redirect_conn to handle error
                     conn->m->send_close(conn);
                     conn->m->dtor(conn);
                     pfc = NULL;
-                    if (transport.s) {
-                        mnd_sprintf_free(transport.s);
-                        transport.s = NULL;
-                    }
+                    //transport will be free after goto err
 
                     conn = redirect_conn;
                     *pconn = redirect_conn;
                     pfc = redirect_conn->protocol_frame_codec;
+                    redirect_conn = NULL;
                     goto err;
                 }
             }
