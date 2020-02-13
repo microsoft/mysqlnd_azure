@@ -389,6 +389,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
             if (ret == FAIL) {
                 DBG_ENTER("[redirect]: init redirection option failed. ");
                 redirect_conn->m->dtor(redirect_conn); //release created resource
+                redirect_conn = NULL;
 
                 if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
                     //REDIRECT_ON, abort the original connection
@@ -435,7 +436,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
                 username = redirect_username;
                 port = ui_redirect_port;
                 transport = redirect_transport;
-                redirect_transport = NULL;
+                redirect_transport.s = NULL;
 
             } else { //redirect failed. if REDIRECT_ON, also abort the original conn, if REDIRECT_PREFERRED, use original connection
                 DBG_ENTER("[redirect]: mysql redirect handshake fails");
