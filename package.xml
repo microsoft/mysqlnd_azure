@@ -16,23 +16,24 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2020-02-15</date>
+ <date>2020-02-14</date>
  <time>15:00:13</time>
  <version>
-  <release>1.1.0RC1</release>
-  <api>1.1.0RC1</api>
+  <release>1.1.0</release>
+  <api>1.1.0</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
 - 1. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect.
-- 2. When enableRedirect is "on", ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
-- 3. When enableRedirect is "on", but on server side redirection is not available, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
-- 4. When enableRedirect is "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
-- 5. A new option for mysqlnd_azure.enableRedirect is introduced with name "preferred". When enableRedirect is "preferred", it will use redirection if possible. 
+- 2. Add a new option choice "preferred".
+- 3. When enableRedirect is "on", ssl is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
+- 4. When enableRedirect is "on", but on server side redirection is not available, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
+- 5. When enableRedirect is "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
+- 6. When enableRedirect is "preferred", it will use redirection if possible. 
      If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
  </notes>
  <contents>
@@ -50,7 +51,7 @@
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_option_test.phpt" role="test" />   
    <file md5sum="271878ad9afcd0f4304529ff9522e034" name="tests/connect.inc" role="test" />
    <file md5sum="d621e9a3ad808225480ee11b361338ad" name="tests/skipif.inc" role="test" />
-   <file md5sum="841204de228db4ea0150bf7289956163" name="tests/skipifconnectfailure.inc" role="test" />
+   <file md5sum="841204de228db4ea0150bf7289956163" name="tests/skipif_mysqli.inc" role="test" />
    <file md5sum="c5ac2a622a1ad2ecbb1a80fddb1ea774" name="tests/server.inc" role="test" />
    <file md5sum="ee9b26d984fe6024f9ee9d6c162b3a1d" name="tests/skipif_pdo.inc" role="test" />
    <file md5sum="9ecaa780d20d362faeae7df543a0d38f" name="tests/skipif_server.inc" role="test" />
@@ -81,8 +82,8 @@
  <changelog>
     <release>
      <version>
-     <release>1.1.0RC1</release>
-     <api>1.1.0RC1</api>
+     <release>1.1.0</release>
+     <api>1.1.0</api>
      </version>
      <stability>
       <release>beta</release>

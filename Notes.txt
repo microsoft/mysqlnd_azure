@@ -13,7 +13,7 @@ mysqlnd_azure.enableRedirect This option is to control enable or disable redirec
 If this is set to off, it will not use redirection.
 
 Available option values:
-(Default: off)
+(Default: preferred)
 ---------------|------------------------------------------------------------------------------------------------------------------------------------------
 off(0)         | - It will not use redirection.
 ---------------|------------------------------------------------------------------------------------------------------------------------------------------

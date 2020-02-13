@@ -629,16 +629,17 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
         else {
             DBG_ENTER("mysqlnd_azure::connect redirect enabled");
 
-            //Redirection is only possible with SSL at present. Continue with no redirection if SSL is not set
+            //Redirection is only possible with SSL at present.
             unsigned int temp_flags = (*pconn)->m->get_updated_connect_flags(*pconn, mysql_flags);
             if (!(temp_flags & CLIENT_SSL)) {
+                //REDIRECT_ON, no ssl, return error
                 if((MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON)) {
                     SET_CLIENT_ERROR((*pconn)->error_info, MYSQLND_AZURE_ENFORCE_REDIRECT_ERROR_NO, UNKNOWN_SQLSTATE, "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL.");
                     (*pconn)->m->local_tx_end(*pconn, this_func, FAIL);
                     (*pconn)->m->free_contents(*pconn);
                     return FAIL;
                 }
-                else {
+                else { //REDIRECT_PREFERRED, no ssl, do not redirect
                     ret = org_conn_d_m.connect(*pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
                 }
             }

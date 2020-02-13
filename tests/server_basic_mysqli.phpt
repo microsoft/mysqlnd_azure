@@ -4,7 +4,7 @@ Test redirection in web server with baisc functionality - mysqli
 <?php 
     require_once('skipif_server.inc');
     require_once('skipif.inc');
-    require_once('skipifconnectfailure.inc');
+    require_once('skipif_mysqli.inc');
 ?>
 --CONFLICTS--
 server
@@ -51,5 +51,12 @@ step4: redirect disabled, persistent connection
 mysqlnd_azure.enableRedirect: off
 %s
 
+0
+step5: redirect enforced, non-ssl connection 
+mysqlnd_azure.enableRedirect: on
+mysqli_real_connect(): (HY000/2054): mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL.
+step6: redirect enforced, ssl connection 
+%s
+Location: mysql://%s:%d/user=%s
 0
 ===DONE===
