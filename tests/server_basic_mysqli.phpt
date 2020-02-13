@@ -56,6 +56,7 @@ step5: redirect enforced, non-ssl connection
 mysqlnd_azure.enableRedirect: on
 mysqli_real_connect(): (HY000/2054): mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL.
 step6: redirect enforced, ssl connection 
+mysqlnd_azure.enableRedirect: on
 %s
 Location: mysql://%s:%d/user=%s
 0

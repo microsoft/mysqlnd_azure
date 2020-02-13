@@ -91,14 +91,14 @@ echo "step5: redirect enforced, non-ssl connection \n";
 {
     echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
     $link = mysqli_init();
-    $ret = mysqli_real_connect($link, $host, $user, $passwd, $db, $port, NULL, NULL);
-    if ($ret || is_object($link))
+    $ret = @mysqli_real_connect($link, $host, $user, $passwd, $db, $port, NULL, NULL);
+    if ($ret)
     {
         printf("[001] when enableRedirect=on, Connection without SSL should fail.\n");
         mysqli_close($link);
         die();
     }
-    echo error_get_last()["message"];
+    echo error_get_last()["message"], "\n";
 }
 
 echo "step6: redirect enforced, ssl connection \n";

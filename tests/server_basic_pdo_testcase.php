@@ -1,7 +1,7 @@
 <?php
 require_once("connect.inc");
 
-ini_set("mysqlnd_azure.enableRedirect ", "preferred");
+ini_set("mysqlnd_azure.enableRedirect", "preferred");
 
 echo "step1: redirect enabled, non-persistent connection \n";
 {
