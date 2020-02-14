@@ -5,6 +5,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 
 ## Option Usage
 **Before 1.1.0**, the option is with name **mysqlnd_azure.enabled**. Valid values are on/off, and the option "on" supports fallback logic. The detailed usage of the option enableRedirect is as follows:
+
 (Version before 1.1.0. Config name: **mysqlnd_azure.enabled**. Valid value: on/off. Default value: off)
 <table>
 <tr>
