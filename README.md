@@ -14,7 +14,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 </tr>
 <tr>
 <td>on(1)</td>
-<td>  - It will use redirection if possible (Connection is with SSL and Server supports/need redirection).</br>
+<td>  - It will use redirection if possible (Connection is with SSL and Server supports/needs redirection).</br>
       - If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
 </td> 
 </tr>
