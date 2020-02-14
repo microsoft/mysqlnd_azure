@@ -9,7 +9,23 @@ connection, and use the new one afterward.
 +---------------------------+
 OPTION DESCRIPTION
 ------------------ ----------------------------------------------------------
-mysqlnd_azure.enabled This option is to control enable or disable mysqlnd_rd. 
-If this is set to 0, it will not use redirection.
-(Default: 0)
+mysqlnd_azure.enableRedirect This option is to control enable or disable redirection feature of mysqlnd_azure.
+If this is set to off, it will not use redirection.
 
+Available option values:
+(Default: preferred)
+---------------|------------------------------------------------------------------------------------------------------------------------------------------
+off(0)         | - It will not use redirection.
+---------------|------------------------------------------------------------------------------------------------------------------------------------------
+on(1)          | - If ssl is off, no connection will be made, return error:
+               |   "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
+               | - If on server side redirection is not available, abort the first connection and return error:
+               |   "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
+               | - If server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection.
+               |   Return the error of the redirected connection.
+---------------|------------------------------------------------------------------------------------------------------------------------------------------
+preferred(2)   | - it will use redirection if possible.
+               | - If connection does not use SSL, or server does not support redirection, or redirected connection fails 
+               |   to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback 
+               |   to the first proxy connection.
+---------------|------------------------------------------------------------------------------------------------------------------------------------------

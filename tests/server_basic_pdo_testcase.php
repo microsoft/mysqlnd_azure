@@ -1,11 +1,11 @@
 <?php
 require_once("connect.inc");
 
-ini_set("mysqlnd_azure.enabled", "on");
+ini_set("mysqlnd_azure.enableRedirect", "preferred");
 
 echo "step1: redirect enabled, non-persistent connection \n";
 {
-    echo "mysqlnd_azure.enabled: ", ini_get("mysqlnd_azure.enabled") == true?"On":"Off", "\n";
+    echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
     $conn = NULL;
     try {
         $conn = new PDO($pdo_dsn, $user, $passwd,
@@ -27,7 +27,7 @@ echo "step1: redirect enabled, non-persistent connection \n";
 
 echo "step2: redirect enabled, persistent connection \n";
 {
-    echo "mysqlnd_azure.enabled: ", ini_get("mysqlnd_azure.enabled") == true?"On":"Off", "\n";
+    echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
     $conn = NULL;
     try {
         $conn = new PDO($pdo_dsn, $user, $passwd,
@@ -47,11 +47,11 @@ echo "step2: redirect enabled, persistent connection \n";
     $conn = NULL;
 }
 
-ini_set("mysqlnd_azure.enabled", 0);
+ini_set("mysqlnd_azure.enableRedirect", "off");
 
 echo "step3: redirect disabled, non-persistent connection \n";
 {
-    echo "mysqlnd_azure.enabled: ", ini_get("mysqlnd_azure.enabled") == true?"On":"Off", "\n";
+    echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
     $conn = NULL;
     try {
         $conn = new PDO($pdo_dsn, $user, $passwd,
@@ -73,7 +73,7 @@ echo "step3: redirect disabled, non-persistent connection \n";
 
 echo "step4: redirect disabled, persistent connection \n";
 {
-    echo "mysqlnd_azure.enabled: ", ini_get("mysqlnd_azure.enabled") == true?"On":"Off", "\n";
+    echo "mysqlnd_azure.enableRedirect: ", ini_get("mysqlnd_azure.enableRedirect"), "\n";
     $conn = NULL;
     try {
         $conn = new PDO($pdo_dsn, $user, $passwd,

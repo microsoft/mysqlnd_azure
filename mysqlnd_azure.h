@@ -36,6 +36,8 @@ typedef struct st_mysqlnd_azure_redirect_info {
 #define MAX_REDIRECT_HOST_LEN 128
 #define MAX_REDIRECT_USER_LEN 128
 
+#define MYSQLND_AZURE_ENFORCE_REDIRECT_ERROR_NO CR_NOT_IMPLEMENTED
+
 void mysqlnd_azure_minit_register_hooks();
 
 enum_func_status mysqlnd_azure_add_redirect_cache(const char* user, const char* host, int port, const char* redirect_user, const char* redirect_host, int redirect_port);

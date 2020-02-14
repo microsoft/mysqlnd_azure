@@ -28,12 +28,20 @@
 extern zend_module_entry mysqlnd_azure_module_entry;
 #define phpext_mysqlnd_azure_ptr &mysqlnd_azure_module_entry
 
-#define EXT_MYSQLND_AZURE_NAME      "mysqlnd_azure"
-#define EXT_MYSQLND_AZURE_VERSION   "1.0.3"
+#define PHP_MYSQLND_AZURE_NAME      "mysqlnd_azure"
+#define PHP_MYSQLND_AZURE_VERSION   "1.1.0"
+
+#define STRING_EQUALS(z_str,str) (ZSTR_LEN((z_str)) == strlen((str)) && strcasecmp((str), ZSTR_VAL((z_str))) == 0)
+
+typedef enum _mysqlnd_azure_redirect_mode {
+    REDIRECT_OFF = 0,       /* completely disabled */
+    REDIRECT_ON = 1,        /* enabled without fallback, block if redirection fail */
+    REDIRECT_PREFERRED = 2  /* enabled with fallback */
+} mysqlnd_azure_redirect_mode;
 
 ZEND_BEGIN_MODULE_GLOBALS(mysqlnd_azure)
-    zend_bool       enabled;
-    HashTable*      redirectCache;
+    mysqlnd_azure_redirect_mode     enableRedirect;
+    HashTable*                      redirectCache;
 ZEND_END_MODULE_GLOBALS(mysqlnd_azure)
 
 PHPAPI ZEND_EXTERN_MODULE_GLOBALS(mysqlnd_azure)
