@@ -2,9 +2,9 @@
 
 If you encounter PHP related crash problem with this extension, you can follow following steps for inital trouble shooting:
 
-1. Check the config mysqlnd_azure.enableRedirect option's choice, if it is off now, big change is that the problem is not caused by this extension. Otherwise, switch it to off to see whether the problem still exist.
+1. Check the config mysqlnd_azure.enableRedirect option's choice. If it is off now, big change is that the problem is not caused by this extension. Otherwise, switch it to off to see whether the problem still exist.
 
-2. If the problem only persistents when the option is not with value off, then please contact with us for detailed investigation. But before this, helping prepare the following information will be highly appreciated:
+2. If the problem only persistents when the option is not with value off, then please contact with us for detailed investigation. Before this, helping prepare the following information will be highly appreciated:
 
 ## Web server log
 E.g. on Ubuntu, the related error log paths  usually are: 
