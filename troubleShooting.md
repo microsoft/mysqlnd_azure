@@ -8,9 +8,9 @@ If you encounter PHP related crash problem with this extension, you can follow f
 
 ## Web server log
 E.g. on Ubuntu, the related error log paths  usually are: 
-Apache: /var/log/apache2/error.log
-Nginx: /var/log/nginx/error.log
-php-fpm:  /var/log/php7.2-fpm.log (for 7.2)
+     - Apache: /var/log/apache2/error.log
+     - Nginx: /var/log/nginx/error.log
+     - php-fpm:  /var/log/php7.2-fpm.log (for 7.2)
 
 Please check the log, and provide the related content when crash happened.
 
