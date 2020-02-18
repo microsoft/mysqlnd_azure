@@ -8,9 +8,10 @@ If you encounter PHP related crash problem with this extension, you can follow f
 
 ## Web server log
 E.g. on Ubuntu, the related error log paths  usually are: 
-     - Apache: /var/log/apache2/error.log
-     - Nginx: /var/log/nginx/error.log
-     - php-fpm:  /var/log/php7.2-fpm.log (for 7.2)
+     
+     - Apache:      /var/log/apache2/error.log
+     - Nginx:       /var/log/nginx/error.log
+     - php-fpm:     /var/log/php7.2-fpm.log (for 7.2)
 
 Please check the log, and provide the related content when crash happened.
 
@@ -18,9 +19,11 @@ Please check the log, and provide the related content when crash happened.
 
 **Note:** Before config to get the dump file, you may need to disable apport or abrtd service/demon, since it will prevent creation of core dump files.
 
-### dump file for php-fpm (Linux)
+### Dump file for php-fpm (Linux)
 You may refer to the following link to get a php-fpm dump file:
+
 https://ma.ttias.be/generate-php-core-dumps-segfaults-php-fpm/
+
 Following are the detailed steps:
 
 1. Choose a directory for the dump file, e.g. /var/coredumps. Then set it in /proc/sys/kernel/core_pattern
@@ -35,7 +38,8 @@ mkdir /var/coredumps
 chown www-data: /var/coredumps
 chmod 777 /var/coredumps
 ```
-3. Set rlimit_core = unlimited in php-fpm pool config file, e.g.
+3. Set process dumpable and rlimit_core = unlimited in php-fpm pool config file, e.g.
+
 /etc/php/7.2/fpm/pool.d/www.conf
 ```conf
 rlimit_core = unlimited
@@ -54,11 +58,12 @@ service php7.2-fpm restart
 
 ### Dump file for Apache with mod_php (Linux)
 You may refer to the following link to get a Apache dump file:
+
 https://support.plesk.com/hc/en-us/articles/213366549-How-to-enable-core-dumps-for-Apache-and-trace-Apache-segmentation-fault-on-a-Linux-server
 
 Following are the detailed steps (take apache2 on Ubuntu as example):
-1. Follow the same step with php-fpm above to set up the dump file directory.
-2. 
+1. Follow the same step 1-2 with php-fpm above to set up the dump file directory.
+2. For systemd systems, create a new unit file using the command:
 ```bash 
 systemctl edit apache2
 ```
@@ -67,11 +72,11 @@ and add the following lines:
 [Service]
 LimitCORE=infinity
 ```
-3. Open the /etc/init.d/apache2 file and locate the do_start() section. Add the following line in this section:
+3. For non-systemd Debian/Ubuntu-based systems, open the /etc/init.d/apache2 file and locate the do_start() section. Add the following line in this section:
 ```
 ulimit -c unlimited
 ```
-4. Specify a CoreDumpDirectory location in /etc/apache2/apache2.conf :
+4. Specify a CoreDumpDirectory location in /etc/apache2/apache2.conf:
 ```
 CoreDumpDirectory /var/coredumps
 ```
@@ -90,15 +95,14 @@ service apache2 restart
 
 ### Dump file for Apache with mod_php (Windows)
 You may refer to the following link to get a Apache dump file:
+
 https://bugs.php.net/bugs-generating-backtrace-win32.php
 
 Following are the detailed steps:
-1. Download the corresponding version of debug pack for php-src (https://windows.php.net/download/) and mysqlnd_azure (https://pecl.php.net/package/mysqlnd_azure
- from the DLL link, the pdb file is under same package)
+1. Download the corresponding version of debug pack for php-src (https://windows.php.net/download/) and mysqlnd_azure (https://pecl.php.net/package/mysqlnd_azure from the DLL link, the pdb file is under same package)
 2. Extract the package and put them in same location, e.g. D:/php-debug-pack
 3. Download/install the Windows Debug Diagnostic Tool from e.g. https://www.microsoft.com/en-us/download/details.aspx?id=58210
-4. Open the DebugDiag Collection
-5. Select the Tools menu and click on "Options and settings". The first tab contains the path to the symbols files, add the "debug pack folder" just set
-6. We will use the wizard, click the "Add Rule..." button at bottom and choose "Crash" as the rule type.
-Click Next and choose "A specific process", chose the process you want to monitor and activate the rule. After a crash happened, a dump will be created 
-under the spedicifed rule folder.
+4. Open the DebugDiag Collection tool
+5. Select the Tools menu and click on "Options and settings". The first tab contains the path to the symbols files, add the "debug pack folder" set in step above
+6. Use the wizard, click the "Add Rule..." button at bottom and choose "Crash" as the rule type.
+Click Next and choose "A specific process", choose the process you want to monitor and activate the rule. After a crash happened, a dump will be created under the spedicifed rule folder.
