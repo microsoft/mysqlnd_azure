@@ -1,10 +1,26 @@
 # Trouble shooting
 
-If you encounter PHP related crash problem with this extension, you can follow following steps for inital trouble shooting:
+## Possibly frequently asked questions
+1.  How to make sure my web page with this extension use redirection when connect to Azure MySQL?  
 
-1. Check the config mysqlnd_azure.enableRedirect option's choice. If it is off now, big change is that the problem is not caused by this extension. Otherwise, switch it to off to see whether the problem still exist.
+Answer:  Set mysqlnd_azure.enableRedirect=on   The option value "on" will enforce redirection and return error if the configuration is wrong, e.g. the connection is not configured with SSL.
 
-2. If the problem only persistents when the option is not with value off, then please contact with us for detailed investigation. Before this, helping prepare the following information will be highly appreciated:
+2. How to verify the connection is currently using redirection?
+
+Answer:  For mysqli interface, check the host_info property of the connection object. For PDO interface, check the PDO::ATTR_CONNECTION_STATUS attribute.
+If the connection is using redirection, the content will be different from the host info you  used to connect. Otherwise, it should contains the same value.
+
+## PHP related crash problem with this extension
+
+If there is PHP related crash problem with this extension, you can follow following steps for initial trouble shooting:
+
+1. Check the configuration of option mysqlnd_azure.enableRedirect.
+
+ Usually, the related config for PHP served for a web service is under /etc/php/x.x/mods-available/,  E.g. /etc/php/x.x/mods-available/.
+ 
+If it's on/preferred now, switch it to off first to see whether the problem still exist. If the problem still exists, then try to uninstall the plugin to check the situation.
+
+2. If the problem disappeared after the plugin is uninstalled, then please contact with customer and ask them helping prepare the following information:
 
 ## Web server log
 E.g. on Ubuntu, the related error log paths  usually are: 
@@ -27,13 +43,13 @@ https://ma.ttias.be/generate-php-core-dumps-segfaults-php-fpm/
 Following are the detailed steps:
 
 1. Choose a directory for the dump file, e.g. /var/coredumps. Then set it in /proc/sys/kernel/core_pattern
-```bash
+```
 sudo bash -c 'echo "/var/coredumps/core-%e.%p" > /proc/sys/kernel/core_pattern'
 ```
 Then the dump file will be under /var/coredumps, with name like core-php-fpm7.2.pid
 
 2. Create the directory, and make sure it is writable for the dump, e.g. 
-```bash
+```
 mkdir /var/coredumps
 chown www-data: /var/coredumps
 chmod 777 /var/coredumps
@@ -46,11 +62,11 @@ rlimit_core = unlimited
 process.dumpable = yes
 ```
 4. Restart php-fpm service, e.g. 
-```bash
+```
 service php7.2-fpm restart
 ```
 5. Check whether the setup works:
-```bash
+```
      ps auxf | grep php-fpm | grep -v grep  #to get a child process id
      kill  -SIGSEGV a_child_process_id
      ls /var/coredumps #check file listed
@@ -64,7 +80,7 @@ https://support.plesk.com/hc/en-us/articles/213366549-How-to-enable-core-dumps-f
 Following are the detailed steps (take apache2 on Ubuntu as example):
 1. Follow the same step 1-2 with php-fpm above to set up the dump file directory.
 2. For systemd systems, create a new unit file using the command:
-```bash 
+```
 systemctl edit apache2
 ```
 and add the following lines:
