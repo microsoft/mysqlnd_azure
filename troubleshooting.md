@@ -1,14 +1,14 @@
-# Trouble shooting
+# Troubleshooting
 
 ## Possible FAQs
-1.  How to make sure my web page with this extension use redirection when connect to Azure MySQL?  
+1. How to ensure my application uses redirection with this extension to connect to Azure Database for MySQL?
 
 Answer:  Set mysqlnd_azure.enableRedirect=on   The option value "on" will enforce redirection and return error if the configuration is wrong, e.g. the connection is not configured with SSL.
 
 2. How to verify the connection is currently using redirection?
 
-Answer:  For mysqli interface, check the host_info property of the connection object. For PDO interface, check the PDO::ATTR_CONNECTION_STATUS attribute.
-If the connection is using redirection, the content will be different from the host info you  used to connect. Otherwise, it should contains the same value.
+Answer:  For mysqli interface, check the "host_info" property of the connection object. For PDO interface, check the "PDO::ATTR_CONNECTION_STATUS" attribute.
+If the connection is using redirection, the content will be different from the host info you used to connect. Otherwise, it should contains the same value.
 
 ## PHP related crash problem with this extension
 
