@@ -12,7 +12,7 @@ If the connection is using redirection, the content will be different from the h
 
 ## PHP related crash problem with this extension
 
-If there is PHP related crash problem with this extension, you can follow following steps for initial trouble shooting:
+If there is PHP related crash problem with this extension, you can follow following steps for initial troubleshooting:
 
 1. Check the configuration of option mysqlnd_azure.enableRedirect.
 
