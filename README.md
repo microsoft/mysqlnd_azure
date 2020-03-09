@@ -213,3 +213,6 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 	$db->close();
   }
 ```
+
+## Troubleshooting
+If you encounter problem like how to ensure redirection or PHP crash when using this extension, you may follow the steps described in [troubleshooting.md](/troubleshooting.md) for initial troubleshooting.
