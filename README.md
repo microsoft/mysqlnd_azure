@@ -34,7 +34,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 <td>on(1)</td>
 <td>  - If SSL is off, no connection will be made, return error:
 	<i>"mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."</i></br>
-      - If on server side redirection is not supported, abort the first connection and return error: <i>"Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."</i></br>
+      - If on server side redirection is not supported, abort the first connection and return error: <i>"Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet redirection protocol."</i></br>
       - If server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
 </td> 
 </tr>
