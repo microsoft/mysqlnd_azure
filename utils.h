@@ -41,4 +41,17 @@ extern FILE *logfile;
     }                                                                         \
   } while (0)
 
+#define AZURE_LOG_SYS(format, ...)                                            \
+  do {                                                                        \
+    if (MYSQLND_AZURE_G(logLevel) != 0 && logfile != NULL) {                  \
+      time_t now = time(NULL);                                                \
+      char timestr[20];                                                       \
+      strftime(timestr, 20, TIME_FORMAT, localtime(&now));                    \
+      fprintf(logfile, " %s [SYSTM] " format "\n", timestr,                   \
+                              ## __VA_ARGS__);                                \
+      fflush(logfile);                                                        \
+    }                                                                         \
+  } while (0)
+
+
 #endif // UTILS_H

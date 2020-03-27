@@ -711,24 +711,6 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 }
 /* }}} */
 
-
-/* {{{ mysqlnd_azure_minit_register_hooks */
-void mysqlnd_azure_minit_register_hooks()
-{
-    mysqlnd_azure_plugin_id = mysqlnd_plugin_register();
-
-    conn_m = mysqlnd_conn_get_methods();
-    memcpy(&org_conn_m, conn_m, sizeof(struct st_mysqlnd_conn_methods));
-
-    conn_d_m = mysqlnd_conn_data_get_methods();
-    memcpy(&org_conn_d_m, conn_d_m, sizeof(struct st_mysqlnd_conn_data_methods));
-
-    conn_m->connect = MYSQLND_METHOD(mysqlnd_azure, connect);
-    conn_d_m->connect = MYSQLND_METHOD(mysqlnd_azure_data, connect);
-}
-
-/* }}} */
-
 /* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init*/
 int mysqlnd_azure_apply_resources() {
   if (MYSQLND_AZURE_G(logLevel) > 0) {
@@ -749,4 +731,21 @@ int mysqlnd_azure_release_resources() {
   }
   return 0;
 }
+/* }}} */
+
+/* {{{ mysqlnd_azure_minit_register_hooks */
+void mysqlnd_azure_minit_register_hooks()
+{
+    mysqlnd_azure_plugin_id = mysqlnd_plugin_register();
+
+    conn_m = mysqlnd_conn_get_methods();
+    memcpy(&org_conn_m, conn_m, sizeof(struct st_mysqlnd_conn_methods));
+
+    conn_d_m = mysqlnd_conn_data_get_methods();
+    memcpy(&org_conn_d_m, conn_d_m, sizeof(struct st_mysqlnd_conn_data_methods));
+
+    conn_m->connect = MYSQLND_METHOD(mysqlnd_azure, connect);
+    conn_d_m->connect = MYSQLND_METHOD(mysqlnd_azure_data, connect);
+}
+
 /* }}} */

@@ -60,6 +60,11 @@ static ZEND_INI_MH(OnUpdateEnableLogfile) {
 }
 
 static ZEND_INI_MH(OnUpdateEnableLogLevel) {
+  // Loglevel is a PHP_INI_ALL variable,
+  // every time it changed will be logged (unless it is 0 now)
+  AZURE_LOG_SYS("mysqlnd_azure.logLevel changed: %d -> %d",
+      MYSQLND_AZURE_G(logLevel), atoi(ZSTR_VAL(new_value)));
+
   if (STRING_EQUALS(new_value, "3")) {
     MYSQLND_AZURE_G(logLevel) = 3;
   } else if (STRING_EQUALS(new_value, "2")) {
@@ -76,7 +81,7 @@ static ZEND_INI_MH(OnUpdateEnableLogLevel) {
 /* {{{ PHP_INI */
 PHP_INI_BEGIN()
 STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "preferred", PHP_INI_ALL, OnUpdateEnableRedirect, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
-STD_PHP_INI_ENTRY("mysqlnd_azure.logfilePath", "mysqlnd_azure_runtime.log", PHP_INI_ALL, OnUpdateEnableLogfile, logfilePath, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
+STD_PHP_INI_ENTRY("mysqlnd_azure.logfilePath", "mysqlnd_azure_runtime.log", PHP_INI_SYSTEM, OnUpdateEnableLogfile, logfilePath, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 STD_PHP_INI_ENTRY("mysqlnd_azure.logLevel", 0, PHP_INI_ALL, OnUpdateEnableLogLevel, logLevel, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 PHP_INI_END()
 /* }}} */
@@ -89,8 +94,6 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
 #endif
     mysqlnd_azure_globals->enableRedirect = REDIRECT_PREFERRED;
     mysqlnd_azure_globals->redirectCache = NULL;
-    char *tmp = "mysqlnd_azure_runtime.log";
-    mysqlnd_azure_globals->logfilePath = zend_string_init(tmp, strlen(tmp), 0);
     mysqlnd_azure_globals->logLevel = 0;
 }
 /* }}} */
@@ -103,7 +106,6 @@ static PHP_GSHUTDOWN_FUNCTION(mysqlnd_azure)
         mnd_pefree(mysqlnd_azure_globals->redirectCache, 1);
         mysqlnd_azure_globals->redirectCache = NULL;
     }
-    zend_string_release(mysqlnd_azure_globals->logfilePath);
 }
 /* }}} */
 
@@ -125,9 +127,9 @@ static PHP_MINIT_FUNCTION(mysqlnd_azure)
  */
 static PHP_MSHUTDOWN_FUNCTION(mysqlnd_azure)
 {
-    UNREGISTER_INI_ENTRIES();
-
     mysqlnd_azure_release_resources();
+
+    UNREGISTER_INI_ENTRIES();
 
     return SUCCESS;
 }
