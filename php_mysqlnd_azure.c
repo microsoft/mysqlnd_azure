@@ -23,6 +23,7 @@
 #include "php.h"
 #include "mysqlnd_azure.h"
 #include "php_mysqlnd_azure.h"
+#include "utils.h"
 #include "ext/mysqlnd/mysqlnd_ext_plugin.h"
 #include "ext/standard/info.h"
 
@@ -76,7 +77,7 @@ static ZEND_INI_MH(OnUpdateEnableLogLevel) {
 PHP_INI_BEGIN()
 STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "preferred", PHP_INI_ALL, OnUpdateEnableRedirect, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 STD_PHP_INI_ENTRY("mysqlnd_azure.logfilePath", "mysqlnd_azure_runtime.log", PHP_INI_ALL, OnUpdateEnableLogfile, logfilePath, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
-STD_PHP_INI_ENTRY("mysqlnd_azure.logLevel", "0", PHP_INI_ALL, OnUpdateEnableLogLevel, logLevel, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
+STD_PHP_INI_ENTRY("mysqlnd_azure.logLevel", 0, PHP_INI_ALL, OnUpdateEnableLogLevel, logLevel, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 PHP_INI_END()
 /* }}} */
 
@@ -88,7 +89,8 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
 #endif
     mysqlnd_azure_globals->enableRedirect = REDIRECT_PREFERRED;
     mysqlnd_azure_globals->redirectCache = NULL;
-    mysqlnd_azure_globals->logfilePath = "mysqlnd_azure_runtime.log";
+    char *tmp = "mysqlnd_azure_runtime.log";
+    mysqlnd_azure_globals->logfilePath = zend_string_init(tmp, strlen(tmp), 0);
     mysqlnd_azure_globals->logLevel = 0;
 }
 /* }}} */
@@ -101,6 +103,7 @@ static PHP_GSHUTDOWN_FUNCTION(mysqlnd_azure)
         mnd_pefree(mysqlnd_azure_globals->redirectCache, 1);
         mysqlnd_azure_globals->redirectCache = NULL;
     }
+    zend_string_release(mysqlnd_azure_globals->logfilePath);
 }
 /* }}} */
 
@@ -113,6 +116,8 @@ static PHP_MINIT_FUNCTION(mysqlnd_azure)
   /* register mysqlnd plugin */
   mysqlnd_azure_minit_register_hooks();
 
+  mysqlnd_azure_apply_resources();
+
   return SUCCESS;
 }
 
@@ -122,6 +127,8 @@ static PHP_MSHUTDOWN_FUNCTION(mysqlnd_azure)
 {
     UNREGISTER_INI_ENTRIES();
 
+    mysqlnd_azure_release_resources();
+
     return SUCCESS;
 }
 
@@ -129,9 +136,14 @@ static PHP_MSHUTDOWN_FUNCTION(mysqlnd_azure)
  */
 PHP_MINFO_FUNCTION(mysqlnd_azure)
 {
+
     php_info_print_table_start();
     php_info_print_table_header(2, "mysqlnd_azure", "enableRedirect");
     php_info_print_table_row(2, "enableRedirect", MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF ? "off" : (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON ? "on" : "preferred"));
+    php_info_print_table_row(2, "logfilePath", ZSTR_VAL(MYSQLND_AZURE_G(logfilePath)));
+    char tmp[2];
+    sprintf(tmp, "%d", MYSQLND_AZURE_G(logLevel));
+    php_info_print_table_row(2, "logLevel", tmp);
     php_info_print_table_end();
 }
 /* }}} */

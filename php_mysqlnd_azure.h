@@ -43,8 +43,8 @@ ZEND_BEGIN_MODULE_GLOBALS(mysqlnd_azure)
     mysqlnd_azure_redirect_mode     enableRedirect;
     HashTable*                      redirectCache;
     // TODO: restrict string length
-    zend_string* logfilePath;
-    int logLevel;
+    zend_string*                    logfilePath;
+    int                             logLevel;
 ZEND_END_MODULE_GLOBALS(mysqlnd_azure)
 
 PHPAPI ZEND_EXTERN_MODULE_GLOBALS(mysqlnd_azure)

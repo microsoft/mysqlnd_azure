@@ -5,32 +5,40 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include "php_mysqlnd_azure.h"
+
 extern FILE *logfile;
 #define TIME_FORMAT "%Y-%m-%d %H:%M:%S"
 
-#define OPEN_LOGFILE(filename) \
-  do {\
-    if (filename != NULL) {\
-      logfile = fopen(filename, "a"); \
-    }\
+// Azure Log Levels, 1(ERROR), 2(INFO), 3(DEBUG)
+#define ALOGERR  1
+#define ALOGINFO 2
+#define ALOGDBG  3
+
+#define OPEN_LOGFILE(filename)                                                \
+  do {                                                                        \
+    if (filename != NULL) {                                                   \
+      logfile = fopen(filename, "a");                                         \
+    }                                                                         \
   } while (0)
 
-#define CLOSE_LOGFILE() \
-  do {\
-    if (logfile != NULL) { \
-      fclose(logfile);\
+#define CLOSE_LOGFILE()                                                       \
+  do {                                                                        \
+    if (logfile != NULL) {                                                    \
+      fclose(logfile);                                                        \
     } } while (0)
 
-#define AZURE_LOG(level, format, ...) \
-  do { \
-    if (logfile != NULL) { \
-      time_t now = time(NULL); \
-      char timestr[20];\
-      strftime(timestr, 20, TIME_FORMAT, localtime(&now)); \
-      fprintf(logfile, " %s [" level "] " format "\n", timestr, \
-                              ## __VA_ARGS__);        \
-      fflush(logfile); \
-    } \
+#define AZURE_LOG(level, format, ...)                                         \
+  do {                                                                        \
+    if (logfile != NULL && level <= MYSQLND_AZURE_G(logLevel)) {              \
+      time_t now = time(NULL);                                                \
+      char timestr[20];                                                       \
+      char *levelstr = level == 1 ? "ERROR" : level == 2 ? "INFO " : "DEBUG"; \
+      strftime(timestr, 20, TIME_FORMAT, localtime(&now));                    \
+      fprintf(logfile, " %s [%s] " format "\n", timestr, levelstr,            \
+                              ## __VA_ARGS__);                                \
+      fflush(logfile);                                                        \
+    }                                                                         \
   } while (0)
 
 #endif // UTILS_H
