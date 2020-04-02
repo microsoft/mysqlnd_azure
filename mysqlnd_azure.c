@@ -714,10 +714,26 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 /* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init*/
 int mysqlnd_azure_apply_resources() {
   if (MYSQLND_AZURE_G(logLevel) > 0) {
-    char *logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
+    char *logfilePath = NULL;
+    int logflag = 0;
+    if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 155) {
+      logflag = 1;
+      logfilePath = "mysqlnd_azure_runtime.log";
+    } else {
+      logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
+    }
+
     OPEN_LOGFILE(logfilePath);
 
-    if (logfile == NULL) return 1;
+    if (logflag) {
+      php_error_docref(NULL, E_WARNING, "Logfile string length exceeds 255, redirected to mysqlnd_azure_runtime.log");
+      AZURE_LOG_SYS("Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log");
+    }
+
+    if (logfile == NULL) {
+      php_error_docref(NULL, E_WARNING, "Unable to open log file: %s", logfilePath);
+      return 1;
+    }
   }
   return 0;
 }

@@ -45,6 +45,7 @@
    <file md5sum="81379d753b8268922e3e3dd8c11c803c" name="redirect_cache.c" role="src" />
    <file md5sum="f6ce2d3ccfaa1d8e53196f9df9043b35" name="mysqlnd_azure.h" role="src" />
    <file md5sum="207e117afe26f28a75d83776e88d7ee0" name="php_mysqlnd_azure.h" role="src" />
+   <file md5sum="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" name="utils.h" role="src" />
    <file md5sum="1d60dd2a72d2d9a325e68070b7fd0fbf" name="tests/mysqli_azure_redirection_on.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_off.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_preferred.phpt" role="test" />
