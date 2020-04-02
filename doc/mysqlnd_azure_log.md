@@ -11,10 +11,7 @@ Type | String
 Accepted Value | String length <= 255, legal filename string
 Default | mysqlnd\_azure\_runtime.log
 Dynamic | NO
-Note | 1. This variable was inited at PHP Module Init (MINIT) period, and immutable at runtime. a call of
-`ini\_set('mysqlnd\_azure.logLevel', '$VAL'); ` would fail. <br> 2. Filename length cannot exceed the file system's
-restriction(155), otherwise system will use the default filename and throw a warning "Given logfile name too long,
-redirected to default: mysqlnd\_azure\_runtime.log"
+Note | 1. This variable was inited at PHP Module Init (MINIT) period, and immutable at runtime. a call of `ini_set('mysqlnd_azure.logLevel', '$VAL'); ` would fail. <br> 2. Filename length cannot exceed the file system's restriction(155), otherwise system will use the default filename and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log"
 
 
 Name | mysqlnd\_azure.logLevel
@@ -24,7 +21,7 @@ Type | Enumeration
 Accepted Value | [ 0 \| 1 \| 2 \| 3 ]
 Default | 0 (OFF)
 Dynamic | Yes
-Note | 1. When the current `mysqlnd\_azure.logLevel > 0`, change logLevel at runtime will be logged.
+Note | 1. When the current `mysqlnd_azure.logLevel > 0`, change logLevel at runtime will be logged.
 
 ### Loglevel supported
 we support 3 level of logs for user:
@@ -40,12 +37,12 @@ we support 3 level of logs for user:
   1. any operation may cause customer see connection break (e.x. original conn/ redirected\_conn
     established failed, ... and connection fall back when mysqlnd\_azure.enableRedirection = ON)
 
-> [SYSTM], not a level for user. Logs for Azuer MySQLND Log Module, when current
-> `mysqlnd\_azure.logLevel > 0`, any operation related to log system itself will be logged.
-> For example, if someone call  `ini\_set('mysqlnd\_azure.logLevel', '2');` at runtime, there
+> [SYSTM] maked log rows for Azure mysqlnd Log Module itself, when current
+> `mysqlnd_azure.logLevel > 0`, any operation related to log system itself will be logged.
+> For example, if someone call  `ini_set('mysqlnd_azure.logLevel', '2');` at runtime, there
 > may appear a log like 
 > ```
-> 2020-03-27 09:09:05 [SYSTM] mysqlnd\_azure.logLevel changed: 3 -> 2
+> 2020-03-27 09:09:05 [SYSTM] mysqlnd_azure.logLevel changed: 3 -> 2
 > ```
 
 
@@ -62,10 +59,10 @@ we support 3 level of logs for user:
 > You can add to section [mysqlnd\_azure] in file `php.ini`
 
 ```
-[mysqlnd\_azure]
-mysqlnd\_azure.enableRedirect = 2
-mysqlnd\_azure.logfilePath = "test.log"
-mysqlnd\_azure.logLevel = 3
+[mysqlnd_azure]
+mysqlnd_azure.enableRedirect = 2
+mysqlnd_azure.logfilePath = "test.log"
+mysqlnd_azure.logLevel = 3
 ```
 
 ### phpinfo() / php -i
@@ -74,9 +71,9 @@ After successfully configured, try `php -i`, there will be var:val pairs listed 
 mysqlnd\_azure section, like:
 
 ```
-mysqlnd\_azure
+mysqlnd_azure
 
-mysqlnd\_azure => enableRedirect
+mysqlnd_azure => enableRedirect
 enableRedirect => preferred
 logfilePath => santotest.log
 logLevel => 3
