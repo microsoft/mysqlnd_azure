@@ -213,3 +213,6 @@ After this, the code directory should look like C:\php-sdk\phpdev\vc15\x64\php-s
 	$db->close();
   }
 ```
+
+### Diagnostic Log for mysqlnd\_azure
+[Configuration to get more runtime logs](doc/mysqlnd_azure_log.md)
