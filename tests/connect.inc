@@ -14,7 +14,7 @@
     $passwd    = getenv("MYSQL_TEST_PASSWD")   ? getenv("MYSQL_TEST_PASSWD") : "";
     $db        = getenv("MYSQL_TEST_DB")       ? getenv("MYSQL_TEST_DB") : NULL;
     $engine    = getenv("MYSQL_TEST_ENGINE")   ? getenv("MYSQL_TEST_ENGINE") : "InnoDB";
-    $pdo_dsn        = getenv("PDO_MYSQL_TEST_DSN")   ? getenv("PDO_MYSQL_TEST_DSN") : "mysql:host=".$host.";dbname=".$db;
+    $pdo_dsn        = getenv("PDO_MYSQL_TEST_DSN")   ? getenv("PDO_MYSQL_TEST_DSN") : "mysql:host=localhost;dbname=";
     $ssl_cert_file  = getenv("MYSQL_SSL_CERT_FILE")   ? getenv("MYSQL_SSL_CERT_FILE") : NULL;
 
     $IS_MYSQLND = stristr(mysqli_get_client_info(), "mysqlnd");
