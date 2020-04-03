@@ -49,6 +49,7 @@
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_off.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_preferred.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_option_test.phpt" role="test" />   
+   <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_option_test_collect_memory_statistics.phpt" role="test" />
    <file md5sum="271878ad9afcd0f4304529ff9522e034" name="tests/connect.inc" role="test" />
    <file md5sum="d621e9a3ad808225480ee11b361338ad" name="tests/skipif.inc" role="test" />
    <file md5sum="841204de228db4ea0150bf7289956163" name="tests/skipif_mysqli.inc" role="test" />

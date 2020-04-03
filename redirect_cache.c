@@ -70,7 +70,7 @@ enum_func_status mysqlnd_azure_add_redirect_cache(const char* user, const char* 
         return FAIL;
     }
 
-    MYSQLND_AZURE_REDIRECT_INFO* redirect_info = pemalloc(sizeof(MYSQLND_AZURE_REDIRECT_INFO), 1);
+    MYSQLND_AZURE_REDIRECT_INFO* redirect_info = mnd_pemalloc(sizeof(MYSQLND_AZURE_REDIRECT_INFO), 1);
     if(redirect_info == NULL) {
         return FAIL;
     }
