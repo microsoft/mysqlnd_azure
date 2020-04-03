@@ -11,7 +11,7 @@ Type | String
 Accepted Value | String length <= 255, legal filename string
 Default | mysqlnd\_azure\_runtime.log
 Dynamic | NO
-Note | 1. This variable was inited at PHP Module Init (MINIT) period, and immutable at runtime. a call of `ini_set('mysqlnd_azure.logLevel', '$VAL'); ` would fail. <br> 2. Filename length cannot exceed the file system's restriction(155), otherwise system will use the default filename and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log"
+Note | 1. This variable was inited at PHP Module Init (MINIT) period, and immutable at runtime. a call of `ini_set('mysqlnd_azure.logLevel', '$VAL'); ` would fail. <br> 2. Filename length cannot exceed the file system's restriction(255), otherwise system will use the default filename and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log"
 
 
 Name | mysqlnd\_azure.logLevel
