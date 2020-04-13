@@ -4,7 +4,7 @@ new mysqli()
 <?php
 require_once('skipif.inc');
 require_once('skipifemb.inc');
-require_once('skipifconnectfailure.inc');
+require_once('skipif_mysqli.inc');
 ?>
 --FILE--
 <?php
@@ -111,14 +111,17 @@ require_once('skipifconnectfailure.inc');
 		if (!$res = $mysqli->query("SELECT 1"))
 			printf("[009] [%d] %s\n", $mysqli->errno, $mysqli->error);
 		$res->free_result();
-
 		if (!$res = $mysqli->query("SELECT SUBSTRING_INDEX(USER(),'@',1) AS username"))
 			printf("[010] [%d] %s\n", $mysqli->errno, $mysqli->error);
 
 		$tmp = $res->fetch_assoc();
 		$res->free_result();
-		if ($tmp['username'] !== $user)
-			printf("[011] Expecting string/%s, got %s/%s\n", $user, gettype($tmp['username']), $tmp['username']);
+        
+        require_once("convert_username_format.php");
+        #Azure  Expecting user cloudsa@qibu-unittest-57, got user() cloudsa
+        $realUser = get_real_username($user);
+		if ($tmp['username'] !== $realUser)
+			printf("[011] Expecting string/%s, got %s/%s\n", $realUser, gettype($tmp['username']), $tmp['username']);
 
 		$mysqli->close();
 

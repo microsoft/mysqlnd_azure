@@ -9,6 +9,9 @@ require_once('skipif_mysqli.inc');
 --FILE--
 <?php
 	require_once("connect.inc");
+    require_once("convert_username_format.php");
+    #Azure  The server name you tried cannot be found. Please use the correct name and retry
+    $user = convert_username_format($user);
 
 	$tmp    = NULL;
 	$link   = NULL;

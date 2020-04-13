@@ -4,7 +4,7 @@ mysqli_real_connect() - persistent connections
 <?php
 require_once('skipif.inc');
 require_once('skipifemb.inc');
-require_once('skipifconnectfailure.inc');
+require_once('skipif_mysqli.inc');
 require_once('connect.inc');
 if (!$IS_MYSQLND)
 	die("skip mysqlnd only test");
@@ -16,6 +16,9 @@ mysqli.max_persistent=10
 <?php
 	require_once("connect.inc");
 	$host = 'p:' . $host;
+    //The server name you tried cannot be found. Please use the correct name and retry.
+    require_once("convert_username_format.php");
+    $user = convert_username_format($user);
 
 	if (!$link = mysqli_init())
 		printf("[002] mysqli_init() failed\n");

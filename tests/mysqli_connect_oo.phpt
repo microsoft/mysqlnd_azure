@@ -4,11 +4,14 @@ new mysqli()
 <?php
 require_once('skipif.inc');
 require_once('skipifemb.inc');
-require_once('skipifconnectfailure.inc');
+require_once('skipif_mysqli.inc');
 ?>
 --FILE--
 <?php
 	require_once("connect.inc");
+    #Azure  The server name you tried cannot be found. Please use the correct name and retry
+    require_once("convert_username_format.php");
+    $user = convert_username_format($user);
 
 	$tmp    = NULL;
 	$link   = NULL;

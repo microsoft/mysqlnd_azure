@@ -65,14 +65,11 @@ require_once('skipif_mysqli.inc');
 	$tmp = mysqli_fetch_assoc($res);
 	mysqli_free_result($res);
 
+    require_once("convert_username_format.php");
     #Azure  Expecting user cloudsa@qibu-unittest-57, got user() cloudsa@40.113.230.136
-    $realUser = $user;
-    if (strpos($user, "@") !== false) {
-        $realUser = explode("@", $user)[0];
-    } else if (strpos($user, "%") != false) {
-        $realUser = explode("%", $user)[1];
-    }
-	if (strpos($tmp['user'], $realUser) !== true)
+    $realUser = get_real_username($user);
+    $returnUser = get_real_username($tmp['user']);
+	if (strcmp($returnUser, $realUser) !== 0)
 		printf("[015] Expecting user %s, got user() %s\n", $realUser, $tmp['user']);
 	if ($tmp['dbname'] != $db)
 		printf("[016] Expecting database %s, got database() %s\n", $db, $tmp['dbname']);
@@ -137,8 +134,9 @@ require_once('skipif_mysqli.inc');
 	$tmp = mysqli_fetch_assoc($res);
 	mysqli_free_result($res);
 
-	if (substr($tmp['user'], 0, strlen($user)) !== $user)
-		printf("[025] Expecting user %s, got user() %s\n", $user, $tmp['user']);
+    $returnUser2 = get_real_username($tmp['user']);
+	if (strcmp($realUser, $returnUser2) !== 0)
+		printf("[025] Expecting user %s, got user() %s\n", $realUser, $tmp['user']);
 	if ($tmp['dbname'] != $db)
 		printf("[026] Expecting database %s, got database() %s\n", $db, $tmp['dbname']);
 
