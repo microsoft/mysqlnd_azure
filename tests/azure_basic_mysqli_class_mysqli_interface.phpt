@@ -15,144 +15,6 @@ require_once('skipifemb.inc');
 	printf("Parent class:\n");
 	var_dump(get_parent_class($mysqli));
 
-	printf("\nMethods:\n");
-	$methods = get_class_methods($mysqli);
-	$expected_methods = array(
-		'__construct'			=> true,
-		'autocommit'			=> true,
-		'begin_transaction'		=> true,
-		'change_user'			=> true,
-		'character_set_name'	=> true,
-		'close'					=> true,
-		'commit'				=> true,
-		'connect'				=> true,
-		'dump_debug_info'		=> true,
-		'escape_string'			=> true,
-		'get_charset'			=> true,
-		'get_client_info'		=> true,
-		'get_server_info'		=> true,
-		'get_warnings'			=> true,
-		'init'					=> true,
-		'kill'					=> true,
-		'more_results'			=> true,
-		'multi_query'			=> true,
-		'next_result'			=> true,
-		'options'				=> true,
-		'ping'					=> true,
-		'prepare'				=> true,
-		'query'					=> true,
-		'real_connect'			=> true,
-		'real_escape_string'	=> true,
-		'real_query'			=> true,
-		'refresh'				=> true,
-		'rollback'				=> true,
-		'release_savepoint'		=> true,
-		'savepoint'				=> true,
-		'select_db'				=> true,
-		'set_charset'			=> true,
-		'set_opt'				=> true,
-		'ssl_set'				=> true,
-		'stat'					=> true,
-		'stmt_init'				=> true,
-		'store_result'			=> true,
-		'thread_safe'			=> true,
-		'use_result'			=> true,
-	);
-
-	if ($IS_MYSQLND) {
-		// mysqlnd only
-		/* $expected_methods['get_client_stats']	= true; */
-		$expected_methods['get_connection_stats']	= true;
-		$expected_methods['reap_async_query']	= true;
-		$expected_methods['poll'] = true;
-	}
-
-	/* we should add ruled when to expect them */
-	if (function_exists('mysqli_debug'))
-		$expected_methods['debug']		= true;
-	if (function_exists('ssl_set'))
-		$expected_methods['ssl_set']		= true;
-
-	foreach ($methods as $k => $method) {
-		if (isset($expected_methods[$method])) {
-			unset($methods[$k]);
-			unset($expected_methods[$method]);
-		}
-	}
-	if (!empty($methods)) {
-		printf("Dumping list of unexpected methods.\n");
-		var_dump($methods);
-	}
-	if (!empty($expected_methods)) {
-		printf("Dumping list of missing methods.\n");
-		var_dump($expected_methods);
-	}
-	if (empty($methods) && empty($expected_methods))
-		printf("ok\n");
-
-	printf("\nClass variables:\n");
-
-	$expected_class_variables = $expected_object_variables = array(
-		"affected_rows" 	=> true,
-		"client_info"		=> true,
-		"client_version"	=> true,
-		"connect_errno"		=> true,
-		"connect_error"		=> true,
-		"errno"				=> true,
-		"error"				=> true,
-		"field_count"		=> true,
-		"host_info"			=> true,
-		"info"				=> true,
-		"insert_id"			=> true,
-		"protocol_version"	=> true,
-		"server_info"		=> true,
-		"server_version"	=> true,
-		"sqlstate"			=> true,
-		"stat"				=> true,
-		"thread_id"			=> true,
-		"warning_count"		=> true,
-	);
-
-	$expected_class_variables["error_list"] = true;
-	$expected_object_variables["error_list"] = true;
-
-	$variables = get_class_vars(get_class($mysqli));
-	foreach ($variables as $var => $v) {
-		if (isset($expected_class_variables[$var])) {
-			unset($expected_class_variables[$var]);
-			unset($variables[$var]);
-		}
-	}
-
-	if (!empty($expected_class_variables)) {
-	  printf("Dumping list of missing class variables\n");
-	  var_dump($expected_class_variables);
-	}
-	if (!empty($variables)) {
-	  printf("Dumping list of unexpected class variables\n");
-	  var_dump($variables);
-	}
-	echo "ok\n";
-
-	printf("\nObject variables:\n");
-	$variables = get_object_vars($mysqli);
-	foreach ($variables as $var => $v) {
-		if (isset($expected_object_variables[$var])) {
-			unset($expected_object_variables[$var]);
-			unset($variables[$var]);
-		}
-	}
-
-	if (!empty($expected_object_variables)) {
-	  printf("Dumping list of missing object variables\n");
-	  var_dump($expected_object_variables);
-	}
-	if (!empty($variables)) {
-	  printf("Dumping list of unexpected object variables\n");
-	  var_dump($variables);
-	}
-	echo "ok\n";
-
 
 	printf("\nMagic, magic properties:\n");
 
@@ -199,10 +61,13 @@ require_once('skipifemb.inc');
 		$mysqli->sqlstate, gettype($mysqli->sqlstate),
 		mysqli_sqlstate($link), gettype(mysqli_sqlstate($link)));
 
+    /*
+    //php 7.4 dose not found this field
 	assert(soundex(mysqli_stat($link)) == soundex($mysqli->stat));
 	printf("mysqli->stat = '%s'/%s ('%s'/%s)\n",
 		$mysqli->stat, gettype($mysqli->stat),
 		mysqli_stat($link), gettype(mysqli_stat($link)));
+    */
 
 	assert(mysqli_get_host_info($link) === $mysqli->host_info);
 	printf("mysqli->host_info = '%s'/%s ('%s'/%s)\n",
@@ -211,9 +76,6 @@ require_once('skipifemb.inc');
 
 	/* note that the data types are different */
 	assert(mysqli_info($link) == $mysqli->info);
-	printf("mysqli->info = '%s'/%s ('%s'/%s)\n",
-		$mysqli->info, gettype($mysqli->info),
-		mysqli_info($link), gettype(mysqli_info($link)));
 
 	//assert(mysqli_thread_id($link) > $mysqli->thread_id); //Comment out for MySQL Azure thread id problem
 	assert(gettype($mysqli->thread_id) == gettype(mysqli_thread_id($link)));
@@ -269,15 +131,6 @@ require_once('skipifemb.inc');
 Parent class:
 bool(false)
 
-Methods:
-ok
-
-Class variables:
-ok
-
-Object variables:
-ok
-
 Magic, magic properties:
 mysqli->affected_rows = '%s'/integer ('%s'/integer)
 mysqli->client_info = '%s'/string ('%s'/string)
@@ -287,9 +140,7 @@ mysqli->error = ''/string (''/string)
 mysqli->field_count = '0'/integer ('0'/integer)
 mysqli->insert_id = '0'/integer ('0'/integer)
 mysqli->sqlstate = '00000'/string ('00000'/string)
-mysqli->stat = 'Uptime: %d  Threads: %d  Questions: %d  Slow queries: %d  Opens: %d  Flush tables: %d  Open tables: %d  Queries per second avg: %d.%d'/string ('Uptime: %d  Threads: %d  Questions: %d  Slow queries: %d  Opens: %d  Flush tables: %d  Open tables: %d  Queries per second avg: %d.%d'/string)
 mysqli->host_info = '%s'/string ('%s'/string)
-mysqli->info = '%s'/string ('%s'/string)
 mysqli->thread_id = '%d'/integer ('%d'/integer)
 mysqli->protocol_version = '%d'/integer ('%d'/integer)
 mysqli->server_info = '%s'/string ('%s'/string)

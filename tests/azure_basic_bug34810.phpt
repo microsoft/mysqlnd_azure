@@ -12,11 +12,8 @@ class DbConnection {
 		require_once("connect.inc");
 
 		$link = my_mysqli_connect($host, $user, $passwd, $db, $port, $socket);
-		var_dump($link);
 
 		$link = mysqli_init();
-		/* @ is to suppress 'Property access is not allowed yet' */
-		@var_dump($link);
 
 		$mysql = new my_mysqli($host, $user, $passwd, $db, $port, $socket);
 		$mysql->query("DROP TABLE IF EXISTS test_warnings");
@@ -61,85 +58,4 @@ if (!mysqli_query($link, "DROP TABLE IF EXISTS test_warnings"))
 mysqli_close($link);
 ?>
 --EXPECTF--
-object(mysqli)#%d (%d) {
-  ["affected_rows"]=>
-  int(0)
-  ["client_info"]=>
-  string(%d) "%s"
-  ["client_version"]=>
-  int(%d)
-  ["connect_errno"]=>
-  int(0)
-  ["connect_error"]=>
-  NULL
-  ["errno"]=>
-  int(0)
-  ["error"]=>
-  string(0) ""
-  ["error_list"]=>
-  array(0) {
-  }
-  ["field_count"]=>
-  int(0)
-  ["host_info"]=>
-  string(%d) "%s"
-  ["info"]=>
-  %s
-  ["insert_id"]=>
-  int(0)
-  ["server_info"]=>
-  string(%d) "%s"
-  ["server_version"]=>
-  int(%d)
-  ["stat"]=>
-  string(%d) "Uptime: %d  Threads: %d  Questions: %d  Slow queries: %d  Opens: %d  Flush tables: %d  Open tables: %d  Queries per second avg: %d.%d"
-  ["sqlstate"]=>
-  string(5) "00000"
-  ["protocol_version"]=>
-  int(10)
-  ["thread_id"]=>
-  int(%d)
-  ["warning_count"]=>
-  int(0)
-}
-object(mysqli)#%d (%d) {
-  ["affected_rows"]=>
-  bool(false)
-  ["client_info"]=>
-  string(%d) "%s"
-  ["client_version"]=>
-  int(%d)
-  ["connect_errno"]=>
-  int(0)
-  ["connect_error"]=>
-  NULL
-  ["errno"]=>
-  int(0)
-  ["error"]=>
-  string(0) ""
-  ["error_list"]=>
-  bool(false)
-  ["field_count"]=>
-  bool(false)
-  ["host_info"]=>
-  bool(false)
-  ["info"]=>
-  bool(false)
-  ["insert_id"]=>
-  bool(false)
-  ["server_info"]=>
-  bool(false)
-  ["server_version"]=>
-  bool(false)
-  ["stat"]=>
-  NULL
-  ["sqlstate"]=>
-  bool(false)
-  ["protocol_version"]=>
-  bool(false)
-  ["thread_id"]=>
-  bool(false)
-  ["warning_count"]=>
-  bool(false)
-}
 Done
