@@ -87,7 +87,7 @@
 		* @param enable_env_flags Enable setting of connection flags through 	env(MYSQL_TEST_CONNECT_FLAGS)?
 		*/
 		function my_mysqli_connect($host, $user, $passwd, $db, $port, $socket, $enable_env_flags = true) {
-			global $connect_flags;
+			$connect_flags = getenv("MYSQL_TEST_CONNECT_FLAGS") ? (int)getenv("MYSQL_TEST_CONNECT_FLAGS") : 0;
 
 			$flags = $enable_env_flags? $connect_flags:0;
 			if ($flags !== 0) {
@@ -107,7 +107,7 @@
 		* @param enable_env_flags Enable setting of connection flags through env(MYSQL_TEST_CONNECT_FLAGS)
 		*/
 		function my_mysqli_real_connect($link, $host, $user, $passwd, $db, $port, $socket, $flags = 0, $enable_env_flags = true) {
-			global $connect_flags;
+			$connect_flags = getenv("MYSQL_TEST_CONNECT_FLAGS") ? (int)getenv("MYSQL_TEST_CONNECT_FLAGS") : 0;
 
 			if ($enable_env_flags)
 				$flags = $flags | $connect_flags;
@@ -117,7 +117,7 @@
 
 		class my_mysqli extends mysqli {
 			public function __construct($host, $user, $passwd, $db, $port, $socket, $enable_env_flags = true) {
-				global $connect_flags;
+				$connect_flags = getenv("MYSQL_TEST_CONNECT_FLAGS") ? (int)getenv("MYSQL_TEST_CONNECT_FLAGS") : 0;
 
 				$flags = ($enable_env_flags) ? $connect_flags : 0;
 
