@@ -2,9 +2,8 @@
 Trying implicit reconnect after wait_timeout and KILL using mysqli_ping()
 --SKIPIF--
 <?php
-require_once('skipif.inc');
+require_once('skipif_azure_basic.inc');
 require_once('skipifemb.inc');
-require_once('skipifconnectfailure.inc');
 ?>
 --INI--
 mysqli.reconnect=0
@@ -12,13 +11,14 @@ mysqli.reconnect=0
 <?php
 	require_once("connect.inc");
 	require_once("table.inc");
+    require_once("utility.php");
 
 	if (!$link2 = my_mysqli_connect($host, $user, $passwd, $db, $port, $socket))
 		printf("[001] Cannot create second database connection, [%d] %s\n",
 			mysqli_connect_errno(), mysqli_connect_error());
 
-	$thread_id_timeout = mysqli_thread_id($link);
-	$thread_id_control = mysqli_thread_id($link2);
+	$thread_id_timeout = get_connectionId($link);
+	$thread_id_control = get_connectionId($link2);
 
 	if (!$res = mysqli_query($link2, "SHOW FULL PROCESSLIST"))
 		printf("[002] Cannot get full processlist, [%d] %s\n",
@@ -77,7 +77,7 @@ mysqli.reconnect=0
 		printf("[012] Cannot create database connection, [%d] %s\n",
 			mysqli_connect_errno(), mysqli_connect_error());
 
-	$thread_id_timeout = mysqli_thread_id($link);
+	$thread_id_timeout = get_connectionId($link);
 	/*
 	  Don't test for the mysqli_query() return value here.
 	  It is undefined if the server replies to the query and how.

@@ -2,10 +2,9 @@
 mysqli_poll() & INSERT SELECT
 --SKIPIF--
 <?php
-require_once('skipif.inc');
+require_once('skipif_azure_basic.inc');
 require_once('skipifemb.inc');
 require_once('connect.inc');
-require_once('skipifconnectfailure.inc');
 
 if (!$IS_MYSQLND)
 	die("skip mysqlnd only feature, compile PHP using --with-mysqli=mysqlnd");
@@ -13,20 +12,7 @@ if (!$IS_MYSQLND)
 --FILE--
 <?php
 	require_once('table.inc');
-    	require_once("connect.inc");
-        function get_connectionId($link) {
-          return spl_object_id($link);
-        if(!$res=$link->query("select connection_id() as thread_id;")) {
-            printf("[012] [%d] %s\n", mysqli_errno($link), mysqli_error($link));
-            $thread_id=0;
-        }
-        else {
-            $tmp = mysqli_fetch_assoc($res);
-            $thread_id = $tmp["thread_id"];
-            mysqli_free_result($res);
-        }
-        return intval($thread_id);
-    }
+    require_once("connect.inc");
 
 	function get_connection() {
 		global $host, $user, $passwd, $db, $port, $socket;
@@ -74,7 +60,7 @@ if (!$IS_MYSQLND)
 		// If your MySQL server is very slow the test may randomly fail!
 		usleep(20000);
 
-		$links[get_connectionId($link)] = array(
+		$links[spl_object_id($link)] = array(
 			'query' => $queries[$i],
 			'link' => $link,
 			'processed' => false,
@@ -84,7 +70,7 @@ if (!$IS_MYSQLND)
 	$saved_errors = array();
 	do {
 		$poll_links = $poll_errors = $poll_reject = array();
-		foreach ($links as $thread_id => $link) {
+		foreach ($links as $object_id => $link) {
 			if (!$link['processed']) {
 				$poll_links[] = $link['link'];
 				$poll_errors[] = $link['link'];
@@ -106,8 +92,8 @@ if (!$IS_MYSQLND)
 		}
 
 		foreach ($poll_links as $link) {
-			$thread_id = get_connectionId($link);
-			$links[$thread_id]['processed'] = true;
+			$object_id = spl_object_id($link);
+			$links[$object_id]['processed'] = true;
 
 			if (is_object($res = mysqli_reap_async_query($link))) {
 				// result set object
@@ -119,8 +105,8 @@ if (!$IS_MYSQLND)
 			} else {
 				// either there is no result (no SELECT) or there is an error
 				if (mysqli_errno($link) > 0) {
-					$saved_errors[$thread_id] = mysqli_errno($link);
-					printf("[003] '%s' caused %d\n", $links[$thread_id]['query'],	mysqli_errno($link));
+					$saved_errors[$object_id] = mysqli_errno($link);
+					printf("[003] '%s' caused %d\n", $links[$object_id]['query'],	mysqli_errno($link));
 				}
 			}
 		}
@@ -128,11 +114,11 @@ if (!$IS_MYSQLND)
 	} while (true);
 
 	// Checking if all lines are still usable
-	foreach ($links as $thread_id => $link) {
-		if (isset($saved_errors[$thread_id]) &&
-			$saved_errors[$thread_id] != mysqli_errno($link['link'])) {
+	foreach ($links as $object_id => $link) {
+		if (isset($saved_errors[$object_id]) &&
+			$saved_errors[$object_id] != mysqli_errno($link['link'])) {
 			printf("[004] Error state not saved for query '%s', %d != %d\n", $link['query'],
-					$saved_errors[$thread_id], mysqli_errno($link['link']));
+					$saved_errors[$object_id], mysqli_errno($link['link']));
 		}
 
 		if (!$res = mysqli_query($link['link'], 'SELECT * FROM test WHERE id = 100'))

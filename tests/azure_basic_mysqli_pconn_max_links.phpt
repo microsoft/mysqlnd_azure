@@ -2,9 +2,8 @@
 Persistent connections and mysqli.max_links
 --SKIPIF--
 <?php
-	require_once('skipif.inc');
+	require_once('skipif_azure_basic.inc');
 	require_once('skipifemb.inc');
-	require_once('skipifconnectfailure.inc');
 	require_once('table.inc');
 
 	mysqli_query($link, 'DROP USER pcontest');
@@ -47,6 +46,7 @@ mysqli.rollback_on_cached_plink=1
 <?php
 	require_once("connect.inc");
 	require_once('table.inc');
+    require_once("utility.php");
 
 
 	if (!mysqli_query($link, 'DROP USER pcontest') ||
@@ -104,7 +104,7 @@ mysqli.rollback_on_cached_plink=1
 		printf("[006] Cannot change PW of second DB user, [%d] %s\n", mysqli_errno($link), mysqli_error($link));
 
 	// persistent connections cannot be closed but only be killed
-	$pthread_id = mysqli_thread_id($plink);
+	$pthread_id = get_connectionId($plink);
 	if (!mysqli_query($link, sprintf('KILL %d', $pthread_id)))
 		printf("[007] Cannot KILL persistent connection of second DB user, [%d] %s\n", mysqli_errno($link), mysqli_error($link));
 	// give the server a second to really kill the thread

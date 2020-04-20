@@ -9,7 +9,7 @@ require_once('skipifemb.inc');
 <?php
 	include("connect.inc");
     //The server name you tried cannot be found. Please use the correct name and retry.
-    require_once("convert_username_format.php");
+    require_once("utility.php");
     $user = convert_username_format($user);
     
 	$tmp    = NULL;

@@ -16,7 +16,7 @@ mysqli.max_persistent=10
 	require_once("connect.inc");
 	$host = 'p:' . $host;
     //The server name you tried cannot be found. Please use the correct name and retry.
-    require_once("convert_username_format.php");
+    require_once("utility.php");
     $user = convert_username_format($user);
 
 	if (!$link = mysqli_init())

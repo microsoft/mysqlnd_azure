@@ -2,9 +2,8 @@
 Calling connect() on an open persistent connection to create a new persistent connection
 --SKIPIF--
 <?php
-require_once('skipif.inc');
+require_once('skipif_azure_basic.inc');
 require_once('skipifemb.inc');
-require_once('skipifconnectfailure.inc');
 ?>
 --INI--
 mysqli.allow_persistent=1
@@ -13,18 +12,7 @@ mysqli.max_links=-1
 --FILE--
 <?php
 	require_once("connect.inc");
-        function get_connectionId($link) {
-        if(!$res=$link->query("select connection_id() as thread_id;")) {
-            printf("[012] [%d] %s\n", mysqli_errno($link), mysqli_error($link));
-            $thread_id=0;
-        }
-        else {
-            $tmp = mysqli_fetch_assoc($res);
-            $thread_id = $tmp["thread_id"];
-            mysqli_free_result($res);
-        }
-        return intval($thread_id);
-    }
+    require_once("utility.php");
 
 	$phost = 'p:' . $host;
 

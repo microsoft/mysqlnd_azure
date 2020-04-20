@@ -2,9 +2,8 @@
 Killing a persistent connection.
 --SKIPIF--
 <?php
-require_once('skipif.inc');
+require_once('skipif_azure_basic.inc');
 require_once('skipifemb.inc');
-require_once('skipifconnectfailure.inc');
 require_once("connect.inc");
 ?>
 --INI--
@@ -14,6 +13,7 @@ mysqli.max_persistent=2
 <?php
 	require_once("connect.inc");
 	require_once("table.inc");
+    require_once("utility.php");
 
 	$host = 'p:' . $host;
 	if (!$plink = my_mysqli_connect($host, $user, $passwd, $db, $port, $socket))
@@ -21,8 +21,8 @@ mysqli.max_persistent=2
 			$host, $user, $db, $port, $socket);
 
 	// get the thread ids of the two connections...
-	$thread_id = mysqli_thread_id($link);
-	$pthread_id = mysqli_thread_id($plink);
+	$thread_id = get_connectionId($link);
+	$pthread_id = get_connectionId($plink);
 
 	if (!$res = mysqli_query($link, 'SHOW FULL PROCESSLIST'))
 		printf("[002] Cannot get processlist, [%d] %s\n", mysqli_errno($link), mysqli_error($link));

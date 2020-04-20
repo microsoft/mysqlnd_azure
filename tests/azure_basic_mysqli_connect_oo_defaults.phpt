@@ -116,7 +116,7 @@ require_once('skipifemb.inc');
 		$tmp = $res->fetch_assoc();
 		$res->free_result();
         
-        require_once("convert_username_format.php");
+        require_once("utility.php");
         #Azure  Expecting user cloudsa@qibu-unittest-57, got user() cloudsa
         $realUser = get_real_username($user);
 		if ($tmp['username'] !== $realUser)

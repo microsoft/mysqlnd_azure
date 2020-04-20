@@ -64,7 +64,7 @@ require_once('skipifemb.inc');
 	$tmp = mysqli_fetch_assoc($res);
 	mysqli_free_result($res);
 
-    require_once("convert_username_format.php");
+    require_once("utility.php");
     #Azure  Expecting user cloudsa@qibu-unittest-57, got user() cloudsa@40.113.230.136
     $realUser = get_real_username($user);
     $returnUser = get_real_username($tmp['user']);
