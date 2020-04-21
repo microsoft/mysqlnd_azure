@@ -42,10 +42,10 @@ $link->close();
     $flags = MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
 
     $cipher_list = array(
-        'ECDHE-RSA-AES128-GCM-SHA256',
-        'ECDHE-RSA-AES256-GCM-SHA384',
-        'DHE-RSA-AES256-GCM-SHA384',
-        'DHE-RSA-AES128-GCM-SHA256');
+                    'ECDHE-RSA-AES256-SHA384',
+                    'ECDHE-RSA-AES256-GCM-SHA384',
+                    'ECDHE-RSA-AES128-GCM-SHA256',
+                    'ECDHE-RSA-AES128-SHA256');
     foreach ($cipher_list as $key => $value) {
         $link = mysqli_init();
         mysqli_ssl_set($link, null, null, null, null, $value);
