@@ -713,7 +713,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 
 /* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init*/
 int mysqlnd_azure_apply_resources() {
-  if (MYSQLND_AZURE_G(logLevel) > 0) {
+  if (MYSQLND_AZURE_G(logOutput) == 2 && MYSQLND_AZURE_G(logLevel) > 0) {
     char *logfilePath = NULL;
     int logflag = 0;
     if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 155) {
@@ -741,7 +741,7 @@ int mysqlnd_azure_apply_resources() {
 
 /* {{{ mysqlnd_azure_release_resources, release resources when module destruct */
 int mysqlnd_azure_release_resources() {
-  if (MYSQLND_AZURE_G(logLevel) > 0 && logfile) {
+  if (MYSQLND_AZURE_G(logOutput) == 2 && MYSQLND_AZURE_G(logLevel) > 0 && logfile) {
     CLOSE_LOGFILE();
     if (logfile != NULL) return 1;
   }

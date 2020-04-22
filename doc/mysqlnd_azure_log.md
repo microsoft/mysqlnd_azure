@@ -1,8 +1,17 @@
 # Diagnostic Log Configuration
 
-Log down some running information of mysqlnd\_azure to a local file.
+Log down some running information from mysqlnd\_azure.
 
-## Configuration Oprions
+## Configuration
+
+Name |mysqlnd\_azure.logOutput
+:----- | :------
+Comment | Destination for log
+Type | Enumeration
+Accepted Value | [ 0\| 1\| 2 ]
+Default | 0 (No log)
+Dynamic | No
+Note | 1. "0": Turn off the log. <br> 2. "1": Print logs to stdout. <br> 3. "2": Print logs to file. <br> 4. When set to "2"(File), mysqlnd\_azure.logfilePath becomes effective.
 
 Name | mysqlnd\_azure.logfilePath
 :----- | :------
@@ -21,7 +30,7 @@ Type | Enumeration
 Accepted Value | [ 0 \| 1 \| 2 \| 3 ]
 Default | 0 (OFF)
 Dynamic | Yes
-Note | 1. When the current `mysqlnd_azure.logLevel > 0`, change logLevel at runtime will be logged.
+Note | 1. When the current `mysqlnd_azure.logLevel > 0`, changing logLevel at runtime will be logged.
 
 ### Loglevel supported
 we support 3 level of logs for user:
@@ -40,7 +49,7 @@ we support 3 level of logs for user:
 > [SYSTM] maked log rows for Azure mysqlnd Log Module itself, when current
 > `mysqlnd_azure.logLevel > 0`, any operation related to log system itself will be logged.
 > For example, if someone call  `ini_set('mysqlnd_azure.logLevel', '2');` at runtime, there
-> may appear a log like 
+> may appear a log like
 > ```
 > 2020-03-27 09:09:05 [SYSTM] mysqlnd_azure.logLevel changed: 3 -> 2
 > ```
@@ -63,6 +72,7 @@ we support 3 level of logs for user:
 mysqlnd_azure.enableRedirect = 2
 mysqlnd_azure.logfilePath = "test.log"
 mysqlnd_azure.logLevel = 3
+mysqlnd_azure.logOutput = 2
 ```
 
 ### phpinfo() / php -i
@@ -77,4 +87,5 @@ mysqlnd_azure => enableRedirect
 enableRedirect => preferred
 logfilePath => santotest.log
 logLevel => 3
+logOutput => 2
 ```
