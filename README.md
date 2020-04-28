@@ -32,9 +32,9 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 </tr>
 <tr>
 <td>on(1)</td>
-<td>  - If SSL is not enabled on the Azure Database for MySQL server, no connection will be made. The following error will be returned:
+<td>  -  If connection does not use SSL on driver side, no connection will be made. The following error will be returned:
 	<i>"mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."</i></br>
-      - If SSL is enabled on the MySQL server, but redirection is not supported on the server, the first connection is aborted and the following error is returned: <i>"Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet redirection protocol."</i></br>
+      - If SSL is used on driver side, but redirection is not supported on the server, the first connection is aborted and the following error is returned: <i>"Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet redirection protocol."</i></br>
       - If the MySQL server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
 </td> 
 </tr>
@@ -43,7 +43,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 preferred(2)
 </td>
 <td>  - It will use redirection if possible.</br>
-      - If the connection does not use SSL, the server does not support redirection, or the redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fall back to the first proxy connection
+      - If the connection does not use SSL on driver side, the server does not support redirection, or the redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fall back to the first proxy connection
 </td> 
 </tr>
 </table>
