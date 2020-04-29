@@ -4,7 +4,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 **Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL, and it will only support TLS 1.2 with FIPS approved cipher for redirection.**
 
 ## Option Usage
-**Before 1.1.0**, the option is with name **mysqlnd_azure.enabled**. Valid values are on/off, and the option "on" supports fallback logic. The detailed usage of the option enableRedirect is as follows:
+**Before 1.1.0**, the option is with name **mysqlnd_azure.enabled**. Valid values are on/off, and the option "on" supports fallback logic. The detailed usage of the option enableRedirect is as follows:     
 
 (Version before 1.1.0. Config name: **mysqlnd_azure.enabled**. Valid value: on/off. Default value: off)
 <table>
@@ -13,6 +13,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 <td> - It will not use redirection. </td>
 </tr>
 <tr>
+	
 <td>on(1)</td>
 <td>  - It will use redirection if possible (Connection is with SSL and Server supports/needs redirection).</br>
       - If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
