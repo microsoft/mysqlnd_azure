@@ -32,7 +32,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 </tr>
 <tr>
 <td>on(1)</td>
-<td>  -  If connection does not use SSL on driver side, no connection will be made. The following error will be returned:
+<td>  -  If connection does not use SSL on the driver side, no connection will be made. The following error will be returned:
 	<i>"mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."</i></br>
       - If SSL is used on driver side, but redirection is not supported on the server, the first connection is aborted and the following error is returned: <i>"Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet redirection protocol."</i></br>
       - If the MySQL server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
