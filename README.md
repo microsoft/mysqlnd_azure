@@ -64,7 +64,7 @@ Valid version:
 	1. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred".
     2. When enableRedirect is "preferred", it will use redirection if possible. If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
     3. When enableRedirect is "on", SSL is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
-    4. When enableRedirect is "on", but on the server side redirection is not supported, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
+    4. When enableRedirect is "on", but on server side redirection is not supported, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol."
     5. When enableRedirect is "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
