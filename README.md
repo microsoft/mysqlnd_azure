@@ -43,7 +43,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 preferred(2)
 </td>
 <td>  - It will use redirection if possible.</br>
-      - If the connection does not use SSL on driver side, the server does not support redirection, or the redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fall back to the first proxy connection
+      - If the connection does not use SSL on the driver side, the server does not support redirection, or the redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fall back to the first proxy connection
 </td> 
 </tr>
 </table>
