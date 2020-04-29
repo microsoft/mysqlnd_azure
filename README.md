@@ -1,4 +1,3 @@
-Test
 # PHP mysqlnd redirection extension mysqlnd_azure
 The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support.  The extension is also available on PECL website at  https://pecl.php.net/package/mysqlnd_azure.
 
