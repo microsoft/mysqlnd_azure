@@ -92,7 +92,8 @@
      <date>2020-05-13</date>
      <license uri="http://www.php.net/license">PHP License</license>
      <notes>
-- 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version
+- 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version.
+- 2. Fix memory collect mnd_ prefix alloc crash and add a test case for enable mysqlnd.collect_memory_statistics.
      </notes>
     </release>
     <release>
