@@ -618,6 +618,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 
     if (PASS == (*pconn)->m->local_tx_start(*pconn, this_func)) {
         mysqlnd_options4(conn_handle, MYSQL_OPT_CONNECT_ATTR_ADD, "_client_name", "mysqlnd");
+        mysqlnd_options4(conn_handle, MYSQL_OPT_CONNECT_ATTR_ADD, "_extension_version", MYSQLND_AZURE_VERSION);
         if (hostname.l > 0) {
             mysqlnd_options4(conn_handle, MYSQL_OPT_CONNECT_ATTR_ADD, "_server_host", hostname.s);
         }
