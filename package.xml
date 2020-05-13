@@ -19,8 +19,8 @@
  <date>2020-02-14</date>
  <time>16:00:13</time>
  <version>
-  <release>1.1.0</release>
-  <api>1.1.0</api>
+  <release>1.1.1</release>
+  <api>1.1.1</api>
  </version>
  <stability>
   <release>stable</release>
@@ -80,6 +80,21 @@
  <providesextension>mysqlnd_azure</providesextension>
  <extsrcrelease />
  <changelog>
+    <release>
+     <version>
+     <release>1.1.1</release>
+     <api>1.1.1</api>
+     </version>
+     <stability>
+      <release>beta</release>
+      <api>beta</api>
+     </stability>
+     <date>2020-05-13</date>
+     <license uri="http://www.php.net/license">PHP License</license>
+     <notes>
+- 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version
+     </notes>
+    </release>
     <release>
      <version>
      <release>1.1.0</release>
