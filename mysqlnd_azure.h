@@ -26,6 +26,8 @@
 #include "ext/mysqlnd/mysqlnd.h"
 #include "ext/mysqlnd/mysqlnd_debug.h"
 
+#define MYSQLND_AZURE_VERSION "mysqlnd_azure-1.1.1"
+
 /*struct to store redirection chache info in hash table*/
 typedef struct st_mysqlnd_azure_redirect_info {
     char* redirect_user;
