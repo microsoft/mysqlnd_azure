@@ -16,7 +16,7 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2020-02-14</date>
+ <date>2020-05-29</date>
  <time>16:00:13</time>
  <version>
   <release>1.1.1</release>
@@ -30,6 +30,9 @@
  <notes>
 - 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version.
 - 2. Fix memory collect mnd_ prefix alloc crash and add a test case for enable mysqlnd.collect_memory_statistics.
+- 3. Add support for two redirection info format. The two formats are as follows:
+    - Location: mysql://[%s]:%u/?user=%s&ttl=%u\n (where ttl is a mandatory field)
+    - Location: mysql://%s:%u/user=%s&ttl=%u (where ttl is an optional field).
  </notes>
  <contents>
   <dir name="/">
@@ -86,11 +89,14 @@
       <release>stable</release>
       <api>stable</api>
      </stability>
-     <date>2020-05-13</date>
+     <date>2020-05-29</date>
      <license uri="http://www.php.net/license">PHP License</license>
      <notes>
 - 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version.
 - 2. Fix memory collect mnd_ prefix alloc crash and add a test case for enable mysqlnd.collect_memory_statistics.
+- 3. Add support for two redirection info format. The two formats are as follows:
+    - Location: mysql://[%s]:%u/?user=%s&ttl=%u\n (where ttl is a mandatory field)
+    - Location: mysql://%s:%u/user=%s&ttl=%u (where ttl is an optional field).
      </notes>
     </release>
     <release>
