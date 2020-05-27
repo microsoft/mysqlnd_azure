@@ -35,17 +35,17 @@ fclose($fp);
 step1: redirect enabled, non-persistent connection 
 mysqlnd_azure.enableRedirect: preferred
 %s
-Location: mysql://%s:%d/user=%s
+Location: mysql://%s
 0
 step2: redirect enabled, persistent connection 
 mysqlnd_azure.enableRedirect: preferred
 %s
-Location: mysql://%s:%d/user=%s
+Location: mysql://%s
 0
 step3: redirect disabled, non-persistent connection 
 mysqlnd_azure.enableRedirect: off
 %s
-Location: mysql://%s:%d/user=%s
+Location: mysql://%s
 1
 step4: redirect disabled, persistent connection 
 mysqlnd_azure.enableRedirect: off
@@ -58,6 +58,6 @@ mysqli_real_connect(): (HY000/2054): mysqlnd_azure.enableRedirect is on, but SSL
 step6: redirect enforced, ssl connection 
 mysqlnd_azure.enableRedirect: on
 %s
-Location: mysql://%s:%d/user=%s
+Location: mysql://%s
 0
 ===DONE===
