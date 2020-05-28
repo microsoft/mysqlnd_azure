@@ -1,7 +1,9 @@
 # PHP mysqlnd redirection extension mysqlnd_azure
 The source code here is a PHP extension implemented using mysqlnd plugin API (https://www.php.net/manual/en/mysqlnd.plugin.php), which provides redirection feature support.  The extension is also available on PECL website at  https://pecl.php.net/package/mysqlnd_azure.
 
-**Important notice: There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL, and it will only support TLS 1.2 with FIPS approved cipher for redirection.**
+**Important notice for prerequisites to use redirection:**
+- There is a limitation for Azure DB for MySQL where redirection is only possible when the connection is configured with SSL and only works with TLS 1.2 with a FIPS approved cipher for redirection.
+- On the server side, redirection also needs to be enabled. You can enable redirection by updating the **redirect_enabled** server parameter using the [Azure portal](https://docs.microsoft.com/azure/mysql/howto-server-parameters) or [Azure CLI](https://docs.microsoft.com/azure/mysql/howto-configure-server-parameters-using-cli). You can also use "show global variables like 'redirect_enabled'" to check the current redirection enable status on server side.
 
 ## Option Usage
 **Before 1.1.0**, the option is with name **mysqlnd_azure.enabled**. Valid values are on/off, and the option "on" supports fallback logic. The detailed usage of the option enableRedirect is as follows:
@@ -54,18 +56,12 @@ Extension name: **mysqlnd_azure**
 Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
 
 Valid version:
-- 1.0.0  Change: initial version. Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
-- 1.0.1  Change: with pecl install command line support on linux. Limitation: cannot work with 7.2.23+ and 7.3.10+
-- 1.0.2  Change: fix compatibility problem with  7.2.23+ and 7.3.10+.  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false
-- 1.0.3RC Change: fix the crash problem when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false.
-                  This version is marked as beta, so please use *pecl install mysqlnd_azure-1.0.3RC* to install when using pecl.
-- 1.0.3  Change: Remove the use of is_using_redirect flag. More strict validation and new test cases with php built-in web server.
-- 1.1.0  Change:
-	1. Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred".
-    2. When enableRedirect is "preferred", it will use redirection if possible. If connection does not use SSL, or server does not support redirection, or redirected connection fails to connect for any non-fatal reason while the proxy connection is still a valid one, it will fallback to the first proxy connection.
-    3. When enableRedirect is "on", SSL is off, no connection will be made, return error "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL."
-    4. When enableRedirect is "on", but on the server side redirection is not supported, abort the first connection and return error "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet redirection protocol."
-    5. When enableRedirect is "on" and server supports redirection, but the redirected connection failed for any reason, also abort the first proxy connection. Return the error of the redirected connection.
+The latest version is **1.1.0**. Please check [package.xml](/package.xml) for changelog details. Following are some special notice for certain versions:
+
+- 1.1.0  Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred". When enableRedirect is "on", it will enforce redirection. Please check [package.xml](/package.xml) for changelog details.
+- 1.0.2  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false
+- 1.0.1  Limitation: cannot work with 7.2.23+ and 7.3.10+
+- 1.0.0  Limitation: cannot install with pecl on linux; cannot work with 7.2.23+ and 7.3.10+
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
