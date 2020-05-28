@@ -3,7 +3,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 
 **Important notice:**
 - There is a limitation that for Azure MySQL, redirection is only possible when the connection is configured with SSL, and it will only support TLS 1.2 with FIPS approved cipher for redirection.
-- On server side, redirection is also need to be enabled, the setting is OFF by default. You may configure the value using server parameter **redirect_enabled**.
+- On the server side, redirection also needs to be enabled. You can enable redirection by updating the **redirect_enabled** server parameter using the [Azure portal](https://docs.microsoft.com/azure/mysql/howto-server-parameters) or [Azure CLI](https://docs.microsoft.com/azure/mysql/howto-configure-server-parameters-using-cli). This setting is OFF by default.
 
 ## Option Usage
 **Before 1.1.0**, the option is with name **mysqlnd_azure.enabled**. Valid values are on/off, and the option "on" supports fallback logic. The detailed usage of the option enableRedirect is as follows:
