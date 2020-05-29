@@ -157,6 +157,36 @@ copyFailed:
 }
 /* }}} */
 
+static int 
+mysqlnd_azure_strtoi(const char* const begin, unsigned int len)
+{
+    //max length 8
+    if(len > 8) {
+        return -1;
+    }
+
+    char  str[9] = { 0 };
+    memcpy(str, begin, len);
+
+    //value 0
+    if(strcmp(str, "0") == 0)
+        return 0;
+
+    char *endptr;
+    long long_var = strtol(str, &endptr, 0);
+
+    //out of long range or invalid
+    if (long_var == LONG_MAX || long_var == LONG_MIN || *endptr != '\0' || long_var == 0 ) {
+        return -1;
+    }
+
+    //out of int range
+    if (long_var < INT_MIN || long_var > INT_MAX) {
+        return -1;
+    }
+
+    return (int) long_var;
+}
 
 static zend_bool
 parse_azure_protocol(const MYSQLND_STRING * const last_message, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port, unsigned int* p_ui_redirect_ttl)
@@ -219,18 +249,14 @@ parse_azure_protocol(const MYSQLND_STRING * const last_message, char* redirect_h
 		return FALSE;
 	}
 
-	char  redirect_port[8] = { 0 };
-	memcpy(redirect_port, port_begin, port_len);
-	int port = atoi(redirect_port);
+	int port = mysqlnd_azure_strtoi(port_begin, port_len);
 	if (port <= 0) {
 		return FALSE;
 	}
 
 	if (ttl_len > 0) {
-		char  redirect_ttl[8] = { 0 };
-		memcpy(redirect_ttl, ttl_begin, ttl_len);
-		int ttl = atoi(redirect_ttl);
-		if (ttl <= 0 && strcmp(redirect_ttl, "0") != 0) {
+		int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
+		if (ttl < 0) {
 			return FALSE;
 		}
 		*p_ui_redirect_ttl = ttl;
@@ -300,17 +326,13 @@ parse_community_protocol(const MYSQLND_STRING * const last_message, char* redire
 		return FALSE;
 	}
 
-	char  redirect_port[8] = { 0 };
-	memcpy(redirect_port, port_begin, port_len);
-	int port = atoi(redirect_port);
+	int port = mysqlnd_azure_strtoi(port_begin, port_len);
 	if (port <= 0) {
 		return FALSE;
 	}
 
-	char  redirect_ttl[8] = { 0 };
-	memcpy(redirect_ttl, ttl_begin, ttl_len);
-	int ttl = atoi(redirect_ttl);
-	if (ttl <= 0 && strcmp(redirect_ttl, "0") != 0) {
+    int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
+	if (ttl < 0) {
 		return FALSE;
 	}
 
