@@ -160,12 +160,12 @@ copyFailed:
 static int 
 mysqlnd_azure_strtoi(const char* const begin, unsigned int len)
 {
-    //max length 8
-    if(len > 8) {
+    //max length INT_MAX's char length cannot be greater than 32
+    if(len > 32) {
         return -1;
     }
 
-    char  str[9] = { 0 };
+    char  str[33] = { 0 };
     memcpy(str, begin, len);
 
     //value 0
@@ -275,7 +275,7 @@ parse_community_protocol(const MYSQLND_STRING * const last_message, char* redire
 {
 	/**
 	* Community protocol:
-	* Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d/n
+	* Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d\n
 	*/
 	const char* msg_header = "Location: mysql://[";
 	int msg_header_len = strlen(msg_header);
@@ -322,7 +322,7 @@ parse_community_protocol(const MYSQLND_STRING * const last_message, char* redire
 	int user_len = user_end - user_begin;
 	int ttl_len = ttl_end - ttl_begin;
 
-	if (host_len <= 0 || port_len <= 0 || user_len <= 0 || ttl_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || port_len > 8 || user_len > MAX_REDIRECT_USER_LEN || ttl_len > 8) {
+	if (host_len <= 0 || port_len <= 0 || user_len <= 0 || ttl_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || user_len > MAX_REDIRECT_USER_LEN) {
 		return FALSE;
 	}
 
@@ -355,7 +355,7 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
     * Azure protocol:
     * Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser&ttl=%d (where ttl is optional)
     * Community protocol:
-    * Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d/n
+    * Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d\n
     * the minimal len is 28 bytes
     */
 
