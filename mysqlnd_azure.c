@@ -157,14 +157,205 @@ copyFailed:
 }
 /* }}} */
 
+static int 
+mysqlnd_azure_strtoi(const char* const begin, unsigned int len)
+{
+    //max length INT_MAX's char length cannot be greater than 32
+    if(len > 32) {
+        return -1;
+    }
+
+    char  str[33] = { 0 };
+    memcpy(str, begin, len);
+
+    //value 0
+    if(strcmp(str, "0") == 0)
+        return 0;
+
+    char *endptr;
+    long long_var = strtol(str, &endptr, 0);
+
+    //out of long range or invalid
+    if (long_var == LONG_MAX || long_var == LONG_MIN || *endptr != '\0' || long_var == 0 ) {
+        return -1;
+    }
+
+    //out of int range
+    if (long_var < INT_MIN || long_var > INT_MAX) {
+        return -1;
+    }
+
+    return (int) long_var;
+}
+
+static zend_bool
+parse_azure_protocol(const MYSQLND_STRING * const last_message, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port, unsigned int* p_ui_redirect_ttl)
+{
+	/**
+	* Azure protocol:
+	* Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser&ttl=%d (where ttl is optional)
+	*/
+	const char* msg_header = "Location: mysql://";
+	int msg_header_len = strlen(msg_header);
+	char* cur_pos = last_message->s + msg_header_len;
+	char* end = last_message->s + last_message->l;
+
+	char* host_begin = cur_pos, * host_end = NULL,
+		* port_begin = NULL, * port_end = NULL,
+		* user_begin = NULL, * user_end = NULL,
+		* ttl_begin = NULL, * ttl_end = NULL;
+
+	host_end = strchr(cur_pos, ':');
+	if (host_end == NULL) return FALSE;
+
+	cur_pos = host_end + 1;
+	if (cur_pos == end) return FALSE;
+
+	port_begin = cur_pos;
+	port_end = strchr(cur_pos, '/');
+	if (port_end == NULL) return FALSE;
+
+	cur_pos = port_end + 1;
+	if (cur_pos == end) return FALSE;
+
+	int user_delimiter_len = strlen("user=");
+	if (end - cur_pos <= user_delimiter_len || strncmp(cur_pos, "user=", user_delimiter_len) != 0) return FALSE;
+
+	user_begin = cur_pos + user_delimiter_len;
+	char* optional_ttl_pos = strchr(cur_pos, '&');
+	if (optional_ttl_pos == NULL) {
+		user_end = end;
+	}
+	else {
+		user_end = optional_ttl_pos;
+		cur_pos = user_end + 1;
+		int ttl_delimiter_len = strlen("ttl=");
+		if (end - cur_pos <= ttl_delimiter_len || strncmp(cur_pos, "ttl=", ttl_delimiter_len) != 0) return FALSE;
+
+		ttl_begin = cur_pos + ttl_delimiter_len;
+		ttl_end = end;
+	}
+
+	if (host_end == NULL || port_end == NULL || user_end == NULL) {
+		return FALSE;
+	}
+
+	int host_len = host_end - host_begin;
+	int port_len = port_end - port_begin;
+	int user_len = user_end - user_begin;
+	int ttl_len = ttl_end == NULL ? 0 : (ttl_end - ttl_begin);
+
+	if (host_len <= 0 || port_len <= 0 || user_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || port_len > 8 || user_len > MAX_REDIRECT_USER_LEN || ttl_len > 8) {
+		return FALSE;
+	}
+
+	int port = mysqlnd_azure_strtoi(port_begin, port_len);
+	if (port <= 0) {
+		return FALSE;
+	}
+
+	if (ttl_len > 0) {
+		int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
+		if (ttl < 0) {
+			return FALSE;
+		}
+		*p_ui_redirect_ttl = ttl;
+	}
+
+	//setback the value when everything is settled
+	*p_ui_redirect_port = port;
+	memcpy(redirect_host, host_begin, host_len);
+	memcpy(redirect_user, user_begin, user_len);
+
+	return TRUE;
+}
+
+static zend_bool
+parse_community_protocol(const MYSQLND_STRING * const last_message, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port, unsigned int* p_ui_redirect_ttl)
+{
+	/**
+	* Community protocol:
+	* Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d\n
+	*/
+	const char* msg_header = "Location: mysql://[";
+	int msg_header_len = strlen(msg_header);
+	char* cur_pos = last_message->s + msg_header_len;
+	char* end = last_message->s + last_message->l;
+
+	char* host_begin = cur_pos, * host_end = NULL,
+		* port_begin = NULL, * port_end = NULL,
+		* user_begin = NULL, * user_end = NULL,
+		* ttl_begin = NULL, * ttl_end = NULL;
+
+	host_end = strchr(cur_pos, ']');
+	if (host_end == NULL) return FALSE;
+
+	cur_pos = host_end + 1;
+	if (cur_pos == end || *cur_pos != ':' || ++cur_pos == end) return FALSE;
+
+	port_begin = cur_pos;
+	port_end = strchr(cur_pos, '/');
+	if (port_end == NULL) return FALSE;
+
+	cur_pos = port_end + 1;
+	if (cur_pos == end || *cur_pos != '?' || ++cur_pos == end) return FALSE;
+
+	int user_delimiter_len = strlen("user=");
+	if (end - cur_pos <= user_delimiter_len || strncmp(cur_pos, "user=", user_delimiter_len) != 0) return FALSE;
+
+	user_begin = cur_pos + user_delimiter_len;
+	user_end = strchr(cur_pos, '&');
+	if (user_end == NULL) return FALSE;
+
+	cur_pos = user_end + 1;
+	if (cur_pos == end) return FALSE;
+
+	int ttl_delimiter_len = strlen("ttl=");
+	if (end - cur_pos <= ttl_delimiter_len || strncmp(cur_pos, "ttl=", ttl_delimiter_len) != 0) return FALSE;
+
+	ttl_begin = cur_pos + ttl_delimiter_len;
+	ttl_end = strchr(cur_pos, '\n');
+	if (ttl_end == NULL) return FALSE;
+
+	int host_len = host_end - host_begin;
+	int port_len = port_end - port_begin;
+	int user_len = user_end - user_begin;
+	int ttl_len = ttl_end - ttl_begin;
+
+	if (host_len <= 0 || port_len <= 0 || user_len <= 0 || ttl_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || user_len > MAX_REDIRECT_USER_LEN) {
+		return FALSE;
+	}
+
+	int port = mysqlnd_azure_strtoi(port_begin, port_len);
+	if (port <= 0) {
+		return FALSE;
+	}
+
+    int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
+	if (ttl < 0) {
+		return FALSE;
+	}
+
+	//setback the value when everything is settled
+	*p_ui_redirect_port = port;
+	*p_ui_redirect_ttl = ttl;
+	memcpy(redirect_host, host_begin, host_len);
+	memcpy(redirect_user, user_begin, user_len);
+
+	return TRUE;
+}
+
 /* {{{ get_redirect_info */
 static zend_bool
-get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port)
+get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port, unsigned int* p_ui_redirect_ttl)
 {
     /**
     * Get redirected server information contained in OK packet.
-    * Redirection string has following format:
-    * Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser
+    * Redirection string support following two formats:
+    * Azure protocol:
+    * Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser&ttl=%d (where ttl is optional)
+    * Community protocol:
+    * Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d\n
     * the minimal len is 28 bytes
     */
 
@@ -173,62 +364,16 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
 
     if (conn->last_message.l < 28 || (strncmp(conn->last_message.s, msg_header, msg_header_len) != 0)) {
         return FALSE;
-    }
+    }	
 
     char *cur_pos = conn->last_message.s + msg_header_len;
-    char *end = conn->last_message.s + conn->last_message.l;
-
-    char* host_begin = cur_pos, *host_end = NULL, *port_begin = NULL, *port_end = NULL, *user_begin = NULL,  *user_end = NULL;
-    zend_bool found_host = FALSE, found_port = FALSE, found_user = FALSE;
-
-    while(cur_pos < end) {
-        if(found_host == FALSE && *cur_pos == ':') {
-            host_end = cur_pos;
-            cur_pos++;
-            port_begin = cur_pos;
-            found_host = TRUE;
-        }
-
-        if(found_host == TRUE && found_port == FALSE && *cur_pos == '/') {
-            port_end = cur_pos;
-            found_port = TRUE;
-
-            cur_pos++;
-            int user_delimiter_len = strlen("user=");
-            if(end - cur_pos > user_delimiter_len && strncmp(cur_pos, "user=", user_delimiter_len)==0) {
-                user_begin = cur_pos + user_delimiter_len;
-                user_end = end;
-                found_user = TRUE;
-                break;
-            }
-        }
-
-        cur_pos++;
-    }
-
-    if(!found_host || !found_port || !found_user) {
-        return FALSE;
-    }
-
-    int host_len = host_end - host_begin;
-    int port_len = port_end - port_begin;
-    int user_len = user_end - user_begin;
-
-    if(host_len<=0 || port_len<=0 || user_len<=0 || host_len > MAX_REDIRECT_HOST_LEN || port_len > 8 || user_len > MAX_REDIRECT_USER_LEN) {
-        return FALSE;
-    }
-
-    char  redirect_port[8] = { 0 };
-    memcpy(redirect_port, port_begin, port_len);
-    *p_ui_redirect_port = atoi(redirect_port);
-    if(*p_ui_redirect_port <=0) {
-        return FALSE;
-    }
-
-    memcpy(redirect_host, host_begin, host_len);
-    memcpy(redirect_user, user_begin, user_len);
-
-    return TRUE;
+	if (*cur_pos == '[') {
+		return parse_community_protocol(&conn->last_message, redirect_host, redirect_user, p_ui_redirect_port, p_ui_redirect_ttl);
+	}
+	else {
+		return parse_azure_protocol(&conn->last_message, redirect_host, redirect_user, p_ui_redirect_port, p_ui_redirect_ttl);
+	}
+   
 }
 
 /* {{{ mysqlnd_azure_data::connect */
@@ -338,7 +483,8 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
         char redirect_host[MAX_REDIRECT_HOST_LEN] = { 0 };
         char redirect_user[MAX_REDIRECT_USER_LEN] = { 0 };
         unsigned int ui_redirect_port = 0;
-        zend_bool serverSupportRedirect = get_redirect_info(conn, redirect_host, redirect_user, &ui_redirect_port);
+		unsigned int ui_redirect_ttl = 0;
+        zend_bool serverSupportRedirect = get_redirect_info(conn, redirect_host, redirect_user, &ui_redirect_port, &ui_redirect_ttl);
         if (!serverSupportRedirect) {
             DBG_ENTER("[redirect]: Server does not support redirection.");
             if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
