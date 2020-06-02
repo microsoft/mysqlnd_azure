@@ -16,6 +16,9 @@ echo "step1: redirect enabled, non-persistent connection \n";
     }
     echo $link->host_info."\n";
     echo $link->info."\n";
+    if(strpos($link->info, "\n") == false) { //azure version protocol
+        echo "\n"; //echo extra new line to make the output same with community version protocol
+    }
     if(substr($link->host_info, 0, strlen($host)) == $host)
         echo "1\n";
     else
@@ -36,6 +39,9 @@ echo "step2: redirect enabled, persistent connection \n";
     }
     echo $link->host_info."\n";
     echo $link->info."\n";
+    if(strpos($link->info, "\n") == false) { //azure version protocol
+        echo "\n"; //echo extra new line to make the output same with community version protocol
+    }
     if(substr($link->host_info, 0, strlen($host)) == $host)
         echo "1\n";
     else
@@ -58,6 +64,9 @@ echo "step3: redirect disabled, non-persistent connection \n";
     }
     echo $link->host_info."\n";
     echo $link->info."\n";
+    if(strpos($link->info, "\n") == false) { //azure version protocol
+        echo "\n"; //echo extra new line to make the output same with community version protocol
+    }
     if(substr($link->host_info, 0, strlen($host)) == $host)
         echo "1\n";
     else
@@ -78,6 +87,7 @@ echo "step4: redirect disabled, persistent connection \n";
     }
     echo $link->host_info."\n";
     echo $link->info."\n";
+
     if(substr($link->host_info, 0, strlen($host)) == $host)
         echo "1\n";
     else
@@ -114,6 +124,9 @@ echo "step6: redirect enforced, ssl connection \n";
     }
     echo $link->host_info."\n";
     echo $link->info."\n";
+    if(strpos($link->info, "\n") == false) { //azure version protocol
+        echo "\n"; //echo extra new line to make the output same with community version protocol
+    }
     if(substr($link->host_info, 0, strlen($host)) == $host)
         echo "1\n";
     else
