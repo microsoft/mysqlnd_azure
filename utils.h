@@ -36,7 +36,7 @@ extern FILE *logfile;
         char *levelstr = level == 1 ? "ERROR" : level == 2 ? "INFO " : "DEBUG";\
         strftime(timestr, 20, TIME_FORMAT, localtime(&now));                   \
         if (MYSQLND_AZURE_G(logOutput) == 1) {                                 \
-          printf("%s [%s] " format "\n", timestr, levelstr, ## __VA_ARGS__);   \
+          printf("[MYSQLND_AZURE] %s [%s] " format "\n", timestr, levelstr, ## __VA_ARGS__);   \
         } else if (MYSQLND_AZURE_G(logOutput) == 2) {                          \
           fprintf(logfile, "%s [%s] " format "\n", timestr, levelstr,          \
                                   ## __VA_ARGS__);                             \
@@ -52,7 +52,7 @@ extern FILE *logfile;
       char timestr[20];                                                        \
       strftime(timestr, 20, TIME_FORMAT, localtime(&now));                     \
       if (MYSQLND_AZURE_G(logOutput) == 1) {                                   \
-        printf("%s [SYSTM] " format "\n", timestr,  ## __VA_ARGS__);          \
+        printf("[MYSQLND_AZURE] %s [SYSTM] " format "\n", timestr,  ## __VA_ARGS__);          \
       } else if (MYSQLND_AZURE_G(logOutput) == 2) {                            \
         fprintf(logfile, "%s [SYSTM] " format "\n", timestr,                  \
                                 ## __VA_ARGS__);                               \
