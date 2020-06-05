@@ -728,15 +728,14 @@ int mysqlnd_azure_apply_resources() {
     }
 
     OPEN_LOGFILE(logfilePath);
+    if (!logfile) {
+      php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Unable to open log file: %s", logfilePath);
+      return 1;
+    }
 
     if (logflag) {
       php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Logfile string length exceeds 255, redirected to mysqlnd_azure_runtime.log");
       AZURE_LOG_SYS("Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log");
-    }
-
-    if (logfile == NULL) {
-      php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Unable to open log file: %s", logfilePath);
-      return 1;
     }
   }
   return 0;
