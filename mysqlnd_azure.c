@@ -711,9 +711,13 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 }
 /* }}} */
 
-/* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init*/
+/* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init */
 int mysqlnd_azure_apply_resources() {
-  if (MYSQLND_AZURE_G(logOutput) == 2 && MYSQLND_AZURE_G(logLevel) > 0) {
+  /*
+    If logOutput mode is 2(file mode), a logfile will be opened no matter the verbose
+    level(logLebel) is configured, and closed at the module destruct time.
+   */
+  if (MYSQLND_AZURE_G(logOutput) == 2) {
     char *logfilePath = NULL;
     int logflag = 0;
     if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 155) {
@@ -741,7 +745,14 @@ int mysqlnd_azure_apply_resources() {
 
 /* {{{ mysqlnd_azure_release_resources, release resources when module destruct */
 int mysqlnd_azure_release_resources() {
-  if (MYSQLND_AZURE_G(logOutput) == 2 && MYSQLND_AZURE_G(logLevel) > 0 && logfile) {
+  /*
+    logOutput = 2 is print logs to a local file, only in this case a logfile was opened.
+
+    note: logOutput is a PHP_INI_SYSTEM variable, and cannot be modified at runtime.
+          logLevel is a PHP_INI_ALL variable, so we try to close the logfile whatever the
+          logLevel value is.
+  */
+  if (MYSQLND_AZURE_G(logOutput) == 2 && logfile) {
     CLOSE_LOGFILE();
     if (logfile != NULL) return 1;
   }
