@@ -29,37 +29,39 @@ extern FILE *logfile;
     } } while (0)
 
 #define AZURE_LOG(level, format, ...)                                                        \
-    do {                                                                                     \
-      if (MYSQLND_AZURE_G(logOutput) && level <= MYSQLND_AZURE_G(logLevel)) {                \
-        time_t now = time(NULL);                                                             \
-        char timestr[20];                                                                    \
-        char *levelstr = level == 1 ? "ERROR" : level == 2 ? "INFO " : "DEBUG";              \
-        strftime(timestr, 20, TIME_FORMAT, localtime(&now));                                 \
-        if (MYSQLND_AZURE_G(logOutput) == 1) {                                               \
-          printf("[MYSQLND_AZURE] %s [%s] " format "\n", timestr, levelstr, ## __VA_ARGS__); \
-        } else if (logfile && MYSQLND_AZURE_G(logOutput) == 2) {                             \
-          fprintf(logfile, "%s [%s] " format "\n", timestr, levelstr,                        \
-                                  ## __VA_ARGS__);                                           \
-          fflush(logfile);                                                                   \
-        }                                                                                    \
-      }                                                                                      \
-  } while (0)
-
-#define AZURE_LOG_SYS(format, ...)                                                           \
   do {                                                                                       \
-      if (MYSQLND_AZURE_G(logOutput)) {                                                      \
+    if (MYSQLND_AZURE_G(logOutput) && level <= MYSQLND_AZURE_G(logLevel)) {                  \
       time_t now = time(NULL);                                                               \
       char timestr[20];                                                                      \
+      char *levelstr = level == 1 ? "ERROR" : level == 2 ? "INFO " : "DEBUG";                \
       strftime(timestr, 20, TIME_FORMAT, localtime(&now));                                   \
       if (MYSQLND_AZURE_G(logOutput) == 1) {                                                 \
-        printf("[MYSQLND_AZURE] %s [SYSTM] " format "\n", timestr,  ## __VA_ARGS__);         \
+        fprintf(stderr, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,         \
+                                ## __VA_ARGS__);                                             \
       } else if (logfile && MYSQLND_AZURE_G(logOutput) == 2) {                               \
-        fprintf(logfile, "%s [SYSTM] " format "\n", timestr,                                 \
+        fprintf(logfile, "[%s] [%s] " format "\n", timestr, levelstr,                        \
                                 ## __VA_ARGS__);                                             \
         fflush(logfile);                                                                     \
       }                                                                                      \
     }                                                                                        \
-  } while (0)
+} while (0)
+
+#define AZURE_LOG_SYS(format, ...)                                                           \
+  do {                                                                                       \
+    if (MYSQLND_AZURE_G(logOutput)) {                                                        \
+      time_t now = time(NULL);                                                               \
+      char timestr[20];                                                                      \
+      strftime(timestr, 20, TIME_FORMAT, localtime(&now));                                   \
+      if (MYSQLND_AZURE_G(logOutput) == 1) {                                                 \
+        fprintf(stderr, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,                \
+                                ## __VA_ARGS__);                                             \
+      } else if (logfile && MYSQLND_AZURE_G(logOutput) == 2) {                               \
+        fprintf(logfile, "[%s] [SYSTM] " format "\n", timestr,                               \
+                                ## __VA_ARGS__);                                             \
+        fflush(logfile);                                                                     \
+      }                                                                                      \
+    }                                                                                        \
+} while (0)
 
 
 #endif // UTILS_H
