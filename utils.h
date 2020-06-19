@@ -38,6 +38,7 @@ extern FILE *logfile;
       if (MYSQLND_AZURE_G(logOutput) == 1) {                                                 \
         fprintf(stderr, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,         \
                                 ## __VA_ARGS__);                                             \
+        fflush(stderr);                                                                      \
       } else if (logfile && MYSQLND_AZURE_G(logOutput) == 2) {                               \
         fprintf(logfile, "[%s] [%s] " format "\n", timestr, levelstr,                        \
                                 ## __VA_ARGS__);                                             \
@@ -55,6 +56,7 @@ extern FILE *logfile;
       if (MYSQLND_AZURE_G(logOutput) == 1) {                                                 \
         fprintf(stderr, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,                \
                                 ## __VA_ARGS__);                                             \
+        fflush(stderr);                                                                      \
       } else if (logfile && MYSQLND_AZURE_G(logOutput) == 2) {                               \
         fprintf(logfile, "[%s] [SYSTM] " format "\n", timestr,                               \
                                 ## __VA_ARGS__);                                             \
