@@ -78,14 +78,13 @@ static ZEND_INI_MH(OnUpdateEnableLogLevel) {
 }
 
 static ZEND_INI_MH(OnUpdateEnableLogOutput) {
-  if (STRING_EQUALS(new_value, "2")) {
-    MYSQLND_AZURE_G(logOutput) = 2;
-  } else if (STRING_EQUALS(new_value, "1")) {
-    MYSQLND_AZURE_G(logOutput) = 1;
-  } else  {
-    // 0 or value larger than 2
+  int tval = atoi(ZSTR_VAL(new_value));
+  if (tval > 0 && tval < 8) {
+    MYSQLND_AZURE_G(logOutput) = tval;
+  } else {
     MYSQLND_AZURE_G(logOutput) = 0;
   }
+
   return SUCCESS;
 }
 /* }}} */

@@ -8,10 +8,13 @@ Name |mysqlnd\_azure.logOutput
 :----- | :------
 Comment | Destination for log
 Type | Enumeration
-Accepted Value | [ 0\| 1\| 2 ]
+Accepted Value | [ 0\| 1\| 2 \| 4 ]
 Default | 0 (No log)
 Dynamic | No
-Note | 1. "0": Turn off the log. <br> 2. "1": Print logs to stdout. <br> 3. "2": Print logs to file. <br> 4. When set to "2"(File), mysqlnd\_azure.logfilePath becomes effective.
+Note | 1. "0": Turn off the log. <br> 2. "1": Print logs using PHP doc ref call. <br> 3. "2": Print logs to local file. <br> 4. When set to "2"(File), mysqlnd\_azure.logfilePath becomes effective. <br> 5. "4": Print logs to stderr <br>
+
+__note__: If used with Apache, log to stderr is redirected to system wide error.log, besides, PHP doc ref is redirected
+to virtual host's error.log. If you want use both, configured this value to 5 (1 | 4).
 
 Name | mysqlnd\_azure.logfilePath
 :----- | :------
