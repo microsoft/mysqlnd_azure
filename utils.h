@@ -74,7 +74,7 @@ extern FILE *logfile;
         fflush(logfile);                                                                     \
       }                                                                                      \
       if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                                   \
-        fprintf(stderr, "[%s] [MYSQLND_AZURE] [[SYSTM] " format "\n", timestr,                                \
+        fprintf(stderr, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,                                \
                                 ## __VA_ARGS__);                                             \
         fflush(stderr);                                                                      \
       }                                                                                      \
