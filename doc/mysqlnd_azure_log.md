@@ -34,7 +34,7 @@ Config file | Config options | Usage
 :----- | :------ | :----- 
 /etc/php/7.2/apache2/php.ini | error_log <br/> log_error <br/> display_errors   | This file is Apache mod_php's config file s <br/> -log_error: logOutput1 is only available if this is on. <br/> error_log: where logOutput1 goes into. <br/> --1.	error_log=syslog:  logOutput1 is not available with this option. <br/> --2.	error_log=A_file_path. It will take priority of apache’s error log setting. <br/> display_errors: Whether print logOutput1 to a client web page.
 /etc/apache2/sites-available/000-default.conf | ErrorLog | This file is Apache's error log path for seperated virtual instance. <br/> If error_log is not set in php.ini above, logOutput1 will go here.
-/etc/apache2/apache2.conf | ErrorLog | This file is Apache’s global error log path. <br/> logOutput4 goes here. <br/> If ErrorLog is not set for each virtual host, and error_log is not set in php.ini, then logOutput4 also goes here.
+/etc/apache2/apache2.conf | ErrorLog | This file is Apache’s global error log path. <br/> logOutput4 goes here. <br/> If ErrorLog is not set for each virtual host, and error_log is not set in php.ini, then logOutput1 also goes here.
  
  - **For php-fpm and Apache (take php7.2 as example)**
  
