@@ -60,10 +60,6 @@ static ZEND_INI_MH(OnUpdateEnableLogfile) {
 }
 
 static ZEND_INI_MH(OnUpdateEnableLogLevel) {
-  // Loglevel is a PHP_INI_ALL variable,
-  // every time it changed will be logged (unless it is 0 now)
-  AZURE_LOG_SYS("mysqlnd_azure.logLevel changed: %d -> %d",
-      MYSQLND_AZURE_G(logLevel), atoi(ZSTR_VAL(new_value)));
 
   if (STRING_EQUALS(new_value, "3")) {
     MYSQLND_AZURE_G(logLevel) = 3;
@@ -79,7 +75,7 @@ static ZEND_INI_MH(OnUpdateEnableLogLevel) {
 
 static ZEND_INI_MH(OnUpdateEnableLogOutput) {
   int tval = atoi(ZSTR_VAL(new_value));
-  if (tval > 0 && tval < 8) {
+  if (tval == ALOG_TYPE_PHPERROR || tval == ALOG_TYPE_FILE || tval == ALOG_TYPE_STDERR) {
     MYSQLND_AZURE_G(logOutput) = tval;
   } else {
     MYSQLND_AZURE_G(logOutput) = 0;

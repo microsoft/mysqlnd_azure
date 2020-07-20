@@ -45,13 +45,13 @@ extern FILE *logfile;
         php_error_docref(NULL, E_WARNING, "[%s] [MYSQLND_AZURE] [%s] " format,               \
             timestr, levelstr, ## __VA_ARGS__);                                              \
       }                                                                                      \
-      if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                        \
-        fprintf(logfile, "[%s] [%s] " format "\n", timestr, levelstr,                        \
+      else if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                   \
+        fprintf(logfile, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,        \
                                 ## __VA_ARGS__);                                             \
         fflush(logfile);                                                                     \
       }                                                                                      \
-      if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                                   \
-        fprintf(stderr, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,                         \
+      else if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                              \
+        fprintf(stderr, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,         \
                                 ## __VA_ARGS__);                                             \
         fflush(stderr);                                                                      \
       }                                                                                      \
@@ -68,13 +68,13 @@ extern FILE *logfile;
         php_error_docref(NULL, E_WARNING, "[%s] [MYSQLND_AZURE] [SYSTM] " format "%s",       \
             timestr, ## __VA_ARGS__, PHP_EOL);                                               \
       }                                                                                      \
-      if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                        \
-        fprintf(logfile, "[%s] [SYSTM] " format "\n", timestr,                               \
+      else if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                   \
+        fprintf(logfile, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,               \
                                 ## __VA_ARGS__);                                             \
         fflush(logfile);                                                                     \
       }                                                                                      \
-      if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                                   \
-        fprintf(stderr, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,                                \
+      else if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                              \
+        fprintf(stderr, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,                \
                                 ## __VA_ARGS__);                                             \
         fflush(stderr);                                                                      \
       }                                                                                      \

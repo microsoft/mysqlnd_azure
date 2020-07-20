@@ -43,7 +43,7 @@ FILE *logfile = NULL;
 static enum_func_status
 set_redirect_client_options(MYSQLND_CONN_DATA * const conn, MYSQLND_CONN_DATA * const redirectConn)
 {
-  AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.c: set_redirect_client_options()");
+    AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.c: set_redirect_client_options()");
     //TODO: the fields copies here are from list that is handled in mysqlnd_conn_data::set_client_option, may not compelete, and may need update when mysqlnd_conn_data::set_client_option updates
     DBG_ENTER("mysqlnd_azure_data::set_redirect_client_options Copy client options for redirection connection");
     enum_func_status ret = FAIL;
@@ -365,6 +365,7 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
     */
 
     AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.c: get_redirect_info()");
+	AZURE_LOG(ALOG_LEVEL_DBG, "last message in ok packet: %s", conn->last_message.s);
     const char * msg_header = "Location: mysql://";
     int msg_header_len = strlen(msg_header);
 
@@ -477,11 +478,12 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
     transport = conn->m->get_scheme(conn, hostname, &socket_or_pipe, port, &unix_socket, &named_pipe);
 
     mysql_flags = conn->m->get_updated_connect_flags(conn, mysql_flags);
+	AZURE_LOG(ALOG_LEVEL_DBG, "mysql_flags after get_updated_connect_flags(): flags=%u", mysql_flags);
 
     {
         const MYSQLND_CSTRING scheme = { transport.s, transport.l };
         if (FAIL == conn->m->connect_handshake(conn, &scheme, &username, &password, &database, mysql_flags)) {
-            AZURE_LOG(ALOG_LEVEL_ERR, "Connection cannot established with given information, please check the server availability, or your parameters given");
+            AZURE_LOG(ALOG_LEVEL_ERR, "First connect_handshake failed.");
             goto err;
         }
     }
@@ -489,7 +491,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
     /*start of Azure Redirection logic*/
     //Redirect before run init_command
     {
-       AZURE_LOG(ALOG_LEVEL_DBG, "Classical connection OK, try to get REDIRECTION information");
+        AZURE_LOG(ALOG_LEVEL_DBG, "Classical connection OK, try to get REDIRECTION information");
         SET_CONNECTION_STATE(&conn->state, CONN_READY); //set ready status so the connection can be closed correctly later if redirect succeeds
 
         DBG_ENTER("[redirect]: mysqlnd_azure_data::connect::redirect");
@@ -499,16 +501,16 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 		unsigned int ui_redirect_ttl = 0;
         zend_bool serverSupportRedirect = get_redirect_info(conn, redirect_host, redirect_user, &ui_redirect_port, &ui_redirect_ttl);
         if (!serverSupportRedirect) {
-            AZURE_LOG(ALOG_LEVEL_ERR, "Failed to get REDIRECTION information from OK Packet, please check whether your MySQL server support redirect.");
+            AZURE_LOG(ALOG_LEVEL_ERR, "get_redirect_info return FALSE, please check whether your MySQL server support redirection and redirection has been turned on.");
             DBG_ENTER("[redirect]: Server does not support redirection.");
             if(MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON) {
                 //REDIRECT_ON, if redirection is not supported, abort the original connection and return error
                 conn->m->send_close(conn);
-                  AZURE_LOG(ALOG_LEVEL_ERR, "mysqlnd_azure.Redirection: ON, MySQL server not support REDERECTION, connection failed");
+                AZURE_LOG(ALOG_LEVEL_ERR, "mysqlnd_azure.enableRedirect: ON. Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol.");
                 SET_CLIENT_ERROR(conn->error_info, MYSQLND_AZURE_ENFORCE_REDIRECT_ERROR_NO, UNKNOWN_SQLSTATE, "Connection aborted because redirection is not enabled on the MySQL server or the network package doesn't meet meet redirection protocol.");
                 goto err;
             } else {
-                AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_zaure.Redirection: PREFERRED, MySQL server not support REDIRECTION, conn falls back to classical one.");
+                AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_zaure.enableRedirect: PREFERRED. MySQL server does not support REDIRECTION, conn falls back to classical one.");
                 //REDIRECT_PREFERRED, do nothing else for redirection, just use the previous connection
                 goto after_conn;
             }
@@ -516,11 +518,11 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
         //Get here means serverSupportRedirect
 
-          AZURE_LOG(ALOG_LEVEL_DBG, "Successfully get redirection information, try to connect with redirection connection");
+        AZURE_LOG(ALOG_LEVEL_DBG, "Successfully get redirection information, try to connect with redirection connection");
         //Already use redirected connection, or the connection string is a redirected one
         if (strcmp(redirect_host, hostname.s) == 0 && strcmp(redirect_user, username.s) == 0 && ui_redirect_port == port) {
             DBG_ENTER("[redirect]: Is using redirection, or redirection info are equal to origin, no need to redirect");
-              AZURE_LOG(ALOG_LEVEL_DBG, "Given conn is already redirect_conn.");
+            AZURE_LOG(ALOG_LEVEL_DBG, "Is using redirection, or redirection info are equal to origin, no need to redirect.");
             goto after_conn;
         }
 
@@ -535,10 +537,10 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
                     //REDIRECT_ON, abort the original connection and return error
                     conn->m->send_close(conn);
                     SET_CLIENT_ERROR(conn->error_info, MYSQLND_AZURE_ENFORCE_REDIRECT_ERROR_NO, UNKNOWN_SQLSTATE, "Connection aborted because init redirection failed.");
-                    AZURE_LOG(ALOG_LEVEL_ERR, "mysqlnd_azure.enableRedirect: ON but redirect_connHandle init failed");
+                    AZURE_LOG(ALOG_LEVEL_ERR, "mysqlnd_azure.enableRedirect: ON. Connection aborted because redirect_connHandle init  failed.");
                     goto err;
                 } else {
-                    AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect: [PREFERRED | OFF], but redirect_connHandle init failed. No redirection conn used.");
+                    AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect: PREFERRED. redirect_connHandle init failed, conn falls back to classical one.");
                     //REDIRECT_PREFERRED, do nothing else for redirection, just use the previous connection
                     goto after_conn;
                 }
@@ -551,7 +553,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
             ret = set_redirect_client_options(conn, redirect_conn);
 
-            //init redirect_conn options failed, just use the proxy connection
+            //init redirect_conn options failed
             if (ret == FAIL) {
                 DBG_ENTER("[redirect]: init redirection option failed. ");
                 redirect_conn->m->dtor(redirect_conn); //release created resource
@@ -561,16 +563,19 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
                     //REDIRECT_ON, abort the original connection
                     conn->m->send_close(conn);
                     SET_CLIENT_ERROR(conn->error_info, MYSQLND_AZURE_ENFORCE_REDIRECT_ERROR_NO, UNKNOWN_SQLSTATE, "Connection aborted because init redirection failed.");
-                    AZURE_LOG(ALOG_LEVEL_ERR, "set_redirect_client_options() failed, but mysqlnd_azure.enableRedirect: ON");
+                    AZURE_LOG(ALOG_LEVEL_ERR, "mysqlnd_azure.enableRedirect: ON. Connection aborted because set_redirect_client_options() failed.");
                     goto err;
                 } else {
-                    AZURE_LOG(ALOG_LEVEL_INFO, "set_redirect_client_options() failed, and mysqlnd_azure.enableRedirect: [PREFERRED | OFF], no redirect conn used.");
+                    AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect: PREFERRED. set_redirect_client_options() failed, conn falls back to classical one.");
                     //REDIRECT_PREFERRED, do nothing else for redirection, just use the previous connection
                     goto after_conn;
                 }
             }
 
             //init redirect_conn succeeded, use this conn to start a new connection and handshake
+			AZURE_LOG(ALOG_LEVEL_DBG, "Redirection connection Information: redirect_host=%s redirect_user=%s redirect_port=%u flags=%u persistent=%u state=%u",
+				redirect_host ? redirect_host : "", redirect_user ? redirect_user : "", ui_redirect_port, mysql_flags,
+				redirect_conn ? redirect_conn->persistent : 0, redirect_conn ? (int)GET_CONNECTION_STATE(&redirect_conn->state) : -1);
  
             const MYSQLND_CSTRING redirect_hostname = { redirect_host, strlen(redirect_host) };
             const MYSQLND_CSTRING redirect_username = { redirect_user, strlen(redirect_user) };
@@ -617,13 +622,13 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
                 }
 
                 if (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_PREFERRED) {
-                  AZURE_LOG(ALOG_LEVEL_INFO, "redirect_conn handshake failed, but mysqlnd_azure.enableRedirect: PREFERRED");
+                    AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect: PREFERRED. redirect_conn handshake failed, conn falls back to classical one.");
                     //free object and use original connection
                     redirect_conn->m->dtor(redirect_conn);
                     goto after_conn;
 
                 } else { //REDIRECT_ON, free original connect, and use redirect_conn to handle error
-                  AZURE_LOG(ALOG_LEVEL_ERR, "redirect_conn handshake failed, but mysqlnd_azure.enableRedirect: ON");
+                    AZURE_LOG(ALOG_LEVEL_ERR, "mysqlnd_azure.enableRedirect: ON. redirect_conn handshake failed, connection aborted.");
                     conn->m->send_close(conn);
                     conn->m->dtor(conn);
                     pfc = NULL;
@@ -643,7 +648,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
 
 after_conn:
     {
-        AZURE_LOG(ALOG_LEVEL_INFO, "Prepare the context of new connection");
+        AZURE_LOG(ALOG_LEVEL_INFO, "connect_handshake finished. Post conn operations like set conn objec info, init_commands");
         SET_CONNECTION_STATE(&conn->state, CONN_READY);
 
         if (saved_compression) {
@@ -790,6 +795,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
     MYSQLND_CONN_DATA ** pconn = &conn_handle->data;
 
     DBG_ENTER("mysqlnd_azure::connect");
+	AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect = %s", MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF ? "off" : (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON ? "on" : "preferred"));
 
     if (PASS == (*pconn)->m->local_tx_start(*pconn, this_func)) {
         mysqlnd_options4(conn_handle, MYSQL_OPT_CONNECT_ATTR_ADD, "_client_name", "mysqlnd");
@@ -800,7 +806,6 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 
         if (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF) {
             DBG_ENTER("mysqlnd_azure::connect redirect disabled");
-              AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.enableRedirect: OFF");
             ret = org_conn_d_m.connect(*pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
         }
         else {
@@ -811,8 +816,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
             if (!(temp_flags & CLIENT_SSL)) {
                 //REDIRECT_ON, no ssl, return error
                 if((MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON)) {
-                    AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.enableRedirect: ON");
-                    AZURE_LOG(ALOG_LEVEL_ERR, "SSL not enabled when mysqlnd_azure.enableRedirect if ON");
+                    AZURE_LOG(ALOG_LEVEL_ERR, "CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON");
                     SET_CLIENT_ERROR((*pconn)->error_info, MYSQLND_AZURE_ENFORCE_REDIRECT_ERROR_NO, UNKNOWN_SQLSTATE, "mysqlnd_azure.enableRedirect is on, but SSL option is not set in connection string. Redirection is only possible with SSL.");
                     (*pconn)->m->local_tx_end(*pconn, this_func, FAIL);
                     (*pconn)->m->free_contents(*pconn);
@@ -820,8 +824,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
                     DBG_RETURN(FAIL);
                 }
                 else { //REDIRECT_PREFERRED, no ssl, do not redirect
-                    AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.enableRedirect: PREFERRED");
-                    AZURE_LOG(ALOG_LEVEL_INFO, "SSL not enabled, and mysqlnd_zaure.enableRedirect if PREFERRED, connection will go through gateway.");
+                    AZURE_LOG(ALOG_LEVEL_INFO, "CLIENT_SSL is not set and mysqlnd_zaure.enableRedirect is PREFERRED, connection will go through gateway.");
                     ret = org_conn_d_m.connect(*pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
                 }
             }
@@ -831,17 +834,23 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
                 MYSQLND_AZURE_REDIRECT_INFO* redirect_info = mysqlnd_azure_find_redirect_cache(username.s, hostname.s, port);
                 if (redirect_info != NULL) {
                     DBG_ENTER("mysqlnd_azure::connect try the cached info first");
+					AZURE_LOG(ALOG_LEVEL_INFO, "Find cache. mysqlnd_azure::connect try the cached info first");
+					AZURE_LOG(ALOG_LEVEL_DBG, "cached host : %s, cached user : %s, cached port : %u", redirect_info->redirect_host, redirect_info->redirect_user, redirect_info->redirect_port);
+
                     const MYSQLND_CSTRING redirect_host = { redirect_info->redirect_host, strlen(redirect_info->redirect_host) };
                     const MYSQLND_CSTRING redirect_user = { redirect_info->redirect_user, strlen(redirect_info->redirect_user) };
 
                     ret = (*pconn)->m->connect(pconn, redirect_host, redirect_user, password, database, redirect_info->redirect_port, socket_or_pipe, mysql_flags);
                     if (ret == FAIL) {
-                        AZURE_LOG(ALOG_LEVEL_INFO, "Redirect cache miss");
+                        AZURE_LOG(ALOG_LEVEL_INFO, "Use cache failed.");
                         //remove invalid cache
                         mysqlnd_azure_remove_redirect_cache(username.s, hostname.s, port);
 
                         ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
-                    }
+					}
+					else {
+						AZURE_LOG(ALOG_LEVEL_INFO, "Use cache sccuceeded.");
+					}
                 }
                 else {
                     AZURE_LOG(ALOG_LEVEL_INFO, "No cache found");
@@ -860,32 +869,33 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 
 /* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init */
 int mysqlnd_azure_apply_resources() {
-  /*
-    If logOutput mode is FILE, a logfile will be opened no matter the verbose
-    level(logLevel) is configured, and closed at the module destruct time.
-   */
-  if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) {
-    char *logfilePath = NULL;
-    int logflag = 0;
-    if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 155) {
-      logflag = 1;
-      logfilePath = "mysqlnd_azure_runtime.log";
-    } else {
-      logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
-    }
+	/*
+	  If logOutput mode is FILE, a logfile will be opened no matter the verbose
+	  level(logLevel) is configured, and closed at the module destruct time.
+	 */
+	if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) {
+		char *logfilePath = NULL;
+		int logflag = 0;
+		if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 155) {
+			logflag = 1;
+			logfilePath = "mysqlnd_azure_runtime.log";
+		}
+		else {
+			logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
+		}
 
-    OPEN_LOGFILE(logfilePath);
-    if (!logfile) {
-      php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Unable to open log file: %s", logfilePath);
-      return 1;
-    }
+		OPEN_LOGFILE(logfilePath);
+		if (!logfile) {
+			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Unable to open log file: %s", logfilePath);
+			return 1;
+		}
 
-    if (logflag) {
-      php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Logfile string length exceeds 255, redirected to mysqlnd_azure_runtime.log");
-      AZURE_LOG_SYS("Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log");
-    }
-  }
-  return 0;
+		if (logflag) {
+			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Logfile string length exceeds 255, redirected to mysqlnd_azure_runtime.log");
+			AZURE_LOG_SYS("Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log");
+		}
+	}
+	return 0;
 }
 /* }}} */
 
