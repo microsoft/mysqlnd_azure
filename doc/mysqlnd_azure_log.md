@@ -46,7 +46,7 @@ Note: Nginx with PHP-FPM works similarly as the below corrensponding behavior.
  
  Destination | Config file and options | Turn on switch
 :----- | :------ | :----- 
-A file path specifed in config files with different priorities | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/> (1) **php_admin_value[error_log]** in /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) **error_log** in /etc/php/7.2/fpm/php.ini <br/><br/> (3) **ErrorLog** in /etc/apache2/sites-available/000-default.conf <br/>Please notice that the logs for single request is in single line since fastcgi treat one request’s log as single line. <br/><br/> (4) **ErrorLog** in /etc/apache2/apache2.conf | (1) **catch_workers_output = yes** in  /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) Following files and options control the another switch, prioity is from highest to lowerest:<br/> (2-1) **php_admin_flag[log_errors]** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **log_errors** in /etc/php/7.2/fpm/php.ini
+A file path specifed in config files with different priorities | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/> (1) **php_admin_value[error_log]** in /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) **error_log** in /etc/php/7.2/fpm/php.ini <br/><br/> (3) **ErrorLog** in /etc/apache2/sites-available/000-default.conf <br/>Please notice that the logs for single request is in single line since FastCGI treat one request’s log as single line. <br/><br/> (4) **ErrorLog** in /etc/apache2/apache2.conf | (1) **catch_workers_output = yes** in  /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) Following files and options control the another switch, prioity is from highest to lowerest:<br/> (2-1) **php_admin_flag[log_errors]** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **log_errors** in /etc/php/7.2/fpm/php.ini
 Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini or in /etc/php/7.2/fpm/pool.d/www.conf | (1) **log_errors** in /etc/php/7.2/fpm/php.ini <br/> <br/> (2) display_errors=on, **prioity is from highest to lowerest**: <br/> (2-1) **display_errors=on** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **display_errors=on** in /etc/php/7.2/apache2/php.ini <br/> <br/>Please notice this destination is not exclusive to a file path, you may have both.
 
 #### Detailed behavior for logOutput=4
@@ -70,7 +70,7 @@ A file path specifed in PHP-FPM's config | **error_log** in /etc/php/7.2/fpm/php
 
 Name | mysqlnd\_azure.logfilePath
 :----- | :------
-Description | Filename that you want your log writes to, if mysqlnd\_azure.logOutput=2
+Description | Filename log writes to when mysqlnd\_azure.logOutput=2
 Type | String
 Accepted Value | String length <= 255, legal filename string. <br>Length cannot exceed the file system's restriction (255). Otherwise, system will use the default file name and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log".
 Default | mysqlnd\_azure\_runtime.log .<br>Length cannot exceed the file system's restriction (255). Otherwise, system will use the default file name and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log
@@ -101,7 +101,7 @@ The mysqlnd_azure extension supports following log levels:
     established failed, ... and connection fall back when mysqlnd\_azure.enableRedirection = ON)
 
 - [SYSTM]:
-Make log rows for Azure mysqlnd Log Module itself, e.g. invalid file length:
+Log info for mysqlnd_azure Log Module itself, e.g. invalid file length:
 > ```
 > 2020-03-27 09:09:05 [SYSTM] Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log
 > ```
