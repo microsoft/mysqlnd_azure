@@ -72,10 +72,9 @@ Name | mysqlnd\_azure.logfilePath
 :----- | :------
 Description | Filename that you want your log writes to, if mysqlnd\_azure.logOutput=2
 Type | String
-Accepted Value | String length <= 255, legal filename string
+Accepted Value | String length <= 255, legal filename string. <br>Length cannot exceed the file system's restriction (255). Otherwise, system will use the default file name and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log".
 Default | mysqlnd\_azure\_runtime.log .<br>Length cannot exceed the file system's restriction (255). Otherwise, system will use the default file name and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log
 Dynamic | NO
-Note | Filename length cannot exceed the file system's restriction(255), otherwise system will use the default filename and throw a warning "Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log"
 
 ### mysqlnd\_azure.logLevel
 Name | mysqlnd\_azure.logLevel
