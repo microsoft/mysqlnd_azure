@@ -38,7 +38,7 @@ This option acts similar as php user script level error_log (https://www.php.net
 Destination | Config file and options | Turn on switch
 :----- | :------ | :-----
 A file path specifed in config files with different priorities. | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/><br/> (1) **error_log** in /etc/php/7.2/apache2/php.ini <br/><br/> (2) **ErrorLog** in /etc/apache2/sites-available/000-default.conf (This file is Apache's error log path for seperated virtual instance if you define it). <br/><br/> (3) **ErrorLog** in /etc/apache2/apache2.conf (This file is Apache’s global error log path. If ErrorLog is not set for each virtual host, and error_log is not set in php.ini, then log goes here). | **log_errors=on** in /etc/php/7.2/apache2/php.ini
-Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini |  (1) **log_errors=on** in /etc/php/7.2/apache2/php.ini <br/><br/> **display_errors=on** in /etc/php/7.2/apache2/php.ini. <br/><br/> Please notice this destination is not exclusive to a file path, you may have both.
+Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini |  (1) **log_errors=on** in /etc/php/7.2/apache2/php.ini <br/><br/> (2) **display_errors=on** in /etc/php/7.2/apache2/php.ini. <br/><br/> Please notice this destination is not exclusive to a file path, you may have both.
 
 Note: Nginx with PHP-FPM works similarly as the below corrensponding behavior.
  
