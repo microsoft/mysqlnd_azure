@@ -152,9 +152,9 @@ PHP_MINFO_FUNCTION(mysqlnd_azure)
     php_info_print_table_row(2, "enableRedirect", MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF ? "off" : (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON ? "on" : "preferred"));
     php_info_print_table_row(2, "logfilePath", ZSTR_VAL(MYSQLND_AZURE_G(logfilePath)));
     char tmp[2];
-    sprintf(tmp, "%d", MYSQLND_AZURE_G(logLevel));
+    snprintf(tmp, 2, "%d", MYSQLND_AZURE_G(logLevel));
     php_info_print_table_row(2, "logLevel", tmp);
-    sprintf(tmp, "%d", MYSQLND_AZURE_G(logOutput));
+    snprintf(tmp, 2, "%d", MYSQLND_AZURE_G(logOutput));
     php_info_print_table_row(2, "logOutput", tmp);
     php_info_print_table_end();
 }
