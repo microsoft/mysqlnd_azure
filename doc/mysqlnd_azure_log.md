@@ -25,31 +25,9 @@ Value | Behavior | Sample log
 2 | Print logs to a pre-defined file by mysqlnd\_azure's config mysqlnd\_azure.logfilePath=xx.log. | [MYSQLND_AZURE] [ERROR] CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON
 4 | Print logs using stderr. <br/> - PHP CLI: Print to console. <br/> - Works with Apache/Nginx: Will be discussed in seperate section below. | [MYSQLND_AZURE] [ERROR] CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON
 
-
-#### Detailed behavior for logOutput=1 
-
-This option acts similar as php user script level error_log (https://www.php.net/manual/en/function.error-log.php), with following differences:
-1. It has script file name and line name in format (Check the sample log above).
-2. It can be configured to log to client web page.
-3. The option value syslog of error_log config does not work with this option.
-
-- **For mod-php and Apache (using PHP 7.2 as an example)**
-
-Destination | Config file and options | Turn on switch
-:----- | :------ | :-----
-A file path specifed in config files with different priorities. | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/><br/> (1) **error_log** in /etc/php/7.2/apache2/php.ini <br/><br/> (2) **ErrorLog** in /etc/apache2/sites-available/000-default.conf (This file is Apache's error log path for seperated virtual instance if you define it). <br/><br/> (3) **ErrorLog** in /etc/apache2/apache2.conf (This file is Apache’s global error log path. If ErrorLog is not set for each virtual host, and error_log is not set in php.ini, then log goes here). | **log_errors=on** in /etc/php/7.2/apache2/php.ini
-Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini |  (1) **log_errors=on** in /etc/php/7.2/apache2/php.ini <br/><br/> (2) **display_errors=on** in /etc/php/7.2/apache2/php.ini. <br/><br/> Please notice this destination is not exclusive to a file path, you may have both.
-
 Note: Nginx with PHP-FPM works similarly as the below corrensponding behavior.
- 
- - **For PHP-FPM and Apache (using PHP 7.2 as an example)**
- 
- Destination | Config file and options | Turn on switch
-:----- | :------ | :----- 
-A file path specifed in config files with different priorities | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/> (1) **php_admin_value[error_log]** in /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) **error_log** in /etc/php/7.2/fpm/php.ini <br/><br/> (3) **ErrorLog** in /etc/apache2/sites-available/000-default.conf <br/>Please notice that the logs for single request is in single line since FastCGI treat one request’s log as single line. <br/><br/> (4) **ErrorLog** in /etc/apache2/apache2.conf | (1) **catch_workers_output = yes** in  /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) Following files and options control the another switch, prioity is from highest to lowerest:<br/> (2-1) **php_admin_flag[log_errors]** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **log_errors** in /etc/php/7.2/fpm/php.ini
-Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini or in /etc/php/7.2/fpm/pool.d/www.conf | (1) **log_errors** in /etc/php/7.2/fpm/php.ini <br/> <br/> (2) display_errors=on, **prioity is from highest to lowerest**: <br/> (2-1) **display_errors=on** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **display_errors=on** in /etc/php/7.2/apache2/php.ini <br/> <br/>Please notice this destination is not exclusive to a file path, you may have both.
 
-#### Detailed behavior for logOutput=4
+#### Detailed behavior for logOutput=4 when works with Apache
 
 This option values will use stderr, when intergated with web server, it will be redirected to corrensponding error log files.
 
@@ -64,6 +42,29 @@ A file path specifed in Apache's config | **ErrorLog** in /etc/apache2/apache2.c
  Destination | Config file and options | Turn on switch
 :----- | :------ | :----- 
 A file path specifed in PHP-FPM's config | **error_log** in /etc/php/7.2/fpm/php-fpm.conf | **catch_workers_output = yes** in  /etc/php/7.2/fpm/pool.d/www.conf
+
+
+#### Detailed behavior for logOutput=1 when works with Apache
+
+This option acts similar as php user script level error_log (https://www.php.net/manual/en/function.error-log.php), with following differences:
+1. It has script file name and line name in format (Check the sample log above).
+2. It can be configured to log to client web page.
+3. The option value syslog of error_log config does not work with this option.
+
+- **For mod-php and Apache (using PHP 7.2 as an example)**
+
+Destination | Config file and options | Turn on switch
+:----- | :------ | :-----
+A file path specifed in config files with different priorities. | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/><br/> (1) **error_log** in /etc/php/7.2/apache2/php.ini <br/><br/> (2) **ErrorLog** in /etc/apache2/sites-available/000-default.conf (This file is Apache's error log path for seperated virtual instance if you define it). <br/><br/> (3) **ErrorLog** in /etc/apache2/apache2.conf (This file is Apache’s global error log path. If ErrorLog is not set for each virtual host, and error_log is not set in php.ini, then log goes here). | **log_errors=on** in /etc/php/7.2/apache2/php.ini
+Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini |   **display_errors=on** in /etc/php/7.2/apache2/php.ini. <br/><br/> Please notice this destination is not exclusive to a file path, you may have both.
+
+ 
+ - **For PHP-FPM and Apache (using PHP 7.2 as an example)**
+ 
+ Destination | Config file and options | Turn on switch
+:----- | :------ | :----- 
+A file path specifed in config files with different priorities | Following files and options control where the log logs to, **prioity is from highest to lowerest**: <br/> (1) **php_admin_value[error_log]** in /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) **error_log** in /etc/php/7.2/fpm/php.ini <br/><br/> (3) **ErrorLog** in /etc/apache2/sites-available/000-default.conf <br/>Please notice that the logs for single request is in single line since FastCGI treat one request’s log as single line. <br/><br/> (4) **ErrorLog** in /etc/apache2/apache2.conf | (1) **catch_workers_output = yes** in  /etc/php/7.2/fpm/pool.d/www.conf <br/><br/> (2) Following files and options control the another switch, prioity is from highest to lowerest:<br/> (2-1) **php_admin_flag[log_errors]** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **log_errors** in /etc/php/7.2/fpm/php.ini
+Client web page | **display_errors=on** in /etc/php/7.2/apache2/php.ini or in /etc/php/7.2/fpm/pool.d/www.conf |  display_errors=on, **prioity is from highest to lowerest**: <br/> (2-1) **display_errors=on** in /etc/php/7.2/fpm/pool.d/www.conf <br/> (2-2) **display_errors=on** in /etc/php/7.2/fpm/php.ini <br/> <br/>Please notice this destination is not exclusive to a file path, you may have both.
 
 
  ### mysqlnd\_azure.logfilePath
