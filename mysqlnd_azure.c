@@ -876,9 +876,9 @@ int mysqlnd_azure_apply_resources() {
 	if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) {
 		char *logfilePath = NULL;
 		int logflag = 0;
-		if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 155) {
-			logflag = 1;
-			logfilePath = "mysqlnd_azure_runtime.log";
+		if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 255) {
+			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] logOutput=2 but logfilePath %s is invalid. logfilePath string length can not exceed 255.", ZSTR_VAL(MYSQLND_AZURE_G(logfilePath)));
+			return 1;
 		}
 		else {
 			logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
@@ -886,14 +886,10 @@ int mysqlnd_azure_apply_resources() {
 
 		OPEN_LOGFILE(logfilePath);
 		if (!logfile) {
-			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Unable to open log file: %s", logfilePath);
+			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] logOutput=2 but unable to open logfilePath: %s. Please check the configuration of the file is correct.", logfilePath);
 			return 1;
 		}
 
-		if (logflag) {
-			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] Logfile string length exceeds 255, redirected to mysqlnd_azure_runtime.log");
-			AZURE_LOG_SYS("Given logfile name too long, redirected to default: mysqlnd_azure_runtime.log");
-		}
 	}
 	return 0;
 }

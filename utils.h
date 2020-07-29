@@ -16,9 +16,9 @@ extern FILE *logfile;
 #define ALOG_LEVEL_DBG  3
 
 // Azure Log Types
-#define ALOG_TYPE_PHPERROR (1 << 0)
-#define ALOG_TYPE_FILE     (1 << 1)
-#define ALOG_TYPE_STDERR   (1 << 2)
+#define ALOG_TYPE_STDERR   1
+#define ALOG_TYPE_FILE     2
+
 
 #define OPEN_LOGFILE(filename)                                                               \
   do {                                                                                       \
@@ -41,40 +41,13 @@ extern FILE *logfile;
       char *levelstr = (level == ALOG_LEVEL_ERR ? "ERROR" :                                  \
           (level == ALOG_LEVEL_INFO ? "INFO " : "DEBUG"));                                   \
       strftime(timestr, 20, TIME_FORMAT, localtime(&now));                                   \
-      if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_PHPERROR) {                                 \
-        php_error_docref(NULL, E_WARNING, "[%s] [MYSQLND_AZURE] [%s] " format,               \
-            timestr, levelstr, ## __VA_ARGS__);                                              \
-      }                                                                                      \
-      else if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                   \
+      if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                        \
         fprintf(logfile, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,        \
                                 ## __VA_ARGS__);                                             \
         fflush(logfile);                                                                     \
       }                                                                                      \
       else if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                              \
         fprintf(stderr, "[%s] [MYSQLND_AZURE] [%s] " format "\n", timestr, levelstr,         \
-                                ## __VA_ARGS__);                                             \
-        fflush(stderr);                                                                      \
-      }                                                                                      \
-    }                                                                                        \
-} while (0)
-
-#define AZURE_LOG_SYS(format, ...)                                                           \
-  do {                                                                                       \
-    if (MYSQLND_AZURE_G(logOutput)) {                                                        \
-      time_t now = time(NULL);                                                               \
-      char timestr[20];                                                                      \
-      strftime(timestr, 20, TIME_FORMAT, localtime(&now));                                   \
-      if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_PHPERROR) {                                 \
-        php_error_docref(NULL, E_WARNING, "[%s] [MYSQLND_AZURE] [SYSTM] " format "%s",       \
-            timestr, ## __VA_ARGS__, PHP_EOL);                                               \
-      }                                                                                      \
-      else if ((MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) && logfile) {                   \
-        fprintf(logfile, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,               \
-                                ## __VA_ARGS__);                                             \
-        fflush(logfile);                                                                     \
-      }                                                                                      \
-      else if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_STDERR) {                              \
-        fprintf(stderr, "[%s] [MYSQLND_AZURE] [SYSTM] " format "\n", timestr,                \
                                 ## __VA_ARGS__);                                             \
         fflush(stderr);                                                                      \
       }                                                                                      \

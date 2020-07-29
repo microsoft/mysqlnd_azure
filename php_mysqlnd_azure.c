@@ -75,7 +75,7 @@ static ZEND_INI_MH(OnUpdateEnableLogLevel) {
 
 static ZEND_INI_MH(OnUpdateEnableLogOutput) {
   int tval = atoi(ZSTR_VAL(new_value));
-  if (tval == ALOG_TYPE_PHPERROR || tval == ALOG_TYPE_FILE || tval == ALOG_TYPE_STDERR) {
+  if (tval == ALOG_TYPE_FILE || tval == ALOG_TYPE_STDERR) {
     MYSQLND_AZURE_G(logOutput) = tval;
   } else {
     MYSQLND_AZURE_G(logOutput) = 0;
@@ -103,6 +103,8 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
     mysqlnd_azure_globals->enableRedirect = REDIRECT_PREFERRED;
     mysqlnd_azure_globals->redirectCache = NULL;
     mysqlnd_azure_globals->logLevel = 0;
+	mysqlnd_azure_globals->logOutput = 0;
+	mysqlnd_azure_globals->logfilePath = NULL;
 }
 /* }}} */
 
