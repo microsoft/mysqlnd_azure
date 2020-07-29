@@ -21,8 +21,8 @@ Dynamic | No
 Value | Behavior | Sample log
 :----- | :------ | :----- 
 0 | Like logLevel control, it will turn off the log. No log will be print out. | 
-1 | Print logs using stderr. <br/> - PHP CLI: Print to console. <br/> - Works with Apache/Nginx: Will be discussed in seperate section below. | [MYSQLND_AZURE] [ERROR] CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON
-2 | Print logs to a pre-defined file by mysqlnd\_azure's config mysqlnd\_azure.logfilePath=xx.log. | [MYSQLND_AZURE] [ERROR] CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON
+1 | Print logs using stderr. <br/> - PHP CLI: Print to console. <br/> - Works with Apache/Nginx: Will be discussed in seperate section below. | [2020-07-29 10:45:16] [MYSQLND_AZURE] [ERROR] CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON
+2 | Print logs to a pre-defined file by mysqlnd\_azure's config mysqlnd\_azure.logfilePath=xx.log. | [2020-07-29 10:46:16] [MYSQLND_AZURE] [ERROR] CLIENT_SSL is not set when mysqlnd_azure.enableRedirect is ON
 
 Note: Nginx with PHP-FPM works similarly as the below corrensponding behavior.
 
