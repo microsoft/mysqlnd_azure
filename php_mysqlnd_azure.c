@@ -88,7 +88,7 @@ static ZEND_INI_MH(OnUpdateEnableLogOutput) {
 /* {{{ PHP_INI */
 PHP_INI_BEGIN()
 STD_PHP_INI_ENTRY("mysqlnd_azure.enableRedirect", "preferred", PHP_INI_ALL, OnUpdateEnableRedirect, enableRedirect, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
-STD_PHP_INI_ENTRY("mysqlnd_azure.logfilePath", "mysqlnd_azure_runtime.log", PHP_INI_SYSTEM, OnUpdateEnableLogfile, logfilePath, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
+STD_PHP_INI_ENTRY("mysqlnd_azure.logfilePath", "", PHP_INI_SYSTEM, OnUpdateEnableLogfile, logfilePath, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 STD_PHP_INI_ENTRY("mysqlnd_azure.logLevel", "0", PHP_INI_ALL, OnUpdateEnableLogLevel, logLevel, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 STD_PHP_INI_ENTRY("mysqlnd_azure.logOutput", "0", PHP_INI_SYSTEM, OnUpdateEnableLogOutput, logOutput, zend_mysqlnd_azure_globals, mysqlnd_azure_globals)
 PHP_INI_END()
