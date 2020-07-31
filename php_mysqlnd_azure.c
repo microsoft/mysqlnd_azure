@@ -104,7 +104,7 @@ static PHP_GINIT_FUNCTION(mysqlnd_azure)
     mysqlnd_azure_globals->redirectCache = NULL;
     mysqlnd_azure_globals->logLevel = 0;
 	mysqlnd_azure_globals->logOutput = 0;
-	mysqlnd_azure_globals->logfilePath = NULL;
+	mysqlnd_azure_globals->logfilePath = "";
 }
 /* }}} */
 
