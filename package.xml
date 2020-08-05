@@ -16,7 +16,7 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2020-05-29</date>
+ <date>2020-07-30</date>
  <time>16:00:13</time>
  <version>
   <release>1.1.1</release>
@@ -33,6 +33,7 @@
 - 3. Add support for two redirection info format. The two formats are as follows:
     - Location: mysql://[%s]:%u/?user=%s&ttl=%u\n (where ttl is a mandatory field)
     - Location: mysql://%s:%u/user=%s&ttl=%u (where ttl is an optional field).
+- 4. Add support to enable runtime log, check myslqnd_azure_log.md
  </notes>
  <contents>
   <dir name="/">
@@ -43,6 +44,7 @@
    <file md5sum="81379d753b8268922e3e3dd8c11c803c" name="redirect_cache.c" role="src" />
    <file md5sum="f6ce2d3ccfaa1d8e53196f9df9043b35" name="mysqlnd_azure.h" role="src" />
    <file md5sum="207e117afe26f28a75d83776e88d7ee0" name="php_mysqlnd_azure.h" role="src" />
+   <file md5sum="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" name="utils.h" role="src" />
    <file md5sum="1d60dd2a72d2d9a325e68070b7fd0fbf" name="tests/mysqli_azure_redirection_on.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_off.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_preferred.phpt" role="test" />
@@ -63,6 +65,7 @@
    <file md5sum="2e6b1acdbd3ea3056847cbd5d8042153" name="CREDITS" role="doc" />
    <file md5sum="7d3659eb516c6d8c7c4c53aaae9bae3b" name="README.md" role="doc" />
    <file md5sum="626ccc6462b2925aa5d3a56ced761942" name="troubleshooting.md" role="doc" />
+   <file md5sum="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" name="mysqlnd_azure_log.md" role="doc" />
   </dir>
  </contents>
  <dependencies>
@@ -89,7 +92,7 @@
       <release>stable</release>
       <api>stable</api>
      </stability>
-     <date>2020-05-29</date>
+     <date>2020-07-30</date>
      <license uri="http://www.php.net/license">PHP License</license>
      <notes>
 - 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version.
@@ -97,6 +100,7 @@
 - 3. Add support for two redirection info format. The two formats are as follows:
     - Location: mysql://[%s]:%u/?user=%s&ttl=%u\n (where ttl is a mandatory field)
     - Location: mysql://%s:%u/user=%s&ttl=%u (where ttl is an optional field).
+- 4. Add support to enable runtime log, check myslqnd_azure_log.md
      </notes>
     </release>
     <release>
