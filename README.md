@@ -26,7 +26,7 @@ The source code here is a PHP extension implemented using mysqlnd plugin API (ht
 - The option mysqlnd_azure.enabled is renamed to **mysqlnd_azure.enableRedirect**, option "on" enforces redirection, and there is a new option value "preferred" provided which becomes the default option.
 - The detailed usage of the option enableRedirect is as follows:
 
-(Version 1.1.0. Config name: **mysqlnd_azure.enableRedirect**. Valid value: on/off/preferred. Default value: preferred)
+(Version >= 1.1.0. Config name: **mysqlnd_azure.enableRedirect**. Valid value: on/off/preferred. Default value: preferred)
 <table>
 <tr>
 <td>off(0)</td>
@@ -56,8 +56,9 @@ Extension name: **mysqlnd_azure**
 Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
 
 Valid version:
-The latest version is **1.1.0**. Please check [package.xml](/package.xml) for changelog details. Following are some special notice for certain versions:
+The latest version is **1.1.1**. Please check [package.xml](/package.xml) for changelog details. Following are some special notice for certain versions:
 
+- 1.1.1  Enable runtime log check support. Fix crash problem when mysqlnd.collect_memory_statistics=1.
 - 1.1.0  Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred". When enableRedirect is "on", it will enforce redirection. Please check [package.xml](/package.xml) for changelog details.
 - 1.0.2  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false
 - 1.0.1  Limitation: cannot work with 7.2.23+ and 7.3.10+
