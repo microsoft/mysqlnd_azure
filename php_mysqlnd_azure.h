@@ -29,7 +29,7 @@ extern zend_module_entry mysqlnd_azure_module_entry;
 #define phpext_mysqlnd_azure_ptr &mysqlnd_azure_module_entry
 
 #define PHP_MYSQLND_AZURE_NAME      "mysqlnd_azure"
-#define PHP_MYSQLND_AZURE_VERSION   "1.1.0"
+#define PHP_MYSQLND_AZURE_VERSION   "1.1.1"
 
 #define STRING_EQUALS(z_str,str) (ZSTR_LEN((z_str)) == strlen((str)) && strcasecmp((str), ZSTR_VAL((z_str))) == 0)
 
