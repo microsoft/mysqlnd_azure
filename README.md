@@ -78,7 +78,7 @@ Example to install required tools for php7.3 on Ubuntu:
 Example to install required tools for php7.3 on Redhat 7.4:
 - sudo yum --enablerepo=epel,remi-php73 install php-devel
 - sudo yum --enablerepo=epel,remi-php73 install php-pear
-- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI,EPEL using following command
+- //If you cannot find the package, there may be a need to renable related repository, e.g. enable REMI, EPEL using following command
 - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 - rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 
