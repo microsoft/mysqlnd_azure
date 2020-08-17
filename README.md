@@ -53,7 +53,7 @@ preferred(2)
 ## Name and Extension Version
 Extension name: **mysqlnd_azure**
 
-Required PHP min version: PHP7.2.15+ and PHP7.3.2+.
+Required PHP min version: PHP7.2.15+, PHP7.3.2+, PHP7.4.0+.
 
 Valid version:
 The latest version is **1.1.1**. Please check [package.xml](/package.xml) for changelog details. Following are some special notice for certain versions:
