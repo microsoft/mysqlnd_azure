@@ -196,158 +196,158 @@ mysqlnd_azure_strtoi(const char* const begin, unsigned int len)
 static zend_bool
 parse_azure_protocol(const MYSQLND_STRING * const last_message, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port, unsigned int* p_ui_redirect_ttl)
 {
-	/**
-	* Azure protocol:
-	* Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser&ttl=%d (where ttl is optional)
-	*/
-	const char* msg_header = "Location: mysql://";
-	int msg_header_len = strlen(msg_header);
-	char* cur_pos = last_message->s + msg_header_len;
-	char* end = last_message->s + last_message->l;
+    /**
+    * Azure protocol:
+    * Location: mysql://redirectedHostName:redirectedPort/user=redirectedUser&ttl=%d (where ttl is optional)
+    */
+    const char* msg_header = "Location: mysql://";
+    int msg_header_len = strlen(msg_header);
+    char* cur_pos = last_message->s + msg_header_len;
+    char* end = last_message->s + last_message->l;
 
-	char* host_begin = cur_pos, * host_end = NULL,
-		* port_begin = NULL, * port_end = NULL,
-		* user_begin = NULL, * user_end = NULL,
-		* ttl_begin = NULL, * ttl_end = NULL;
+    char* host_begin = cur_pos, * host_end = NULL,
+        * port_begin = NULL, * port_end = NULL,
+        * user_begin = NULL, * user_end = NULL,
+        * ttl_begin = NULL, * ttl_end = NULL;
 
-	host_end = strchr(cur_pos, ':');
-	if (host_end == NULL) return FALSE;
+    host_end = strchr(cur_pos, ':');
+    if (host_end == NULL) return FALSE;
 
-	cur_pos = host_end + 1;
-	if (cur_pos == end) return FALSE;
+    cur_pos = host_end + 1;
+    if (cur_pos == end) return FALSE;
 
-	port_begin = cur_pos;
-	port_end = strchr(cur_pos, '/');
-	if (port_end == NULL) return FALSE;
+    port_begin = cur_pos;
+    port_end = strchr(cur_pos, '/');
+    if (port_end == NULL) return FALSE;
 
-	cur_pos = port_end + 1;
-	if (cur_pos == end) return FALSE;
+    cur_pos = port_end + 1;
+    if (cur_pos == end) return FALSE;
 
-	int user_delimiter_len = strlen("user=");
-	if (end - cur_pos <= user_delimiter_len || strncmp(cur_pos, "user=", user_delimiter_len) != 0) return FALSE;
+    int user_delimiter_len = strlen("user=");
+    if (end - cur_pos <= user_delimiter_len || strncmp(cur_pos, "user=", user_delimiter_len) != 0) return FALSE;
 
-	user_begin = cur_pos + user_delimiter_len;
-	char* optional_ttl_pos = strchr(cur_pos, '&');
-	if (optional_ttl_pos == NULL) {
-		user_end = end;
-	}
-	else {
-		user_end = optional_ttl_pos;
-		cur_pos = user_end + 1;
-		int ttl_delimiter_len = strlen("ttl=");
-		if (end - cur_pos <= ttl_delimiter_len || strncmp(cur_pos, "ttl=", ttl_delimiter_len) != 0) return FALSE;
+    user_begin = cur_pos + user_delimiter_len;
+    char* optional_ttl_pos = strchr(cur_pos, '&');
+    if (optional_ttl_pos == NULL) {
+        user_end = end;
+    }
+    else {
+        user_end = optional_ttl_pos;
+        cur_pos = user_end + 1;
+        int ttl_delimiter_len = strlen("ttl=");
+        if (end - cur_pos <= ttl_delimiter_len || strncmp(cur_pos, "ttl=", ttl_delimiter_len) != 0) return FALSE;
 
-		ttl_begin = cur_pos + ttl_delimiter_len;
-		ttl_end = end;
-	}
+        ttl_begin = cur_pos + ttl_delimiter_len;
+        ttl_end = end;
+    }
 
-	if (host_end == NULL || port_end == NULL || user_end == NULL) {
-		return FALSE;
-	}
+    if (host_end == NULL || port_end == NULL || user_end == NULL) {
+        return FALSE;
+    }
 
-	int host_len = host_end - host_begin;
-	int port_len = port_end - port_begin;
-	int user_len = user_end - user_begin;
-	int ttl_len = ttl_end == NULL ? 0 : (ttl_end - ttl_begin);
+    int host_len = host_end - host_begin;
+    int port_len = port_end - port_begin;
+    int user_len = user_end - user_begin;
+    int ttl_len = ttl_end == NULL ? 0 : (ttl_end - ttl_begin);
 
-	if (host_len <= 0 || port_len <= 0 || user_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || port_len > 8 || user_len > MAX_REDIRECT_USER_LEN || ttl_len > 8) {
-		return FALSE;
-	}
+    if (host_len <= 0 || port_len <= 0 || user_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || port_len > 8 || user_len > MAX_REDIRECT_USER_LEN || ttl_len > 8) {
+        return FALSE;
+    }
 
-	int port = mysqlnd_azure_strtoi(port_begin, port_len);
-	if (port <= 0) {
-		return FALSE;
-	}
+    int port = mysqlnd_azure_strtoi(port_begin, port_len);
+    if (port <= 0) {
+        return FALSE;
+    }
 
-	if (ttl_len > 0) {
-		int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
-		if (ttl < 0) {
-			return FALSE;
-		}
-		*p_ui_redirect_ttl = ttl;
-	}
+    if (ttl_len > 0) {
+        int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
+        if (ttl < 0) {
+            return FALSE;
+        }
+        *p_ui_redirect_ttl = ttl;
+    }
 
-	//setback the value when everything is settled
-	*p_ui_redirect_port = port;
-	memcpy(redirect_host, host_begin, host_len);
-	memcpy(redirect_user, user_begin, user_len);
+    //setback the value when everything is settled
+    *p_ui_redirect_port = port;
+    memcpy(redirect_host, host_begin, host_len);
+    memcpy(redirect_user, user_begin, user_len);
 
-	return TRUE;
+    return TRUE;
 }
 
 static zend_bool
 parse_community_protocol(const MYSQLND_STRING * const last_message, char* redirect_host, char* redirect_user, unsigned int* p_ui_redirect_port, unsigned int* p_ui_redirect_ttl)
 {
-	/**
-	* Community protocol:
-	* Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d\n
-	*/
-	const char* msg_header = "Location: mysql://[";
-	int msg_header_len = strlen(msg_header);
-	char* cur_pos = last_message->s + msg_header_len;
-	char* end = last_message->s + last_message->l;
+    /**
+    * Community protocol:
+    * Location: mysql://[redirectedHostName]:redirectedPort/?user=redirectedUser&ttl=%d\n
+    */
+    const char* msg_header = "Location: mysql://[";
+    int msg_header_len = strlen(msg_header);
+    char* cur_pos = last_message->s + msg_header_len;
+    char* end = last_message->s + last_message->l;
 
-	char* host_begin = cur_pos, * host_end = NULL,
-		* port_begin = NULL, * port_end = NULL,
-		* user_begin = NULL, * user_end = NULL,
-		* ttl_begin = NULL, * ttl_end = NULL;
+    char* host_begin = cur_pos, * host_end = NULL,
+        * port_begin = NULL, * port_end = NULL,
+        * user_begin = NULL, * user_end = NULL,
+        * ttl_begin = NULL, * ttl_end = NULL;
 
-	host_end = strchr(cur_pos, ']');
-	if (host_end == NULL) return FALSE;
+    host_end = strchr(cur_pos, ']');
+    if (host_end == NULL) return FALSE;
 
-	cur_pos = host_end + 1;
-	if (cur_pos == end || *cur_pos != ':' || ++cur_pos == end) return FALSE;
+    cur_pos = host_end + 1;
+    if (cur_pos == end || *cur_pos != ':' || ++cur_pos == end) return FALSE;
 
-	port_begin = cur_pos;
-	port_end = strchr(cur_pos, '/');
-	if (port_end == NULL) return FALSE;
+    port_begin = cur_pos;
+    port_end = strchr(cur_pos, '/');
+    if (port_end == NULL) return FALSE;
 
-	cur_pos = port_end + 1;
-	if (cur_pos == end || *cur_pos != '?' || ++cur_pos == end) return FALSE;
+    cur_pos = port_end + 1;
+    if (cur_pos == end || *cur_pos != '?' || ++cur_pos == end) return FALSE;
 
-	int user_delimiter_len = strlen("user=");
-	if (end - cur_pos <= user_delimiter_len || strncmp(cur_pos, "user=", user_delimiter_len) != 0) return FALSE;
+    int user_delimiter_len = strlen("user=");
+    if (end - cur_pos <= user_delimiter_len || strncmp(cur_pos, "user=", user_delimiter_len) != 0) return FALSE;
 
-	user_begin = cur_pos + user_delimiter_len;
-	user_end = strchr(cur_pos, '&');
-	if (user_end == NULL) return FALSE;
+    user_begin = cur_pos + user_delimiter_len;
+    user_end = strchr(cur_pos, '&');
+    if (user_end == NULL) return FALSE;
 
-	cur_pos = user_end + 1;
-	if (cur_pos == end) return FALSE;
+    cur_pos = user_end + 1;
+    if (cur_pos == end) return FALSE;
 
-	int ttl_delimiter_len = strlen("ttl=");
-	if (end - cur_pos <= ttl_delimiter_len || strncmp(cur_pos, "ttl=", ttl_delimiter_len) != 0) return FALSE;
+    int ttl_delimiter_len = strlen("ttl=");
+    if (end - cur_pos <= ttl_delimiter_len || strncmp(cur_pos, "ttl=", ttl_delimiter_len) != 0) return FALSE;
 
-	ttl_begin = cur_pos + ttl_delimiter_len;
-	ttl_end = strchr(cur_pos, '\n');
-	if (ttl_end == NULL) return FALSE;
+    ttl_begin = cur_pos + ttl_delimiter_len;
+    ttl_end = strchr(cur_pos, '\n');
+    if (ttl_end == NULL) return FALSE;
 
-	int host_len = host_end - host_begin;
-	int port_len = port_end - port_begin;
-	int user_len = user_end - user_begin;
-	int ttl_len = ttl_end - ttl_begin;
+    int host_len = host_end - host_begin;
+    int port_len = port_end - port_begin;
+    int user_len = user_end - user_begin;
+    int ttl_len = ttl_end - ttl_begin;
 
-	if (host_len <= 0 || port_len <= 0 || user_len <= 0 || ttl_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || user_len > MAX_REDIRECT_USER_LEN) {
-		return FALSE;
-	}
+    if (host_len <= 0 || port_len <= 0 || user_len <= 0 || ttl_len <= 0 || host_len > MAX_REDIRECT_HOST_LEN || user_len > MAX_REDIRECT_USER_LEN) {
+        return FALSE;
+    }
 
-	int port = mysqlnd_azure_strtoi(port_begin, port_len);
-	if (port <= 0) {
-		return FALSE;
-	}
+    int port = mysqlnd_azure_strtoi(port_begin, port_len);
+    if (port <= 0) {
+        return FALSE;
+    }
 
     int ttl = mysqlnd_azure_strtoi(ttl_begin, ttl_len);
-	if (ttl < 0) {
-		return FALSE;
-	}
+    if (ttl < 0) {
+        return FALSE;
+    }
 
-	//setback the value when everything is settled
-	*p_ui_redirect_port = port;
-	*p_ui_redirect_ttl = ttl;
-	memcpy(redirect_host, host_begin, host_len);
-	memcpy(redirect_user, user_begin, user_len);
+    //setback the value when everything is settled
+    *p_ui_redirect_port = port;
+    *p_ui_redirect_ttl = ttl;
+    memcpy(redirect_host, host_begin, host_len);
+    memcpy(redirect_user, user_begin, user_len);
 
-	return TRUE;
+    return TRUE;
 }
 
 /* {{{ get_redirect_info */
@@ -365,21 +365,21 @@ get_redirect_info(const MYSQLND_CONN_DATA * const conn, char* redirect_host, cha
     */
 
     AZURE_LOG(ALOG_LEVEL_DBG, "mysqlnd_azure.c: get_redirect_info()");
-	AZURE_LOG(ALOG_LEVEL_DBG, "last message in ok packet: %s", conn->last_message.s);
+    AZURE_LOG(ALOG_LEVEL_DBG, "last message in ok packet: %s", conn->last_message.s);
     const char * msg_header = "Location: mysql://";
     int msg_header_len = strlen(msg_header);
 
     if (conn->last_message.l < 28 || (strncmp(conn->last_message.s, msg_header, msg_header_len) != 0)) {
         return FALSE;
-    }	
+    }   
 
     char *cur_pos = conn->last_message.s + msg_header_len;
-	if (*cur_pos == '[') {
-		return parse_community_protocol(&conn->last_message, redirect_host, redirect_user, p_ui_redirect_port, p_ui_redirect_ttl);
-	}
-	else {
-		return parse_azure_protocol(&conn->last_message, redirect_host, redirect_user, p_ui_redirect_port, p_ui_redirect_ttl);
-	}
+    if (*cur_pos == '[') {
+        return parse_community_protocol(&conn->last_message, redirect_host, redirect_user, p_ui_redirect_port, p_ui_redirect_ttl);
+    }
+    else {
+        return parse_azure_protocol(&conn->last_message, redirect_host, redirect_user, p_ui_redirect_port, p_ui_redirect_ttl);
+    }
    
 }
 
@@ -478,7 +478,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
     transport = conn->m->get_scheme(conn, hostname, &socket_or_pipe, port, &unix_socket, &named_pipe);
 
     mysql_flags = conn->m->get_updated_connect_flags(conn, mysql_flags);
-	AZURE_LOG(ALOG_LEVEL_DBG, "mysql_flags after get_updated_connect_flags(): flags=%u", mysql_flags);
+    AZURE_LOG(ALOG_LEVEL_DBG, "mysql_flags after get_updated_connect_flags(): flags=%u", mysql_flags);
 
     {
         const MYSQLND_CSTRING scheme = { transport.s, transport.l };
@@ -498,7 +498,7 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
         char redirect_host[MAX_REDIRECT_HOST_LEN] = { 0 };
         char redirect_user[MAX_REDIRECT_USER_LEN] = { 0 };
         unsigned int ui_redirect_port = 0;
-		unsigned int ui_redirect_ttl = 0;
+        unsigned int ui_redirect_ttl = 0;
         zend_bool serverSupportRedirect = get_redirect_info(conn, redirect_host, redirect_user, &ui_redirect_port, &ui_redirect_ttl);
         if (!serverSupportRedirect) {
             AZURE_LOG(ALOG_LEVEL_ERR, "get_redirect_info return FALSE, please check whether your MySQL server support redirection and redirection has been turned on.");
@@ -573,9 +573,9 @@ MYSQLND_METHOD(mysqlnd_azure_data, connect)(MYSQLND_CONN_DATA ** pconn,
             }
 
             //init redirect_conn succeeded, use this conn to start a new connection and handshake
-			AZURE_LOG(ALOG_LEVEL_DBG, "Redirection connection Information: redirect_host=%s redirect_user=%s redirect_port=%u flags=%u persistent=%u state=%u",
-				redirect_host ? redirect_host : "", redirect_user ? redirect_user : "", ui_redirect_port, mysql_flags,
-				redirect_conn ? redirect_conn->persistent : 0, redirect_conn ? (int)GET_CONNECTION_STATE(&redirect_conn->state) : -1);
+            AZURE_LOG(ALOG_LEVEL_DBG, "Redirection connection Information: redirect_host=%s redirect_user=%s redirect_port=%u flags=%u persistent=%u state=%u",
+                redirect_host ? redirect_host : "", redirect_user ? redirect_user : "", ui_redirect_port, mysql_flags,
+                redirect_conn ? redirect_conn->persistent : 0, redirect_conn ? (int)GET_CONNECTION_STATE(&redirect_conn->state) : -1);
  
             const MYSQLND_CSTRING redirect_hostname = { redirect_host, strlen(redirect_host) };
             const MYSQLND_CSTRING redirect_username = { redirect_user, strlen(redirect_user) };
@@ -795,7 +795,7 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
     MYSQLND_CONN_DATA ** pconn = &conn_handle->data;
 
     DBG_ENTER("mysqlnd_azure::connect");
-	AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect = %s", MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF ? "off" : (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON ? "on" : "preferred"));
+    AZURE_LOG(ALOG_LEVEL_INFO, "mysqlnd_azure.enableRedirect = %s", MYSQLND_AZURE_G(enableRedirect) == REDIRECT_OFF ? "off" : (MYSQLND_AZURE_G(enableRedirect) == REDIRECT_ON ? "on" : "preferred"));
 
     if (PASS == (*pconn)->m->local_tx_start(*pconn, this_func)) {
         mysqlnd_options4(conn_handle, MYSQL_OPT_CONNECT_ATTR_ADD, "_client_name", "mysqlnd");
@@ -834,23 +834,50 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
                 MYSQLND_AZURE_REDIRECT_INFO* redirect_info = mysqlnd_azure_find_redirect_cache(username.s, hostname.s, port);
                 if (redirect_info != NULL) {
                     DBG_ENTER("mysqlnd_azure::connect try the cached info first");
-					AZURE_LOG(ALOG_LEVEL_INFO, "Find cache. mysqlnd_azure::connect try the cached info first");
-					AZURE_LOG(ALOG_LEVEL_DBG, "cached host : %s, cached user : %s, cached port : %u", redirect_info->redirect_host, redirect_info->redirect_user, redirect_info->redirect_port);
 
-                    const MYSQLND_CSTRING redirect_host = { redirect_info->redirect_host, strlen(redirect_info->redirect_host) };
-                    const MYSQLND_CSTRING redirect_user = { redirect_info->redirect_user, strlen(redirect_info->redirect_user) };
+                    //init a new connection obj in order not to affect any field of pconn if cached connection failed.
+                    enum_func_status init_cache_obj_res = PASS;
+                    MYSQLND* redirect_cache_conneHandle = mysqlnd_init(MYSQLND_CLIENT_KNOWS_RSET_COPY_DATA, (*pconn)->persistent); //init MYSQLND but only need only MYSQLND_CONN_DATA here
+                    MYSQLND_CONN_DATA* redirect_cache_conn = NULL;
+                    if (!redirect_cache_conneHandle) {
+                        init_cache_obj_res = FAIL;
+                    }
+                    else {
+                        redirect_cache_conn = redirect_cache_conneHandle->data;
+                        redirect_cache_conneHandle->data = NULL;
+                        mnd_pefree(redirect_cache_conneHandle, redirect_cache_conneHandle->persistent);
+                        redirect_cache_conneHandle = NULL;
 
-                    ret = (*pconn)->m->connect(pconn, redirect_host, redirect_user, password, database, redirect_info->redirect_port, socket_or_pipe, mysql_flags);
-                    if (ret == FAIL) {
-                        AZURE_LOG(ALOG_LEVEL_INFO, "Use cache failed.");
-                        //remove invalid cache
-                        mysqlnd_azure_remove_redirect_cache(username.s, hostname.s, port);
+                        init_cache_obj_res = set_redirect_client_options(*pconn, redirect_cache_conn);
+                    }
 
-                        ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
-					}
-					else {
-						AZURE_LOG(ALOG_LEVEL_INFO, "Use cache sccuceeded.");
-					}
+                    //init redirect_conn options failed
+                    if (init_cache_obj_res == FAIL) {
+                        AZURE_LOG(ALOG_LEVEL_INFO, "Init redirection cache obj failed. Simply ignore the error and try the full round of connection");
+                    }
+                    else {
+                        AZURE_LOG(ALOG_LEVEL_INFO, "Find cache. mysqlnd_azure::connect try the cached info first");
+                        AZURE_LOG(ALOG_LEVEL_DBG, "cached host : %s, cached user : %s, cached port : %u", redirect_info->redirect_host, redirect_info->redirect_user, redirect_info->redirect_port);
+
+                        const MYSQLND_CSTRING redirect_host = { redirect_info->redirect_host, strlen(redirect_info->redirect_host) };
+                        const MYSQLND_CSTRING redirect_user = { redirect_info->redirect_user, strlen(redirect_info->redirect_user) };
+                        ret = org_conn_d_m.connect(redirect_cache_conn, redirect_host, redirect_user, password, database, redirect_info->redirect_port, socket_or_pipe, mysql_flags);
+                        if (ret == FAIL) {
+                            AZURE_LOG(ALOG_LEVEL_INFO, "Use cache failed.");
+                            //remove invalid cache and free redirect_cache_conn
+                            mysqlnd_azure_remove_redirect_cache(username.s, hostname.s, port);
+                            redirect_cache_conn->m->dtor(redirect_cache_conn);
+                            redirect_cache_conn = NULL;
+                            //Init a new full round of connection
+                            ret = (*pconn)->m->connect(pconn, hostname, username, password, database, port, socket_or_pipe, mysql_flags);
+                        }
+                        else {
+                            AZURE_LOG(ALOG_LEVEL_INFO, "Use cache sccuceeded.");
+                            (*pconn)->m->dtor(*pconn);
+                            *pconn = redirect_cache_conn;
+                            ret = PASS;
+                        }
+                    }
                 }
                 else {
                     AZURE_LOG(ALOG_LEVEL_INFO, "No cache found");
@@ -869,29 +896,29 @@ MYSQLND_METHOD(mysqlnd_azure, connect)(MYSQLND * conn_handle,
 
 /* {{{ mysqlnd_azure_apply_resources, do resource apply works when module init */
 int mysqlnd_azure_apply_resources() {
-	/*
-	  If logOutput mode is FILE, a logfile will be opened no matter the verbose
-	  level(logLevel) is configured, and closed at the module destruct time.
-	 */
-	if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) {
-		char *logfilePath = NULL;
-		int logflag = 0;
-		if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 255) {
-			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] logOutput=2 but logfilePath %s is invalid. logfilePath string length can not exceed 255.", ZSTR_VAL(MYSQLND_AZURE_G(logfilePath)));
-			return 1;
-		}
-		else {
-			logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
-		}
+    /*
+      If logOutput mode is FILE, a logfile will be opened no matter the verbose
+      level(logLevel) is configured, and closed at the module destruct time.
+     */
+    if (MYSQLND_AZURE_G(logOutput) & ALOG_TYPE_FILE) {
+        char *logfilePath = NULL;
+        int logflag = 0;
+        if (ZSTR_LEN(MYSQLND_AZURE_G(logfilePath)) > 255) {
+            php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] logOutput=2 but logfilePath %s is invalid. logfilePath string length can not exceed 255.", ZSTR_VAL(MYSQLND_AZURE_G(logfilePath)));
+            return 1;
+        }
+        else {
+            logfilePath = ZSTR_VAL(MYSQLND_AZURE_G(logfilePath));
+        }
 
-		OPEN_LOGFILE(logfilePath);
-		if (!logfile) {
-			php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] logOutput=2 but unable to open logfilePath: %s. Please check the configuration of the file is correct.", logfilePath);
-			return 1;
-		}
+        OPEN_LOGFILE(logfilePath);
+        if (!logfile) {
+            php_error_docref(NULL, E_WARNING, "[mysqlnd_azure] logOutput=2 but unable to open logfilePath: %s. Please check the configuration of the file is correct.", logfilePath);
+            return 1;
+        }
 
-	}
-	return 0;
+    }
+    return 0;
 }
 /* }}} */
 
