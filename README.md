@@ -57,6 +57,7 @@ Required PHP min version: PHP7.2.15+, PHP7.3.2+, PHP7.4.0+.
 
 Valid version:
 The latest version is **1.1.1**. Please check [package.xml](/package.xml) for changelog details. Following are some special notice for certain versions:
+
 - 1.1.1  Enable runtime log check support. Fix crash problem when mysqlnd.collect_memory_statistics=1.
 - 1.1.0  Rename option mysqlnd_azure.enabled to mysqlnd_azure.enableRedirect, and add a new option value "preferred". When enableRedirect is "on", it will enforce redirection. Please check [package.xml](/package.xml) for changelog details.
 - 1.0.2  Limitation: crash when working with PDO interface with flag PDO::ATTR_PERSISTENT=>false
