@@ -16,23 +16,19 @@
   <email>Qianqian.Bu@microsoft.com</email>
   <active>yes</active>
  </lead>
- <date>2020-08-06</date>
+ <date>2020-12-10</date>
  <time>16:00:13</time>
  <version>
-  <release>1.1.1</release>
-  <api>1.1.1</api>
+  <release>1.1.2</release>
+  <api>1.1.2</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>PlaceHolder_ToRelease</release>
+  <api>PlaceHolder_ToRelease</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- 1. New connection attribute "_extension_version", indicate the mysqlnd_azure extension build version.
-- 2. Fix memory collect mnd_ prefix alloc crash and add a test case for enable mysqlnd.collect_memory_statistics.
-- 3. Add support for two redirection info format.
-- 4. Add support to enable runtime log, check myslqnd_azure_log.md
-- 5. Add doc for general troubleshooting.
+- 1. Fix ssl_ca property lost problem when cache failed to connect
  </notes>
  <contents>
   <dir name="/">
@@ -49,6 +45,7 @@
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_redirection_preferred.phpt" role="test" />
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_option_test.phpt" role="test" />   
    <file md5sum="a678a17b08f337292c0471b26be405f5" name="tests/mysqli_azure_option_test_collect_memory_statistics.phpt" role="test" />
+   <file md5sum="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" name="tests/mysqli_azure_cache_invalid.phpt" role="test" />
    <file md5sum="271878ad9afcd0f4304529ff9522e034" name="tests/connect.inc" role="test" />
    <file md5sum="d621e9a3ad808225480ee11b361338ad" name="tests/skipif.inc" role="test" />
    <file md5sum="841204de228db4ea0150bf7289956163" name="tests/skipif_mysqli.inc" role="test" />
@@ -82,6 +79,21 @@
  <providesextension>mysqlnd_azure</providesextension>
  <extsrcrelease />
  <changelog>
+   <release>
+     <version>
+     <release>1.1.2</release>
+     <api>1.1.2</api>
+     </version>
+     <stability>
+      <release>PlaceHolder_ToRelease</release>
+      <api>PlaceHolder_ToRelease</api>
+     </stability>
+     <date>2020-12-10</date>
+     <license uri="http://www.php.net/license">PHP License</license>
+     <notes>
+- 1. Fix ssl_ca property lost problem when cache failed to connect
+     </notes>
+    </release>
     <release>
      <version>
      <release>1.1.1</release>
