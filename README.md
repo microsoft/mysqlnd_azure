@@ -66,7 +66,7 @@ The latest version is **1.1.1**. Please check [package.xml](/package.xml) for ch
 
 Following is a brief guide of how to install using pecl or build and test the extension from source. 
 
-## Step to install using PECL
+## Steps to install using PECL
 The PECL link is available at  https://pecl.php.net/package/mysqlnd_azure.
 Following steps assume that php and php-mysql have already been normally installed on each platform.
 #### Setup
@@ -111,7 +111,7 @@ switch(PHP_INT_SIZE) {
 The configuration step is same with that of build from source. Check content below for Linux or Windows platform.
 
 
-## Step to build on Linux
+## Steps to build on Linux
 #### Setup
 * Install phpize for build using following command
   - Ubuntu: apt-get install php7.x-dev  
@@ -145,7 +145,7 @@ Then you can run **make install** to put the .so to your php so library. However
       	- **Notice:** since 1.1.0, if this value is set to on, the connection must be configured with SSL, and it requires server support redirection. Otherwise, the connection will fail. Please check the Option Usage section for detailed information.
 
 
-## Step to build on Windows
+## Steps to build on Windows
 #### Set up 
 There need more steps to build the extension under Windows, and it willl use the php-sdk-binary-tools developed for help. The detailed step is decribed on https://wiki.php.net/internals/windows/stepbystepbuild_sdk_2. And it is repeated here:
 * If compiling PHP 7.2+:
