@@ -62,11 +62,24 @@ jobs:
         # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
 
+    - name: Install php tool
+      run: |
+        sudo apt-get install software-properties-common
+        sudo add-apt-repository ppa:ondrej/php
+        sudo apt-get update
+        sudo apt-get remove php8.1*
+        sudo apt-get install php7.2-dev
+
 
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: Manual build
+      # uses: github/codeql-action/autobuild@v3
+      run: |
+         cd /home/runner/work/mysqlnd_azure_test/mysqlnd_azure_test
+         phpize
+         ./configure
+         make
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
