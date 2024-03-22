@@ -76,7 +76,7 @@ jobs:
     - name: Manual build
       # uses: github/codeql-action/autobuild@v3
       run: |
-         cd /home/runner/work/mysqlnd_azure_test/mysqlnd_azure_test
+         cd /home/runner/work/mysqlnd_azure_test/mysqlnd_azure
          phpize
          ./configure
          make
