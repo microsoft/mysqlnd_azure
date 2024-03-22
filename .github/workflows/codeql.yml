@@ -73,10 +73,13 @@ jobs:
 
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Auto build
+      uses: github/codeql-action/autobuild@v3
+      
     - name: Manual build
       # uses: github/codeql-action/autobuild@v3
       run: |
-         cd /home/runner/work/mysqlnd_azure_test/mysqlnd_azure
+         cd /home/runner/work/mysqlnd_azure/mysqlnd_azure
          phpize
          ./configure
          make
